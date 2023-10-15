@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">To Do App</string>
+    <string name="add_task">Add new task</string>
+    <string name="task_input_placeholder">Type your task</string>
+    <string name="desc_hint">Description (optional)</string>
+    <string name="due_hint">Due Date (optional)</string>
+    <string name="fav_label">Important?</string>
+    <string name="task_name_hint">What do you want to do?</string>
+</resources>
