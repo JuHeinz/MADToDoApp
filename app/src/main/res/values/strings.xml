@@ -5,5 +5,5 @@
     <string name="desc_hint">Description (optional)</string>
     <string name="due_hint">Due Date (optional)</string>
     <string name="fav_label">Important?</string>
-    <string name="task_name_hint">What do you want to do?</string>
+    <string name="task_name_hint">What needs to be done?</string>
 </resources>
