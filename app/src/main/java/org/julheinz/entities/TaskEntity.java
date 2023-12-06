@@ -2,15 +2,18 @@ package org.julheinz.entities;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 
-public class TaskEntity {
+public class TaskEntity implements Serializable {
 
+    protected static long idCount = 0;
+    private long id = ++idCount;
     private String taskName;
 
-    private String taskDescription;
+    private String description;
 
     private LocalDateTime createdDate;
 
@@ -19,10 +22,10 @@ public class TaskEntity {
     private Date doneDate;
 
 
-    public TaskEntity(String taskName, String taskDescription, LocalDateTime createdDate, LocalDateTime dueDate, Boolean isFav) {
+    public TaskEntity(String taskName, String description, LocalDateTime createdDate, LocalDateTime dueDate, Boolean isFav) {
 
         this.taskName = taskName;
-        this.taskDescription = taskDescription;
+        this.description = description;
         this.createdDate = createdDate;
         this.dueDate = dueDate;
         this.isDone = false;
@@ -62,12 +65,12 @@ public class TaskEntity {
         this.doneDate = doneDate;
     }
 
-    public String getTaskDescription() {
-        return taskDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTaskDescription(String taskDescription) {
-        this.taskDescription = taskDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public LocalDateTime getDueDate() {
@@ -93,7 +96,7 @@ public class TaskEntity {
     public String toString() {
         return "TaskEntity{" +
                 "taskName='" + taskName + '\'' +
-                ", taskDescription='" + taskDescription + '\'' +
+                ", taskDescription='" + description + '\'' +
                 ", createdDate=" + createdDate +
                 ", dueDate=" + dueDate +
                 ", isDone=" + isDone +

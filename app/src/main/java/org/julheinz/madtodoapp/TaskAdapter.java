@@ -5,9 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.julheinz.entities.TaskEntity;
 
@@ -16,58 +20,57 @@ import java.util.List;
 
 public class TaskAdapter extends ArrayAdapter<TaskEntity> {
 
-    private Context context;
-    private int layoutResourceId;
-    private List<TaskEntity> taskList;
+    private final Context context;
+    private final int layoutResourceId;
 
     public TaskAdapter(Context context, int layoutResourceId, List<TaskEntity> taskList) {
         super(context, layoutResourceId, taskList);
         this.context = context;
         this.layoutResourceId = R.layout.list_item;
-        this.taskList = taskList;
     }
 
+    /**
+     * create/get the view for a single item by inflating the layout
+     * @param position the position of the task in the list
+     * @param convertView
+     * @param parent
+     * @return The view for a task in the list
+     */
     @NonNull
     @Override
-    public View getView(int position, View listItemView, @NonNull ViewGroup parent) {
-        ListItem holder;
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        if (listItemView == null) {
+        TaskEntity task = getItem(position);
 
-            LayoutInflater inflater = LayoutInflater.from(context);
-            listItemView = inflater.inflate(layoutResourceId, parent, false);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        ViewGroup itemView = (ViewGroup) inflater.inflate(layoutResourceId, parent, false);
 
-            //Set attributes of view
-            holder = new ListItem();
-            holder.taskName = listItemView.findViewById(R.id.taskNameOutput);
-            holder.taskDescription = listItemView.findViewById(R.id.descriptionOutput);
-            holder.taskCheckBox = listItemView.findViewById(R.id.taskCheckBox);
-            holder.creationDate = listItemView.findViewById(R.id.creationDateOutput);
-            holder.dueDate = listItemView.findViewById(R.id.dueDateOutput);
-            holder.favOutput = listItemView.findViewById(R.id.favOutput);
-            listItemView.setTag(holder);
-        } else {
-            holder = (ListItem) listItemView.getTag();
-        }
+        TextView taskName = itemView.findViewById(R.id.taskNameOutput);
+        taskName.setText(task.getTaskName());
 
-        TaskEntity task = taskList.get(position);
-        holder.taskName.setText(task.getTaskName());
-        holder.taskCheckBox.setChecked(task.isDone());
-        holder.taskDescription.setText(task.getTaskDescription());
+        CheckBox taskCheckBox = itemView.findViewById(R.id.taskCheckBox);
+        taskCheckBox.setChecked(task.isDone());
 
+        TextView taskDescription = itemView.findViewById(R.id.descriptionOutput);
+        taskDescription.setText(task.getDescription());
+
+        TextView  creationDate = itemView.findViewById(R.id.creationDateOutput);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy, H:mm");
-        holder.creationDate.setText(task.getCreatedDate().format(formatter));
-        holder.dueDate.setText(task.getDueDate().format(formatter));
+        creationDate.setText(task.getCreatedDate().format(formatter));
 
+        TextView dueDate = itemView.findViewById(R.id.dueDateOutput);
+        dueDate.setText(task.getDueDate().format(formatter));
+
+        ImageView favOutput = itemView.findViewById(R.id.favOutput);
         //Set star according to fav status
-        holder.favOutput.setImageResource(task.isFav() ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
+        favOutput.setImageResource(task.isFav() ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
 
         // set the value of isDone according to the state of the checkbox
-        holder.taskCheckBox.setOnClickListener(v -> {
-            task.setDone(holder.taskCheckBox.isChecked());
+        taskCheckBox.setOnClickListener(v -> {
+            task.setDone(taskCheckBox.isChecked());
         });
 
-        return listItemView;
+        return itemView;
     }
 
 

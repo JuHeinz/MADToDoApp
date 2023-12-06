@@ -18,13 +18,16 @@ import java.time.format.DateTimeParseException;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
-    EditText taskNameInput;
-    EditText descriptionInput;
-    Button addTaskBtn;
-    Button backBtn;
-    EditText dueDateInput;
-    ImageButton favBtn;
-    boolean isFav;
+    private EditText taskNameInput;
+    private EditText descriptionInput;
+    private Button addTaskBtn;
+    private Button backBtn;
+    private EditText dueDateInput;
+    private ImageButton favBtn;
+    private boolean isFav;
+
+    public static final String ARG_TASK = "task";
+    private TaskEntity task;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,27 +38,33 @@ public class DetailActivity extends AppCompatActivity {
 
         Intent detailViewIntentFromOverview = getIntent();
         //Wenn wir durch klicken auf eine bereits erstellte task auf diese view kommen, wird der name der bereits erstellten task übergeben
-        String itemName = detailViewIntentFromOverview.getStringExtra("itemName");
+        //Neue instanz der klasse, nicht die selbe weil serializable
+        this.task = (TaskEntity) detailViewIntentFromOverview.getSerializableExtra(ARG_TASK);
+        if(this.task == null){
+            this.task = new TaskEntity("", "", null, null, false);
+        }
 
         //get ui components
         taskNameInput = findViewById(R.id.taskNameInput);
         descriptionInput = findViewById(R.id.descriptionInput);
         dueDateInput = findViewById(R.id.dueDateInput);
-        favBtn = findViewById(R.id.favBtn);
-        addTaskBtn = findViewById(R.id.addTaskBtn);
-        backBtn = findViewById(R.id.backBtn);
 
+        favBtn = findViewById(R.id.favBtn);
+
+        addTaskBtn = findViewById(R.id.addTaskBtn);
         addTaskBtn.setOnClickListener(this::addTask);
+
+        backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(this::cancelEdit);
 
-        taskNameInput.setText(itemName);
+        taskNameInput.setText(task.getTaskName());
     }
 
 
     /**
      * Creates an Task Entity with current timestamp as creation date
      */
-    public TaskEntity createNewTask() {
+    private TaskEntity createNewTask() {
         //get user input
         String taskName = taskNameInput.getText().toString();
         String description = descriptionInput.getText().toString();
@@ -78,17 +87,17 @@ public class DetailActivity extends AppCompatActivity {
     /**
      * Adds TaskEntity to to adapter and triggers UI change
      */
-    public void addTask(View view) {
+    private void addTask(View view) {
         if (!taskNameInput.getText().toString().isEmpty()) {
 
             //TODO: add task to adapter
-            TaskEntity task = createNewTask();
+            this.task = createNewTask();
 
             Log.d("Task Created:", task.toString());
 
             //Intent um auf die Activity zurückzukehren, die diese augerufen hat und ihr daten mitgeben
             Intent returnToCallerWithValueIntent = new Intent();
-            returnToCallerWithValueIntent.putExtra("itemName", task.getTaskName());
+            returnToCallerWithValueIntent.putExtra(ARG_TASK, task);
             setResult(Activity.RESULT_OK, returnToCallerWithValueIntent);
 
             //close activity and return to caller
@@ -106,7 +115,7 @@ public class DetailActivity extends AppCompatActivity {
     /**
      * toogle the icon in the favButton and sets the state
      */
-    public void toggleFav(View view) {
+    private void toggleFav(View view) {
         isFav = !isFav;
         Log.d("Fav Btn Click:", isFav + "!");
 

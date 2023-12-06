@@ -1,5 +1,7 @@
 package org.julheinz.madtodoapp;
 
+import static org.julheinz.madtodoapp.DetailActivity.ARG_TASK;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,19 +15,21 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.julheinz.entities.TaskEntity;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
 
-    private static final int CALL_DETAIL_VIEW_FOR_SHOW = 20;
+    private static final int CALL_DETAIL_VIEW_FOR_EDIT = 20;
     private static final int CALL_DETAIL_VIEW_FOR_CREATE = 30;
 
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
-    private final List<String> listItems = new ArrayList<>();
+    private final List<TaskEntity> taskList = new ArrayList<>();
 
-    private ArrayAdapter<String> listViewAdapter;
+    private ArrayAdapter<TaskEntity> listViewAdapter;
 
 
     @Override
@@ -34,7 +38,6 @@ public class OverviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.i(LOG_TAG, "created!");
 
-        this.listItems.addAll(Arrays.asList("Dies", "Ist", "eine", "tolle", "app"));
         ListView listView = findViewById(R.id.listView);
 
         /* adapter managed was in der listview angezeigt wird. arguments:
@@ -42,8 +45,9 @@ public class OverviewActivity extends AppCompatActivity {
          2: welches layout soll ein einzeles item haben,
          3: textfeld wo das resultat rein soll
          3: liste der items */
-        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.taskNameOutput, listItems);
+        this.listViewAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
         listView.setAdapter(this.listViewAdapter);
+
 
         /* click listener for click on list item. arguments:
         1: parent view where click happened
@@ -52,9 +56,11 @@ public class OverviewActivity extends AppCompatActivity {
         4: id für aufruf direkt auf datenbank (hier nicht verwendet) */
         listView.setOnItemClickListener((parentView, view, position, id) -> {
             //Hole das item der liste das der position des geklickten elements entspricht
-            String selectedItem = this.listViewAdapter.getItem(position);
-            callDetailViewForEdit(selectedItem);
+            TaskEntity selectedTask = this.listViewAdapter.getItem(position);
+            callDetailViewForEdit(selectedTask);
         });
+
+        getTasksFromDB();
 
         Button addTaskBtn = findViewById(R.id.addTaskBtn);
         addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
@@ -70,11 +76,11 @@ public class OverviewActivity extends AppCompatActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == CALL_DETAIL_VIEW_FOR_SHOW) {
+        if (requestCode == CALL_DETAIL_VIEW_FOR_EDIT) {
             switch (resultCode) {
                 case Activity.RESULT_OK:
-                    String receivedItemName = data.getStringExtra("taskName");
-                    toastMsg("Added task " + receivedItemName);
+                    TaskEntity receivedTask = (TaskEntity) data.getSerializableExtra(ARG_TASK);
+                    toastMsg("Added task " + receivedTask.getTaskName());
                     break;
                 case Activity.RESULT_CANCELED:
                     toastMsg("Adding of task cancelled");
@@ -83,8 +89,8 @@ public class OverviewActivity extends AppCompatActivity {
         } else if (requestCode == CALL_DETAIL_VIEW_FOR_CREATE) {
             if (resultCode == Activity.RESULT_OK) {
                 //neues item der liste hinzufügen
-                String receivedItemName = data.getStringExtra("itemName");
-                this.listItems.add(receivedItemName);
+                TaskEntity receivedTask = (TaskEntity) data.getSerializableExtra(ARG_TASK);
+                this.taskList.add(receivedTask);
                 this.listViewAdapter.notifyDataSetChanged();
             }
         } else {
@@ -113,11 +119,18 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * Starts detailActivity for result after click on existing task
      */
-    private void callDetailViewForEdit(String selectedItem) {
-        Intent callDetailViewForShow = new Intent(this, DetailActivity.class);
-        callDetailViewForShow.putExtra("itemName", selectedItem);
-        startActivityForResult(callDetailViewForShow, CALL_DETAIL_VIEW_FOR_SHOW);
+    private void callDetailViewForEdit(TaskEntity selectedItem) {
+        Intent callDetailViewForEdit = new Intent(this, DetailActivity.class);
+        callDetailViewForEdit.putExtra(ARG_TASK, selectedItem);
+        startActivityForResult(callDetailViewForEdit, CALL_DETAIL_VIEW_FOR_EDIT);
     }
 
-
+    /**
+     * Gets previously added tasks from "database" and add them to adapter
+     */
+    private void getTasksFromDB() {
+        taskList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
+        taskList.add(new TaskEntity("Be happy", "Just enjoy life", LocalDateTime.now(), LocalDateTime.now(), true));
+        listViewAdapter.notifyDataSetChanged();
+    }
 }
