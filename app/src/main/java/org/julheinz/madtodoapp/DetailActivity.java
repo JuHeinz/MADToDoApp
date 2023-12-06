@@ -1,5 +1,6 @@
 package org.julheinz.madtodoapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,6 +28,8 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "created!");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_view);
 
@@ -39,11 +41,8 @@ public class DetailActivity extends AppCompatActivity {
         addTaskBtn = findViewById(R.id.addTaskBtn);
         backBtn = findViewById(R.id.backBtn);
 
-        addTaskBtn.setOnClickListener(view -> addTask(view));
-        backBtn.setOnClickListener(view -> {
-            Intent overViewIntent = new Intent(this, OverviewActivity.class);
-            startActivity(overViewIntent);
-        });
+        addTaskBtn.setOnClickListener(this::addTask);
+        backBtn.setOnClickListener(this::cancelEdit);
     }
 
 
@@ -74,40 +73,32 @@ public class DetailActivity extends AppCompatActivity {
      * Adds TaskEntity to to adapter and triggers UI change
      */
     public void addTask(View view) {
-        if (!taskNameInput.getText().toString().equals("")) {
+        if (!taskNameInput.getText().toString().isEmpty()) {
 
             //add task to adapter
-
             TaskEntity task = createNewTask();
 
-            //TODO: get task from detailActivity
             /*
             taskArray.add(task);
             adapter.notifyDataSetChanged();
             */
             Log.d("Task Created:", task.toString());
 
-            //success message
-            toastMsg("Task " + task.getTaskName() + " added!");
+            //Intent um auf die Activity zurückzukehren, die diese augerufen hat und ihr daten mitgeben
+            Intent returnToCallerWithValueIntent = new Intent();
+            returnToCallerWithValueIntent.putExtra("taskName", task.getTaskName());
+            setResult(Activity.RESULT_OK, returnToCallerWithValueIntent);
 
-            //reset UI
-            taskNameInput.setText("");
-            descriptionInput.setText("");
-            dueDateInput.setText("");
-            resetFav();
-
-            Intent goToOverview = new Intent(this, OverviewActivity.class);
-            goToOverview.putExtra("addedTask", task.getTaskName());
-            startActivity(goToOverview);
+            //close activity and return to caller
+            finish();
         }
     }
 
-    /**
-     * resets icon and state to not starred
-     */
-    public void resetFav() {
-        isFav = false;
-        favBtn.setImageResource(R.drawable.baseline_star_border_24);
+    private void cancelEdit(View view){
+        Intent returnToCallerWhenCancelled = new Intent();
+        setResult(Activity.RESULT_CANCELED, returnToCallerWhenCancelled);
+        //close activity and return to caller
+        finish();
     }
 
     /**
@@ -125,11 +116,5 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Creates toast for user feedback
-     */
-    //TODO: Call when task is completed
-    public void toastMsg(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-    }
+
 }
