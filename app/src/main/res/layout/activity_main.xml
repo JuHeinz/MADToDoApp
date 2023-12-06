@@ -13,7 +13,7 @@
         android:text="New Task" />
 
     <ListView
-        android:id="@+id/taskListView"
+        android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layout_conversion_absoluteHeight="544dp"

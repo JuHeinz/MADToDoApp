@@ -33,6 +33,10 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_view);
 
+        Intent detailViewIntentFromOverview = getIntent();
+        //Wenn wir durch klicken auf eine bereits erstellte task auf diese view kommen, wird der name der bereits erstellten task übergeben
+        String itemName = detailViewIntentFromOverview.getStringExtra("itemName");
+
         //get ui components
         taskNameInput = findViewById(R.id.taskNameInput);
         descriptionInput = findViewById(R.id.descriptionInput);
@@ -43,6 +47,8 @@ public class DetailActivity extends AppCompatActivity {
 
         addTaskBtn.setOnClickListener(this::addTask);
         backBtn.setOnClickListener(this::cancelEdit);
+
+        taskNameInput.setText(itemName);
     }
 
 

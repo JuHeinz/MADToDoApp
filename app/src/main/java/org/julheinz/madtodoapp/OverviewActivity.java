@@ -13,21 +13,19 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.julheinz.entities.TaskEntity;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
+    private Button addTaskBtn;
+    private ListView listView;
+    private final List<String> listItems = new ArrayList<>();
 
-    ListView taskListView;
-    List<TaskEntity> taskArray;
-    ArrayAdapter<TaskEntity> adapter;
+    private ArrayAdapter<String> listViewAdapter;
 
-    Button addTaskBtn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,16 +33,24 @@ public class OverviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.i(LOG_TAG, "created!");
 
-        //set up adapter
-        taskArray = new ArrayList<>();
-        adapter = new TaskAdapter(this, R.layout.list_item, taskArray);
-        taskListView = findViewById(R.id.taskListView);
-        taskListView.setAdapter(adapter);
+        this.listItems.addAll(Arrays.asList("Dies", "Ist", "eine", "tolle", "app"));
+        this.listView = findViewById(R.id.listView);
+
+        //adapter managed was in der listview angezeigt wird. argumente: 1. von welcher activity wird es aufegrufen, 2: welches layout soll ein einzeles item haben, 3: liste der items
+        this.listViewAdapter = new ArrayAdapter<>(this,R.layout.activity_overview_listitem_view, listItems);
+        this.listView.setAdapter(this.listViewAdapter);
+
+        //call detailView from click on item
+        // parameter: 1: ? 2: item auf das geklickt wurde, 3: position des elements in ansicht = position des elements in List 4: id für aufruf direkt auf datenbank (optional)
+        this.listView.setOnItemClickListener((adapterView, view, position, id) -> {
+            //Hole das item der liste das der position des geklickten elements entspricht
+            String selectedItem = this.listViewAdapter.getItem(position);
+            Intent callDetailViewForShow = new Intent(this, DetailActivity.class);
+            callDetailViewForShow.putExtra("itemName", selectedItem);
+            startActivityForResult(callDetailViewForShow, 20);
+        });
+
         addTaskBtn = findViewById(R.id.addTaskBtn);
-
-        //get previously inputed tasks
-        getTasksFromDB();
-
         addTaskBtn.setOnClickListener(this::startTaskCreation);
 
     }
@@ -80,14 +86,6 @@ public class OverviewActivity extends AppCompatActivity {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
-    /**
-     * Gets previously added tasks from "database" and add them to adapter
-     */
-    private void getTasksFromDB() {
-        taskArray.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
-        taskArray.add(new TaskEntity("Be happy", "Just enjoy life", LocalDateTime.now(), LocalDateTime.now(), true));
-        adapter.notifyDataSetChanged();
-    }
 
     /**
      * Starts detailActivity for result
