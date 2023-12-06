@@ -92,7 +92,7 @@ public class DetailActivity extends AppCompatActivity {
 
             //Intent um auf die Activity zurückzukehren, die diese augerufen hat und ihr daten mitgeben
             Intent returnToCallerWithValueIntent = new Intent();
-            returnToCallerWithValueIntent.putExtra("taskName", task.getTaskName());
+            returnToCallerWithValueIntent.putExtra("itemName", task.getTaskName());
             setResult(Activity.RESULT_OK, returnToCallerWithValueIntent);
 
             //close activity and return to caller
