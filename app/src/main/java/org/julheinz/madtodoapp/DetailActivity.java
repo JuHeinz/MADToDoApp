@@ -80,6 +80,7 @@ public class DetailActivity extends AppCompatActivity {
 
             TaskEntity task = createNewTask();
 
+            //TODO: get task from detailActivity
             /*
             taskArray.add(task);
             adapter.notifyDataSetChanged();
@@ -94,6 +95,10 @@ public class DetailActivity extends AppCompatActivity {
             descriptionInput.setText("");
             dueDateInput.setText("");
             resetFav();
+
+            Intent goToOverview = new Intent(this, OverviewActivity.class);
+            goToOverview.putExtra("addedTask", task.getTaskName());
+            startActivity(goToOverview);
         }
     }
 

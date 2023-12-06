@@ -32,6 +32,11 @@ public class OverviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.i(LOG_TAG, "created!");
 
+        //get from intent when called from detail activity
+        Intent intent = getIntent();
+        String addedTaskName = intent.getStringExtra("addedTask");
+        //Log.i(LOG_TAG, addedTaskName);
+
         //set up adapter
         taskArray = new ArrayList<>();
         adapter = new TaskAdapter(this, R.layout.list_item, taskArray);
