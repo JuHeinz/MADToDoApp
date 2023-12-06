@@ -23,8 +23,6 @@ public class OverviewActivity extends AppCompatActivity {
     private static final int CALL_DETAIL_VIEW_FOR_CREATE = 30;
 
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
-    private Button addTaskBtn;
-    private ListView listView;
     private final List<String> listItems = new ArrayList<>();
 
     private ArrayAdapter<String> listViewAdapter;
@@ -37,23 +35,27 @@ public class OverviewActivity extends AppCompatActivity {
         Log.i(LOG_TAG, "created!");
 
         this.listItems.addAll(Arrays.asList("Dies", "Ist", "eine", "tolle", "app"));
-        this.listView = findViewById(R.id.listView);
+        ListView listView = findViewById(R.id.listView);
 
-        //adapter managed was in der listview angezeigt wird. argumente: 1. von welcher activity wird es aufegrufen, 2: welches layout soll ein einzeles item haben, 3: liste der items
+        /* adapter managed was in der listview angezeigt wird. arguments:
+         1. von welcher activity wird es aufegrufen,
+         2: welches layout soll ein einzeles item haben,
+         3: liste der items */
         this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem_view, listItems);
-        this.listView.setAdapter(this.listViewAdapter);
+        listView.setAdapter(this.listViewAdapter);
 
-        //call detailView from click on item
-        // parameter: 1: ? 2: item auf das geklickt wurde, 3: position des elements in ansicht = position des elements in List 4: id für aufruf direkt auf datenbank (optional)
-        this.listView.setOnItemClickListener((adapterView, view, position, id) -> {
+        /* click listener for click on list item. arguments:
+        1: parent view where click happened
+        2: item (view) auf das geklickt wurde
+        3: position des elements in ansicht
+        4: id für aufruf direkt auf datenbank (hier nicht verwendet) */
+        listView.setOnItemClickListener((parentView, view, position, id) -> {
             //Hole das item der liste das der position des geklickten elements entspricht
             String selectedItem = this.listViewAdapter.getItem(position);
-            Intent callDetailViewForShow = new Intent(this, DetailActivity.class);
-            callDetailViewForShow.putExtra("itemName", selectedItem);
-            startActivityForResult(callDetailViewForShow, CALL_DETAIL_VIEW_FOR_SHOW);
+            callDetailViewForEdit(selectedItem);
         });
 
-        addTaskBtn = findViewById(R.id.addTaskBtn);
+        Button addTaskBtn = findViewById(R.id.addTaskBtn);
         addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
 
     }
@@ -78,13 +80,13 @@ public class OverviewActivity extends AppCompatActivity {
                     break;
             }
         } else if (requestCode == CALL_DETAIL_VIEW_FOR_CREATE) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 //neues item der liste hinzufügen
                 String receivedItemName = data.getStringExtra("itemName");
                 this.listItems.add(receivedItemName);
                 this.listViewAdapter.notifyDataSetChanged();
             }
-        } else{
+        } else {
             //??
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -99,12 +101,21 @@ public class OverviewActivity extends AppCompatActivity {
 
 
     /**
-     * Starts detailActivity for result
+     * Starts detailActivity for result after click on new task button
      */
-    private void callDetailViewForCreate(View view){
+    private void callDetailViewForCreate(View view) {
         Intent detailviewIntent = new Intent(this, DetailActivity.class);
-        //Started eine neue activity von der wir eine result zurück bekommen wollen
+        //Started eine neue activity von der wir ein result zurück bekommen wollen
         startActivityForResult(detailviewIntent, CALL_DETAIL_VIEW_FOR_CREATE);
+    }
+
+    /**
+     * Starts detailActivity for result after click on existing task
+     */
+    private void callDetailViewForEdit(String selectedItem) {
+        Intent callDetailViewForShow = new Intent(this, DetailActivity.class);
+        callDetailViewForShow.putExtra("itemName", selectedItem);
+        startActivityForResult(callDetailViewForShow, CALL_DETAIL_VIEW_FOR_SHOW);
     }
 
 

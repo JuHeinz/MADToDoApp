@@ -81,13 +81,9 @@ public class DetailActivity extends AppCompatActivity {
     public void addTask(View view) {
         if (!taskNameInput.getText().toString().isEmpty()) {
 
-            //add task to adapter
+            //TODO: add task to adapter
             TaskEntity task = createNewTask();
 
-            /*
-            taskArray.add(task);
-            adapter.notifyDataSetChanged();
-            */
             Log.d("Task Created:", task.toString());
 
             //Intent um auf die Activity zurückzukehren, die diese augerufen hat und ihr daten mitgeben
@@ -100,7 +96,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void cancelEdit(View view){
+    private void cancelEdit(View view) {
         Intent returnToCallerWhenCancelled = new Intent();
         setResult(Activity.RESULT_CANCELED, returnToCallerWhenCancelled);
         //close activity and return to caller
