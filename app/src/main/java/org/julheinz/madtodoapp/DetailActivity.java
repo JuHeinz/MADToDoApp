@@ -6,23 +6,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.julheinz.entities.TaskEntity;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
     private EditText taskNameInput;
     private EditText descriptionInput;
-    private Button addTaskBtn;
-    private Button backBtn;
     private EditText dueDateInput;
+
     private ImageButton favBtn;
     private boolean isFav;
 
@@ -40,62 +40,69 @@ public class DetailActivity extends AppCompatActivity {
         //Wenn wir durch klicken auf eine bereits erstellte task auf diese view kommen, wird der name der bereits erstellten task übergeben
         //Neue instanz der klasse, nicht die selbe weil serializable
         this.task = (TaskEntity) detailViewIntentFromOverview.getSerializableExtra(ARG_TASK);
+
+        taskNameInput = findViewById(R.id.taskNameInput);
+        descriptionInput = findViewById(R.id.descriptionInput);
+        CheckBox isDoneCheckBox = findViewById(R.id.isDoneCheckBox);
+        Button addTaskBtn = findViewById(R.id.addTaskBtn);
+        dueDateInput = findViewById(R.id.dueDateInput);
+        favBtn = findViewById(R.id.favBtn);
+        TextView createdDateOutput = findViewById(R.id.createdDateOutput);
+
+
+        //wenn wir durch den "new task" button hier her gekommen sind, dann müssen wir eine neue task erstellen
         if(this.task == null){
-            this.task = new TaskEntity("", "", null, null, false);
+            this.task = new TaskEntity("", "", LocalDateTime.now(), LocalDateTime.now(), false);
+        }else{
+            taskNameInput.setText(task.getTaskName());
+            descriptionInput.setText(task.getDescription());
+            dueDateInput.setText(task.getDueDate());
+            createdDateOutput.setText(task.getCreatedDate());
+            isDoneCheckBox.setChecked(task.isDone());
         }
 
         //get ui components
-        taskNameInput = findViewById(R.id.taskNameInput);
-        descriptionInput = findViewById(R.id.descriptionInput);
-        dueDateInput = findViewById(R.id.dueDateInput);
 
-        favBtn = findViewById(R.id.favBtn);
 
-        addTaskBtn = findViewById(R.id.addTaskBtn);
-        addTaskBtn.setOnClickListener(this::addTask);
 
-        backBtn = findViewById(R.id.backBtn);
+        addTaskBtn.setOnClickListener(this::saveTask);
+
+        Button backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(this::cancelEdit);
 
-        taskNameInput.setText(task.getTaskName());
+
+
+
+
+
+
     }
 
 
     /**
      * Creates an Task Entity with current timestamp as creation date
      */
-    private TaskEntity createNewTask() {
+    private TaskEntity createTaskFromUserInput() {
         //get user input
         String taskName = taskNameInput.getText().toString();
         String description = descriptionInput.getText().toString();
         LocalDateTime dateCreated = LocalDateTime.now();
-
-        LocalDateTime dueDate;
-        if (dueDateInput.getText().toString().isEmpty()) {
-            try {
-                dueDate = LocalDateTime.parse(dueDateInput.getText().toString());
-            } catch (DateTimeParseException e) {
-                dueDate = LocalDateTime.now();
-            }
-        } else {
-            dueDate = LocalDateTime.now();
-        }
-
+        //TODO: Get from user input
+        LocalDateTime dueDate = LocalDateTime.now();
         return new TaskEntity(taskName, description, dateCreated, dueDate, isFav);
     }
 
     /**
      * Adds TaskEntity to to adapter and triggers UI change
      */
-    private void addTask(View view) {
+    private void saveTask(View view) {
         if (!taskNameInput.getText().toString().isEmpty()) {
 
-            //TODO: add task to adapter
-            this.task = createNewTask();
+            this.task = createTaskFromUserInput();
 
             Log.d("Task Created:", task.toString());
 
-            //Intent um auf die Activity zurückzukehren, die diese augerufen hat und ihr daten mitgeben
+            //Intent um auf die Activity zurückzukehren, die diese augerufen hat und ihr daten mitgeben, die dann zum adapter hinzugefügt werdeb
             Intent returnToCallerWithValueIntent = new Intent();
             returnToCallerWithValueIntent.putExtra(ARG_TASK, task);
             setResult(Activity.RESULT_OK, returnToCallerWithValueIntent);

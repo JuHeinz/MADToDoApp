@@ -15,15 +15,14 @@ import androidx.annotation.Nullable;
 
 import org.julheinz.entities.TaskEntity;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class TaskAdapter extends ArrayAdapter<TaskEntity> {
+public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
 
     private final Context context;
     private final int layoutResourceId;
 
-    public TaskAdapter(Context context, int layoutResourceId, List<TaskEntity> taskList) {
+    public TaskListAdapter(Context context, int layoutResourceId, List<TaskEntity> taskList) {
         super(context, layoutResourceId, taskList);
         this.context = context;
         this.layoutResourceId = R.layout.list_item;
@@ -54,12 +53,8 @@ public class TaskAdapter extends ArrayAdapter<TaskEntity> {
         TextView taskDescription = itemView.findViewById(R.id.descriptionOutput);
         taskDescription.setText(task.getDescription());
 
-        TextView  creationDate = itemView.findViewById(R.id.creationDateOutput);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy, H:mm");
-        creationDate.setText(task.getCreatedDate().format(formatter));
-
         TextView dueDate = itemView.findViewById(R.id.dueDateOutput);
-        dueDate.setText(task.getDueDate().format(formatter));
+        dueDate.setText(task.getDueDate());
 
         ImageView favOutput = itemView.findViewById(R.id.favOutput);
         //Set star according to fav status

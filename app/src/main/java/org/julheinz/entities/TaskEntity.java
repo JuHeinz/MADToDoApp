@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 
@@ -19,7 +20,9 @@ public class TaskEntity implements Serializable {
 
     private LocalDateTime dueDate;
     private boolean isDone;
-    private Date doneDate;
+    private LocalDateTime doneDate;
+
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy, H:mm");
 
 
     public TaskEntity(String taskName, String description, LocalDateTime createdDate, LocalDateTime dueDate, Boolean isFav) {
@@ -49,19 +52,19 @@ public class TaskEntity implements Serializable {
         isDone = done;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public String getCreatedDate() {
+        return createdDate.format(formatter);
     }
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
-    public Date getDoneDate() {
-        return doneDate;
+    public String getDoneDate() {
+        return doneDate.format(formatter);
     }
 
-    public void setDoneDate(Date doneDate) {
+    public void setDoneDate(LocalDateTime doneDate) {
         this.doneDate = doneDate;
     }
 
@@ -73,8 +76,8 @@ public class TaskEntity implements Serializable {
         this.description = description;
     }
 
-    public LocalDateTime getDueDate() {
-        return dueDate;
+    public String getDueDate() {
+        return dueDate.format(formatter);
     }
 
     public void setDueDate(LocalDateTime dueDate) {

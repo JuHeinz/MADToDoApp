@@ -4,25 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
+    android:padding="5dp"
+    android:layout_marginLeft="2dp"
+    android:layout_marginRight="2dp"
     android:layout_height="wrap_content">
 
 
     <CheckBox
         android:focusable="false"
         android:id="@+id/taskCheckBox"
-        style="@style/Widget.Material3.CompoundButton.CheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:gravity="center"
+        android:gravity="bottom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/taskNameOutput"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
         android:text="Task Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toEndOf="@+id/taskCheckBox"
@@ -30,33 +31,26 @@
 
     <ImageView
         android:id="@+id/favOutput"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
         android:src="@drawable/baseline_star_border_24"
-        app:layout_constraintStart_toEndOf="@+id/taskNameOutput"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 
     <TextView
         android:id="@+id/descriptionOutput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="2dp"
         android:text="Description Output"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/favOutput"
+        app:layout_constraintStart_toEndOf="@+id/taskCheckBox"
         app:layout_constraintTop_toBottomOf="@+id/taskNameOutput" />
-
-
-    <TextView
-        android:id="@+id/dueDateLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:text="Due:"
-
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionOutput" />
 
     <TextView
         android:id="@+id/dueDateOutput"
@@ -65,32 +59,14 @@
         android:layout_marginStart="5dp"
         android:text="DD/MM/YYYY"
         android:visibility="visible"
-        app:layout_constraintStart_toEndOf="@+id/dueDateLabel"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionOutput" />
-
-
-    <TextView
-        android:id="@+id/createdLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="10dp"
-        android:text="Created:"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dueDateOutput"
+        app:layout_constraintStart_toEndOf="@+id/taskNameOutput"
+        app:layout_constraintBottom_toBottomOf="@+id/taskNameOutput"
+        android:gravity="center_vertical"
         />
 
-    <TextView
-        android:id="@+id/creationDateOutput"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:text="DD/MM/YYYY"
-        app:layout_constraintStart_toEndOf="@+id/createdLabel"
-        app:layout_constraintTop_toBottomOf="@+id/dueDateOutput"
-        android:layout_marginBottom="10dp"
-        />
+
+
+
 
 
 

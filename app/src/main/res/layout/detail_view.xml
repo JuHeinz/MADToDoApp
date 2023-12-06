@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
     <Button
         android:id="@+id/backBtn"
         android:layout_width="wrap_content"
@@ -25,6 +27,8 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/backBtn" />
+
+
 
     <EditText
         android:id="@+id/descriptionInput"
@@ -72,21 +76,21 @@
         app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
 
     <TextView
-        android:id="@+id/doneLabel"
+        android:id="@+id/createdDateLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="Is done:"
+        android:text="Created:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/favLabel" />
 
     <TextView
-        android:id="@+id/isDone"
+        android:id="@+id/createdDateOutput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:text="undefined"
-        app:layout_constraintStart_toEndOf="@+id/doneLabel"
+        app:layout_constraintStart_toEndOf="@+id/createdDateLabel"
         app:layout_constraintTop_toBottomOf="@+id/isFav" />
 
     <ImageButton
@@ -97,7 +101,7 @@
         android:onClick="toggleFav"
         android:src="@drawable/baseline_star_border_24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/isDone" />
+        app:layout_constraintTop_toBottomOf="@+id/createdDateOutput" />
 
     <Button
         android:id="@+id/addTaskBtn"
@@ -106,7 +110,18 @@
         android:text="Confirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/favBtn"
-        app:layout_constraintTop_toBottomOf="@+id/isDone" />
+        app:layout_constraintTop_toBottomOf="@+id/createdDateOutput" />
+
+    <CheckBox
+        android:id="@+id/isDoneCheckBox"
+        style="@style/Widget.Material3.CompoundButton.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/taskNameInput"
+       />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

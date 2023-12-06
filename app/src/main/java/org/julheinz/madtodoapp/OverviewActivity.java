@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.julheinz.entities.TaskEntity;
 
 import java.time.LocalDateTime;
@@ -45,7 +47,7 @@ public class OverviewActivity extends AppCompatActivity {
          2: welches layout soll ein einzeles item haben,
          3: textfeld wo das resultat rein soll
          3: liste der items */
-        this.listViewAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
+        this.listViewAdapter = new TaskListAdapter(this, R.layout.list_item, taskList);
         listView.setAdapter(this.listViewAdapter);
 
 
@@ -62,7 +64,7 @@ public class OverviewActivity extends AppCompatActivity {
 
         getTasksFromDB();
 
-        Button addTaskBtn = findViewById(R.id.addTaskBtn);
+        FloatingActionButton addTaskBtn = findViewById(R.id.addTaskBtn);
         addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
 
     }
@@ -81,6 +83,7 @@ public class OverviewActivity extends AppCompatActivity {
                 case Activity.RESULT_OK:
                     TaskEntity receivedTask = (TaskEntity) data.getSerializableExtra(ARG_TASK);
                     toastMsg("Added task " + receivedTask.getTaskName());
+                    listViewAdapter.add(receivedTask);
                     break;
                 case Activity.RESULT_CANCELED:
                     toastMsg("Adding of task cancelled");
@@ -102,7 +105,7 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * Creates toast for user feedback
      */
-    public void toastMsg(String msg) {
+    private void toastMsg(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
@@ -130,6 +133,17 @@ public class OverviewActivity extends AppCompatActivity {
      */
     private void getTasksFromDB() {
         taskList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
+        taskList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
+        taskList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
+        taskList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
+        taskList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
+        taskList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
+        taskList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
+        taskList.add(new TaskEntity("Be happy", "Just enjoy life", LocalDateTime.now(), LocalDateTime.now(), true));
+        taskList.add(new TaskEntity("Be happy", "Just enjoy life", LocalDateTime.now(), LocalDateTime.now(), true));
+        taskList.add(new TaskEntity("Be happy", "Just enjoy life", LocalDateTime.now(), LocalDateTime.now(), true));
+        taskList.add(new TaskEntity("Be happy", "Just enjoy lifeJust enjoy lifeJust enjoy lifeJust enjoy lifeJust enjoy lifeJust enjoy lifeJust enjoy life", LocalDateTime.now(), LocalDateTime.now(), true));
+        taskList.add(new TaskEntity("Be happy", "Just enjoy life", LocalDateTime.now(), LocalDateTime.now(), true));
         taskList.add(new TaskEntity("Be happy", "Just enjoy life", LocalDateTime.now(), LocalDateTime.now(), true));
         listViewAdapter.notifyDataSetChanged();
     }
