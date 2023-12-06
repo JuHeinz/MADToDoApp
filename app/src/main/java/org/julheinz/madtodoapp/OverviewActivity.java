@@ -40,8 +40,9 @@ public class OverviewActivity extends AppCompatActivity {
         /* adapter managed was in der listview angezeigt wird. arguments:
          1. von welcher activity wird es aufegrufen,
          2: welches layout soll ein einzeles item haben,
+         3: textfeld wo das resultat rein soll
          3: liste der items */
-        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem_view, listItems);
+        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.taskNameOutput, listItems);
         listView.setAdapter(this.listViewAdapter);
 
         /* click listener for click on list item. arguments:

@@ -45,7 +45,6 @@ public class TaskAdapter extends ArrayAdapter<TaskEntity> {
             holder.creationDate = listItemView.findViewById(R.id.creationDateOutput);
             holder.dueDate = listItemView.findViewById(R.id.dueDateOutput);
             holder.favOutput = listItemView.findViewById(R.id.favOutput);
-            holder.openBtn = listItemView.findViewById(R.id.openBtn);
             listItemView.setTag(holder);
         } else {
             holder = (ListItem) listItemView.getTag();
