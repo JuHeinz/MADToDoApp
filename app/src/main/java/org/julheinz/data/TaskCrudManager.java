@@ -1,45 +1,93 @@
 package org.julheinz.data;
 
+import android.app.Activity;
+
+import androidx.room.Dao;
+import androidx.room.Database;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
+import androidx.room.Update;
+
 import org.julheinz.entities.TaskEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * CRUD operations on task database via ROOM
+ */
 public class TaskCrudManager implements TaskCrudOperations {
-
-    public TaskCrudManager() {
-        List<TaskEntity> dummyData = this.getDummyData();
-        dummyData.forEach(this::createTask);
-    }
-
     private static long idCount = 0;
     private final List<TaskEntity> taskList = new ArrayList<>();
+    private DataAccessOperationsOnDb crudOnDb;
+
+    public TaskCrudManager(Activity owner) {
+        //create a database
+        TaskDatabase db = Room.databaseBuilder(owner.getApplicationContext(), TaskDatabase.class, "task-db").build();
+        this.crudOnDb = db.getDao();
+    }
+
+    /**
+     * ROOM DAO Interface. Wird von ROOM implementiert, greift auf Datenbank zu
+     */
+    @Dao
+    public interface DataAccessOperationsOnDb {
+        @Insert
+        long createTaskInDB(TaskEntity task);
+
+        @Query("SELECT * FROM taskEntity")
+        List<TaskEntity> readAllTasksFromDb();
+
+        @Query("SELECT * FROM taskentity WHERE id=:id")
+        TaskEntity readTaskFromDb(long id);
+
+        @Update
+        void updateTaskInDb(TaskEntity task);
+
+    }
+
+    /**
+     * Is used by ROOM to create database on basis of the class/entity we give it
+     * Use converter because ROOM can't save LocalDateTimeObjects
+     */
+    @TypeConverters({LocalDateTimeConverter.class})
+    @Database(entities = {TaskEntity.class}, version = 1)
+    public static abstract class TaskDatabase extends RoomDatabase {
+        public abstract DataAccessOperationsOnDb getDao();
+    }
 
     @Override
     public TaskEntity createTask(TaskEntity taskEntity) {
-        taskEntity.setId(++idCount);
+        long id = crudOnDb.createTaskInDB(taskEntity);
+        taskEntity.setId(id);
         taskList.add(taskEntity);
         return taskEntity;
     }
 
     @Override
     public TaskEntity readTask(long id) {
-        return null;
+        return crudOnDb.readTaskFromDb(id);
     }
 
     @Override
     public List<TaskEntity> readAllTasks() {
-        return taskList;
+        return crudOnDb.readAllTasksFromDb();
     }
 
     @Override
     public boolean updateTask(TaskEntity task) {
-        return false;
+        crudOnDb.updateTaskInDb(task);
+        //TODO: replace with actual boolean
+        return true;
     }
 
     @Override
     public boolean deleteTask(long id) {
+        //TODO: implement in room
         return false;
     }
 
@@ -52,7 +100,6 @@ public class TaskCrudManager implements TaskCrudOperations {
         dummyList.add(new TaskEntity("Code in Android", "Why not?", LocalDateTime.now(), LocalDateTime.now(), false));
         dummyList.add(new TaskEntity("Eat snacks", "Maybe something healthy", LocalDateTime.now(), LocalDateTime.now(), true));
         dummyList.add(new TaskEntity("Be happy!", "Just enjoy life :)", LocalDateTime.now(), LocalDateTime.now(), true));
-
         return dummyList;
     }
 }

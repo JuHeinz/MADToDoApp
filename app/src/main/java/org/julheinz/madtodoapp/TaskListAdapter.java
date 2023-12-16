@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.julheinz.entities.TaskEntity;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
@@ -45,7 +46,7 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
         ViewGroup itemView = (ViewGroup) inflater.inflate(layoutResourceId, parent, false);
 
         TextView taskName = itemView.findViewById(R.id.taskNameOutput);
-        taskName.setText(task.getTaskName());
+        taskName.setText(task.getTitle());
 
         CheckBox taskCheckBox = itemView.findViewById(R.id.taskCheckBox);
         taskCheckBox.setChecked(task.isDone());
@@ -53,8 +54,10 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
         TextView taskDescription = itemView.findViewById(R.id.descriptionOutput);
         taskDescription.setText(task.getDescription());
 
-        TextView dueDate = itemView.findViewById(R.id.dueDateOutput);
-        dueDate.setText(task.getDueDate());
+        TextView dueDateOutput = itemView.findViewById(R.id.dueDateOutput);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy, H:mm");
+        String dueDate = formatter.format(task.getDueDate());
+        dueDateOutput.setText(dueDate);
 
         ImageView favOutput = itemView.findViewById(R.id.favOutput);
         //Set star according to fav status

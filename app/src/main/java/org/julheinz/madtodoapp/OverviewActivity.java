@@ -68,7 +68,7 @@ public class OverviewActivity extends AppCompatActivity{
         //show progressbar while loading of data
         this.progressBar = findViewById(R.id.progressBar);
         this.progressBar.setVisibility(View.VISIBLE);
-        TaskCrudManager taskCrudManager = new TaskCrudManager();
+        TaskCrudManager taskCrudManager = new TaskCrudManager(this);
 
         //new thread for getting tasks from database
         new Thread(() -> {
@@ -107,7 +107,7 @@ public class OverviewActivity extends AppCompatActivity{
             switch (resultCode) {
                 case Activity.RESULT_OK:
                     TaskEntity receivedTask = (TaskEntity) data.getSerializableExtra(ARG_TASK);
-                    toastMsg("Added task " + receivedTask.getTaskName());
+                    toastMsg("Added task " + receivedTask.getTitle());
                     listViewAdapter.add(receivedTask);
                     break;
                 case Activity.RESULT_CANCELED:

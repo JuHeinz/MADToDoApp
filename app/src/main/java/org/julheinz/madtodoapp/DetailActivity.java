@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.julheinz.entities.TaskEntity;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
@@ -54,10 +55,15 @@ public class DetailActivity extends AppCompatActivity {
         if(this.task == null){
             this.task = new TaskEntity("", "", LocalDateTime.now(), LocalDateTime.now(), false);
         }else{
-            taskNameInput.setText(task.getTaskName());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy, H:mm");
+            taskNameInput.setText(task.getTitle());
             descriptionInput.setText(task.getDescription());
-            dueDateInput.setText(task.getDueDate());
-            createdDateOutput.setText(task.getCreatedDate());
+
+            String dueDate = formatter.format(task.getDueDate());
+            dueDateInput.setText(dueDate);
+
+            String createdDate = formatter.format(task.getCreatedDate());
+            createdDateOutput.setText(createdDate);
             isDoneCheckBox.setChecked(task.isDone());
         }
 
