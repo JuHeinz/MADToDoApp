@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -22,7 +23,7 @@ import org.julheinz.entities.TaskEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OverviewActivity extends AppCompatActivity {
+public class OverviewActivity extends AppCompatActivity{
 
     private static final int CALL_DETAIL_VIEW_FOR_EDIT = 20;
     private static final int CALL_DETAIL_VIEW_FOR_CREATE = 30;
@@ -32,12 +33,16 @@ public class OverviewActivity extends AppCompatActivity {
 
     private ArrayAdapter<TaskEntity> listViewAdapter;
 
+    private ProgressBar progressBar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.overview_activity);
         Log.i(LOG_TAG, "created!");
+
+        FloatingActionButton addTaskBtn = findViewById(R.id.addTaskBtn);
+        addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
 
         ListView listView = findViewById(R.id.listView);
 
@@ -60,16 +65,32 @@ public class OverviewActivity extends AppCompatActivity {
             callDetailViewForEdit(selectedTask);
         });
 
-        //Get tasks from database
+        //show progressbar while loading of data
+        this.progressBar = findViewById(R.id.progressBar);
+        this.progressBar.setVisibility(View.VISIBLE);
         TaskCrudManager taskCrudManager = new TaskCrudManager();
-        List<TaskEntity> tasksFromDB = taskCrudManager.readAllTasks();
-        this.taskList.addAll(tasksFromDB);
 
-        // show in list
-        this.listViewAdapter.notifyDataSetChanged();
+        //new thread for getting tasks from database
+        new Thread(() -> {
+            //TODO: remove sleep when getting data from actual databse
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            //Get tasks from database
+            List<TaskEntity> tasksFromDB = taskCrudManager.readAllTasks();
+            this.taskList.addAll(tasksFromDB);
 
-        FloatingActionButton addTaskBtn = findViewById(R.id.addTaskBtn);
-        addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
+            //get back to UI thread from this thread
+            //ui elemente dürfen nur im thread bearbeitet werden in dem sie erstellt wurden
+            this.runOnUiThread(() -> {
+                // show in list
+                this.listViewAdapter.notifyDataSetChanged();
+                //hide progressbar when loading of data done
+                this.progressBar.setVisibility(View.GONE);
+            });
+        }).start();
 
     }
 
@@ -81,7 +102,7 @@ public class OverviewActivity extends AppCompatActivity {
      * @param data        das was bei putExtra von der augerufenen activity mitgegeben wurde
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
         if (requestCode == CALL_DETAIL_VIEW_FOR_EDIT) {
             switch (resultCode) {
                 case Activity.RESULT_OK:
@@ -109,15 +130,14 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * Creates toast for user feedback
      */
-    private void toastMsg(String msg) {
+    private void toastMsg(String msg){
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
-
 
     /**
      * Starts detailActivity for result after click on new task button
      */
-    private void callDetailViewForCreate(View view) {
+    private void callDetailViewForCreate(View view){
         Intent detailviewIntent = new Intent(this, DetailActivity.class);
         //Started eine neue activity von der wir ein result zurück bekommen wollen
         startActivityForResult(detailviewIntent, CALL_DETAIL_VIEW_FOR_CREATE);
@@ -126,11 +146,10 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * Starts detailActivity for result after click on existing task
      */
-    private void callDetailViewForEdit(TaskEntity selectedItem) {
+    private void callDetailViewForEdit(TaskEntity selectedItem){
         Intent callDetailViewForEdit = new Intent(this, DetailActivity.class);
         callDetailViewForEdit.putExtra(ARG_TASK, selectedItem);
         startActivityForResult(callDetailViewForEdit, CALL_DETAIL_VIEW_FOR_EDIT);
     }
-
 
 }

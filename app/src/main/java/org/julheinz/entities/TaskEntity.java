@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 
-
 public class TaskEntity implements Serializable {
 
     public long getId() {
