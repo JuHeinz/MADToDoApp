@@ -5,13 +5,20 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+
 
 
 public class TaskEntity implements Serializable {
 
-    protected static long idCount = 0;
-    private long id = ++idCount;
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    private long id;
     private String taskName;
 
     private String description;
@@ -22,7 +29,7 @@ public class TaskEntity implements Serializable {
     private boolean isDone;
     private LocalDateTime doneDate;
 
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy, H:mm");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy, H:mm");
 
 
     public TaskEntity(String taskName, String description, LocalDateTime createdDate, LocalDateTime dueDate, Boolean isFav) {
