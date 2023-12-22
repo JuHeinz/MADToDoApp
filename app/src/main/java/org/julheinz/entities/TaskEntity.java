@@ -23,15 +23,13 @@ public class TaskEntity implements Serializable {
     private boolean isDone;
     private LocalDateTime doneDate;
 
-    public TaskEntity(String title, String description, LocalDateTime createdDate, LocalDateTime dueDate, Boolean isFav) {
+    public TaskEntity() {
 
-        this.title = title;
-        this.description = description;
-        this.createdDate = createdDate;
-        this.dueDate = dueDate;
+        this.createdDate = LocalDateTime.now();
+        this.dueDate = LocalDateTime.now();
         this.isDone = false;
         this.doneDate = null;
-        this.isFav = isFav;
+        this.isFav = false;
     }
 
     public long getId() {

@@ -32,7 +32,7 @@ public class TaskCrudManager implements TaskCrudOperations {
     }
 
     /**
-     * ROOM DAO Interface. Wird von ROOM implementiert, greift auf Datenbank zu
+     * ROOM DAO Interface. Wird von ROOM zur Laufzeit implementiert, greift auf Datenbank zu
      */
     @Dao
     public interface DataAccessOperationsOnDb {
@@ -42,7 +42,7 @@ public class TaskCrudManager implements TaskCrudOperations {
         @Query("SELECT * FROM taskEntity")
         List<TaskEntity> readAllTasksFromDb();
 
-        @Query("SELECT * FROM taskentity WHERE id=:id")
+        @Query("SELECT * FROM taskEntity WHERE id=:id")
         TaskEntity readTaskFromDb(long id);
 
         @Update
@@ -96,10 +96,7 @@ public class TaskCrudManager implements TaskCrudOperations {
      */
     private List<TaskEntity> getDummyData() {
         List<TaskEntity> dummyList = new ArrayList<>();
-        dummyList.add(new TaskEntity("Open App", "Open this app", LocalDateTime.now(), LocalDateTime.now(), false));
-        dummyList.add(new TaskEntity("Code in Android", "Why not?", LocalDateTime.now(), LocalDateTime.now(), false));
-        dummyList.add(new TaskEntity("Eat snacks", "Maybe something healthy", LocalDateTime.now(), LocalDateTime.now(), true));
-        dummyList.add(new TaskEntity("Be happy!", "Just enjoy life :)", LocalDateTime.now(), LocalDateTime.now(), true));
+
         return dummyList;
     }
 }

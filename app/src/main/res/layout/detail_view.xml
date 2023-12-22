@@ -1,127 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
+
+    <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <!-- Data Binding -->
+    <data>
+        <variable
+            name="activity"
+            type="org.julheinz.madtodoapp.DetailviewActivity" />
+    </data>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        />
+
+        <EditText
+            android:id="@+id/taskTitleInput"
+            android:text="@={activity.taskEntity.title}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/task_name_hint"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/backBtn" />
 
 
 
-    <Button
-        android:id="@+id/backBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    />
+        <EditText
+            android:id="@+id/descriptionInput"
+            android:text="@={activity.taskEntity.description}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/desc_hint"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/taskTitleInput" />
 
-    <EditText
-        android:id="@+id/taskNameInput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/task_name_hint"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/backBtn" />
-
-
-
-    <EditText
-        android:id="@+id/descriptionInput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/desc_hint"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskNameInput" />
-
-    <EditText
-        android:id="@+id/dueDateInput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/due_hint"
-        android:inputType="date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionInput"
-        tools:layout_conversion_absoluteHeight="45dp"
-        tools:layout_conversion_absoluteWidth="210dp" />
+        <EditText
+            android:id="@+id/dueDateInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/due_hint"
+            android:inputType="date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/descriptionInput"
+            tools:layout_conversion_absoluteHeight="45dp"
+            tools:layout_conversion_absoluteWidth="210dp" />
 
 
-    <TextView
-        android:id="@+id/favLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="Is fav:"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
+        <TextView
+            android:id="@+id/favLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/is_fav"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
 
-    <TextView
-        android:id="@+id/isFav"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:text="undefined"
-        app:layout_constraintStart_toEndOf="@+id/favLabel"
-        app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
+        <TextView
+            android:id="@+id/isFav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@string/undefined"
+            app:layout_constraintStart_toEndOf="@+id/favLabel"
+            app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
 
-    <TextView
-        android:id="@+id/createdDateLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="Created:"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/favLabel" />
+        <TextView
+            android:id="@+id/createdDateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Created:"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/favLabel" />
 
-    <TextView
-        android:id="@+id/createdDateOutput"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:text="undefined"
-        app:layout_constraintStart_toEndOf="@+id/createdDateLabel"
-        app:layout_constraintTop_toBottomOf="@+id/isFav" />
+        <TextView
+            android:id="@+id/createdDateOutput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="undefined"
+            app:layout_constraintStart_toEndOf="@+id/createdDateLabel"
+            app:layout_constraintTop_toBottomOf="@+id/isFav" />
 
-    <ImageButton
-        android:id="@+id/favBtn"
-        style="@android:style/Widget.ImageButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:onClick="toggleFav"
-        android:src="@drawable/baseline_star_border_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createdDateOutput" />
+        <ImageButton
+            android:id="@+id/favBtn"
+            style="@android:style/Widget.ImageButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="toggleFav"
+            android:src="@drawable/baseline_star_border_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/createdDateOutput" />
 
-    <Button
-        android:id="@+id/addTaskBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Confirm"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/favBtn"
-        app:layout_constraintTop_toBottomOf="@+id/createdDateOutput" />
+        <Button
+            android:id="@+id/addTaskBtn"
+            android:onClick="@{() -> activity.saveTask()}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Confirm"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/favBtn"
+            app:layout_constraintTop_toBottomOf="@+id/createdDateOutput" />
 
-    <CheckBox
-        android:id="@+id/isDoneCheckBox"
-        style="@style/Widget.Material3.CompoundButton.CheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/taskNameInput"
-       />
+        <CheckBox
+            android:id="@+id/isDoneCheckBox"
+            style="@style/Widget.Material3.CompoundButton.CheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/taskTitleInput"
+            />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </layout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

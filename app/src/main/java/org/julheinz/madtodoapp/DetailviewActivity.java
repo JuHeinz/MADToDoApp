@@ -12,18 +12,23 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import org.julheinz.entities.TaskEntity;
+import org.julheinz.madtodoapp.databinding.DetailViewBinding;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailviewActivity extends AppCompatActivity {
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
-    private EditText taskNameInput;
-    private EditText descriptionInput;
+
+
     private EditText dueDateInput;
 
+    // Durch Databinding Framework automatisch generierte Klasse.
+    // Wird so benannt wie die XML Datei + Binding (detail_view.xml -> DetailViewBinding.java)
+    private DetailViewBinding itemBinding;
     private ImageButton favBtn;
     private boolean isFav;
 
@@ -37,13 +42,17 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_view);
 
+        this.itemBinding = DataBindingUtil.setContentView(this, R.layout.detail_view);
+        this.itemBinding.setActivity(this);
+
         Intent detailViewIntentFromOverview = getIntent();
-        //Wenn wir durch klicken auf eine bereits erstellte task auf diese view kommen, wird der name der bereits erstellten task übergeben
-        //Neue instanz der klasse, nicht die selbe weil serializable
+        /* Wenn wir durch klicken auf eine bereits erstellte task auf diese view kommen,
+         wird der name der bereits erstellten task übergeben
+            Neue instanz der klasse, nicht die selbe weil serializable */
         this.task = (TaskEntity) detailViewIntentFromOverview.getSerializableExtra(ARG_TASK);
 
-        taskNameInput = findViewById(R.id.taskNameInput);
-        descriptionInput = findViewById(R.id.descriptionInput);
+
+
         CheckBox isDoneCheckBox = findViewById(R.id.isDoneCheckBox);
         Button addTaskBtn = findViewById(R.id.addTaskBtn);
         dueDateInput = findViewById(R.id.dueDateInput);
@@ -53,11 +62,11 @@ public class DetailActivity extends AppCompatActivity {
 
         //wenn wir durch den "new task" button hier her gekommen sind, dann müssen wir eine neue task erstellen
         if(this.task == null){
-            this.task = new TaskEntity("", "", LocalDateTime.now(), LocalDateTime.now(), false);
+            this.task = new TaskEntity();
         }else{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.MM.yyyy, H:mm");
-            taskNameInput.setText(task.getTitle());
-            descriptionInput.setText(task.getDescription());
+
+
 
             String dueDate = formatter.format(task.getDueDate());
             dueDateInput.setText(dueDate);
@@ -67,55 +76,28 @@ public class DetailActivity extends AppCompatActivity {
             isDoneCheckBox.setChecked(task.isDone());
         }
 
-        //get ui components
-
-
-
-        addTaskBtn.setOnClickListener(this::saveTask);
 
         Button backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(this::cancelEdit);
 
-
-
-
-
-
-
     }
 
 
-    /**
-     * Creates an Task Entity with current timestamp as creation date
-     */
-    private TaskEntity createTaskFromUserInput() {
-        //get user input
-        String taskName = taskNameInput.getText().toString();
-        String description = descriptionInput.getText().toString();
-        LocalDateTime dateCreated = LocalDateTime.now();
-        //TODO: Get from user input
-        LocalDateTime dueDate = LocalDateTime.now();
-        return new TaskEntity(taskName, description, dateCreated, dueDate, isFav);
-    }
 
     /**
      * Adds TaskEntity to to adapter and triggers UI change
      */
-    private void saveTask(View view) {
-        if (!taskNameInput.getText().toString().isEmpty()) {
-
-            this.task = createTaskFromUserInput();
+    public void saveTask() {
 
             Log.d("Task Created:", task.toString());
 
             //Intent um auf die Activity zurückzukehren, die diese augerufen hat und ihr daten mitgeben, die dann zum adapter hinzugefügt werdeb
             Intent returnToCallerWithValueIntent = new Intent();
-            returnToCallerWithValueIntent.putExtra(ARG_TASK, task);
+            returnToCallerWithValueIntent.putExtra(ARG_TASK, this.task);
             setResult(Activity.RESULT_OK, returnToCallerWithValueIntent);
 
             //close activity and return to caller
             finish();
-        }
     }
 
     private void cancelEdit(View view) {
@@ -140,5 +122,11 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    public TaskEntity getTaskEntity() {
+        return task;
+    }
 
+    public void setTaskEntity(TaskEntity task) {
+        this.task = task;
+    }
 }

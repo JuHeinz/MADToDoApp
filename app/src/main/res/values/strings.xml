@@ -6,4 +6,6 @@
     <string name="due_hint">Due Date (optional)</string>
     <string name="fav_label">Important?</string>
     <string name="task_name_hint">What needs to be done?</string>
+    <string name="is_fav">Is fav:</string>
+    <string name="undefined">undefined</string>
 </resources>

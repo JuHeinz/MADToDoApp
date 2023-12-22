@@ -1,6 +1,6 @@
 package org.julheinz.madtodoapp;
 
-import static org.julheinz.madtodoapp.DetailActivity.ARG_TASK;
+import static org.julheinz.madtodoapp.DetailviewActivity.ARG_TASK;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -144,7 +144,7 @@ public class OverviewActivity extends AppCompatActivity{
      * Starts detailActivity for result after click on new task button
      */
     private void callDetailViewForCreate(View view){
-        Intent detailviewIntent = new Intent(this, DetailActivity.class);
+        Intent detailviewIntent = new Intent(this, DetailviewActivity.class);
         //Started eine neue activity von der wir ein result zurück bekommen wollen
         startActivityForResult(detailviewIntent, CALL_DETAIL_VIEW_FOR_CREATE);
     }
@@ -153,7 +153,7 @@ public class OverviewActivity extends AppCompatActivity{
      * Starts detailActivity for result after click on existing task
      */
     private void callDetailViewForEdit(TaskEntity selectedItem){
-        Intent callDetailViewForEdit = new Intent(this, DetailActivity.class);
+        Intent callDetailViewForEdit = new Intent(this, DetailviewActivity.class);
         callDetailViewForEdit.putExtra(ARG_TASK, selectedItem);
         startActivityForResult(callDetailViewForEdit, CALL_DETAIL_VIEW_FOR_EDIT);
     }
