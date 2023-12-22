@@ -12,7 +12,7 @@ public interface TaskCrudOperations {
 
     List<TaskEntity> readAllTasks();
 
-    boolean updateTask(TaskEntity task);
+    void updateTask(TaskEntity task);
 
     boolean deleteTask(long id);
 }

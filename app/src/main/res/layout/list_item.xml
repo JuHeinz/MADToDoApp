@@ -1,74 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout2"
-    android:layout_width="match_parent"
-    android:padding="5dp"
-    android:layout_marginLeft="2dp"
-    android:layout_marginRight="2dp"
-    android:layout_height="wrap_content">
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="task"
+            type="org.julheinz.entities.TaskEntity"/>
+    </data>
 
-
-    <CheckBox
-        android:focusable="false"
-        android:id="@+id/taskCheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/taskNameOutput"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:text="Task Name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintStart_toEndOf="@+id/taskCheckBox"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/favOutput"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:gravity="center_vertical"
-        android:src="@drawable/baseline_star_border_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-
-    <TextView
-        android:id="@+id/descriptionOutput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:padding="5dp"
         android:layout_marginLeft="2dp"
-        android:layout_marginTop="2dp"
         android:layout_marginRight="2dp"
-        android:text="Description Output"
-        app:layout_constraintEnd_toStartOf="@+id/favOutput"
-        app:layout_constraintStart_toEndOf="@+id/taskCheckBox"
-        app:layout_constraintTop_toBottomOf="@+id/taskNameOutput" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/dueDateOutput"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:text="DD/MM/YYYY"
-        android:visibility="visible"
-        app:layout_constraintStart_toEndOf="@+id/taskNameOutput"
-        app:layout_constraintBottom_toBottomOf="@+id/taskNameOutput"
-        android:gravity="center_vertical"
-        />
+        <CheckBox
+            android:focusable="false"
+            android:id="@+id/taskCheckBox"
+            android:checked="@{task.done}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/taskNameOutput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:text="@{task.title}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintStart_toEndOf="@+id/taskCheckBox"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/favOutput"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:src="@drawable/baseline_star_border_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
+        <TextView
+            android:id="@+id/descriptionOutput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            android:text="@{task.description}"
+            app:layout_constraintEnd_toStartOf="@+id/favOutput"
+            app:layout_constraintStart_toEndOf="@+id/taskCheckBox"
+            app:layout_constraintTop_toBottomOf="@+id/taskNameOutput" />
 
-
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/dueDateOutput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="DD/MM/YYYY"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@+id/taskNameOutput"
+            app:layout_constraintBottom_toBottomOf="@+id/taskNameOutput"
+            android:gravity="center_vertical"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

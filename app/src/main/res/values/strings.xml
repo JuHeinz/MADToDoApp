@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">To Do App</string>
     <string name="add_task">Add new task</string>
-    <string name="task_input_placeholder">Type your task</string>
-    <string name="desc_hint">Description (optional)</string>
-    <string name="due_hint">Due Date (optional)</string>
-    <string name="fav_label">Important?</string>
-    <string name="task_name_hint">What needs to be done?</string>
-    <string name="is_fav">Is fav:</string>
-    <string name="undefined">undefined</string>
+    <string name="title_hint">What needs to be done?</string>
+    <string name="description_hint">Description (optional)</string>
+    <string name="due_date_hint">Due Date (optional)</string>
+    <string name="created_date_label">Created</string>
+    <string name="saveBtn_label">Save</string>
+    <string name="backBtn_label">Back</string>
+    <string name="is_fav_label">Favorite</string>
+    <string name="is_done_label">Done</string>
 </resources>

@@ -1,5 +1,7 @@
 package org.julheinz.entities;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -20,16 +22,15 @@ public class TaskEntity implements Serializable {
     private LocalDateTime createdDate;
 
     private LocalDateTime dueDate;
-    private boolean isDone;
+    private boolean done;
+
+    private boolean fav;
     private LocalDateTime doneDate;
 
     public TaskEntity() {
-
         this.createdDate = LocalDateTime.now();
         this.dueDate = LocalDateTime.now();
-        this.isDone = false;
         this.doneDate = null;
-        this.isFav = false;
     }
 
     public long getId() {
@@ -45,15 +46,17 @@ public class TaskEntity implements Serializable {
     }
 
     public void setTitle(String title) {
+        Log.i("TaskEntity", "Changed title: " + title);
         this.title = title;
     }
 
     public boolean isDone() {
-        return isDone;
+        return done;
     }
 
     public void setDone(boolean done) {
-        isDone = done;
+        this.done = done;
+        Log.i("TaskEntity", "Changed done: " + this.done);
     }
 
     public LocalDateTime getCreatedDate() {
@@ -89,19 +92,17 @@ public class TaskEntity implements Serializable {
     }
 
     public boolean isFav() {
-        return isFav;
+        return fav;
     }
 
     public void setFav(boolean fav) {
-        isFav = fav;
+        this.fav = fav;
     }
-
-    private boolean isFav;
 
     @NonNull
     @Override
     public String toString() {
-        return "TaskEntity{" + "taskName='" + title + '\'' + ", taskDescription='" + description + '\'' + ", createdDate=" + createdDate + ", dueDate=" + dueDate + ", isDone=" + isDone + ", doneDate=" + doneDate + ", isFav=" + isFav + '}';
+        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", createdDate=" + createdDate + ", dueDate=" + dueDate + ", done=" + done + ", fav=" + fav + ", doneDate=" + doneDate + '}';
     }
 }
 

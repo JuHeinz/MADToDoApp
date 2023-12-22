@@ -1,6 +1,7 @@
 package org.julheinz.data;
 
 import android.app.Activity;
+import android.util.Log;
 
 import androidx.room.Dao;
 import androidx.room.Database;
@@ -13,7 +14,7 @@ import androidx.room.Update;
 
 import org.julheinz.entities.TaskEntity;
 
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import java.util.List;
 public class TaskCrudManager implements TaskCrudOperations {
     private static long idCount = 0;
     private final List<TaskEntity> taskList = new ArrayList<>();
-    private DataAccessOperationsOnDb crudOnDb;
+    private final DataAccessOperationsOnDb crudOnDb;
 
     public TaskCrudManager(Activity owner) {
         //create a database
@@ -32,7 +33,7 @@ public class TaskCrudManager implements TaskCrudOperations {
     }
 
     /**
-     * ROOM DAO Interface. Wird von ROOM zur Laufzeit implementiert, greift auf Datenbank zu
+     * ROOM DAO Interface. Implemented by ROOM during runtime to access database.
      */
     @Dao
     public interface DataAccessOperationsOnDb {
@@ -79,10 +80,9 @@ public class TaskCrudManager implements TaskCrudOperations {
     }
 
     @Override
-    public boolean updateTask(TaskEntity task) {
+    public void updateTask(TaskEntity task) {
         crudOnDb.updateTaskInDb(task);
-        //TODO: replace with actual boolean
-        return true;
+        Log.d("Task updated: ", task.toString());
     }
 
     @Override
@@ -91,12 +91,4 @@ public class TaskCrudManager implements TaskCrudOperations {
         return false;
     }
 
-    /**
-     * Gets previously added tasks from "database" and add them to adapter
-     */
-    private List<TaskEntity> getDummyData() {
-        List<TaskEntity> dummyList = new ArrayList<>();
-
-        return dummyList;
-    }
 }

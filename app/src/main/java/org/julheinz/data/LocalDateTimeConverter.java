@@ -4,6 +4,9 @@ import androidx.room.TypeConverter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Converters so that LocalDateTime can be saved as String in Database and translated back to LocalDateTime from String
+ */
 public class LocalDateTimeConverter {
 
     @TypeConverter
