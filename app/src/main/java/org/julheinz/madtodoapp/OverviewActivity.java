@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity{
-
+    private TaskCrudManager taskCrudManager;
     private static final int CALL_DETAIL_VIEW_FOR_EDIT = 20;
     private static final int CALL_DETAIL_VIEW_FOR_CREATE = 30;
 
@@ -68,16 +68,12 @@ public class OverviewActivity extends AppCompatActivity{
         //show progressbar while loading of data
         this.progressBar = findViewById(R.id.progressBar);
         this.progressBar.setVisibility(View.VISIBLE);
-        TaskCrudManager taskCrudManager = new TaskCrudManager(this);
+
+        taskCrudManager = new TaskCrudManager(this);
 
         //new thread for getting tasks from database
         new Thread(() -> {
-            //TODO: remove sleep when getting data from actual databse
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+
             //Get tasks from database
             List<TaskEntity> tasksFromDB = taskCrudManager.readAllTasks();
             this.taskList.addAll(tasksFromDB);
@@ -118,8 +114,18 @@ public class OverviewActivity extends AppCompatActivity{
             if (resultCode == Activity.RESULT_OK) {
                 //neues item der liste hinzufügen
                 TaskEntity receivedTask = (TaskEntity) data.getSerializableExtra(ARG_TASK);
-                this.taskList.add(receivedTask);
-                this.listViewAdapter.notifyDataSetChanged();
+                //new thread for data access
+                new Thread(() -> {
+                    TaskEntity createdTask = this.taskCrudManager.createTask(receivedTask);
+
+                    //go back to ui thread
+                    this.runOnUiThread(() -> {
+                        this.taskList.add(createdTask);
+                        this.listViewAdapter.notifyDataSetChanged();
+                    });
+
+                }).start();
+
             }
         } else {
             //??
