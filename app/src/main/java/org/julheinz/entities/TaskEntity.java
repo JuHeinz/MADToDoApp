@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 //Entity annotation for ROOM to make a table for this class
 @Entity
@@ -103,6 +104,20 @@ public class TaskEntity implements Serializable {
     @Override
     public String toString() {
         return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", createdDate=" + createdDate + ", dueDate=" + dueDate + ", done=" + done + ", fav=" + fav + ", doneDate=" + doneDate + '}';
+    }
+
+    // Override equals so that two TaskEntities with the same id are seen as equal, not exact same instance. Needed because TaskEntities get serialized
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TaskEntity that = (TaskEntity) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
 

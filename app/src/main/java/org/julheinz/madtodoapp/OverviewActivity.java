@@ -13,7 +13,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,8 +27,7 @@ import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
     private TaskCrudManager taskCrudManager;
-    private static final int CALL_DETAIL_VIEW_FOR_EDIT = 20;
-    private static final int CALL_DETAIL_VIEW_FOR_CREATE = 30;
+
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
     private final List<TaskEntity> taskList = new ArrayList<>();
     private ArrayAdapter<TaskEntity> listViewAdapter;
@@ -66,45 +66,6 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     /**
-     * Happens after the activity that was called with startActivityForResult() finishes.
-     *
-     * @param requestCode identifies a call with a use case e.g. 20 = CALL_DETAIL_VIEW_FOR_EDIT
-     * @param resultCode  state of the result e.g. RESULT_OK
-     * @param data        data that was added with putExtra() in the called activity
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == CALL_DETAIL_VIEW_FOR_EDIT) {
-            switch (resultCode) {
-                case Activity.RESULT_OK:
-                    Log.i(LOG_TAG, "Successfully received edited task from DetailView");
-                    TaskEntity receivedTask = (TaskEntity)data.getSerializableExtra(ARG_TASK);
-                    new Thread(() -> {
-                        this.taskCrudManager.updateTask(receivedTask);
-                        this.runOnUiThread(() -> listViewAdapter.add(receivedTask)); //go back to ui thread
-                    }).start();
-                    toastMsg("Edited " + receivedTask.getTitle());
-                    break;
-                case Activity.RESULT_CANCELED:
-                    toastMsg("Edits were not saved");
-                    break;
-            }
-        } else if (requestCode == CALL_DETAIL_VIEW_FOR_CREATE) {
-            if (resultCode == Activity.RESULT_OK) {
-                Log.i(LOG_TAG, "Successfully received edited task from DetailView");
-                TaskEntity receivedTask = (TaskEntity)data.getSerializableExtra(ARG_TASK);
-                new Thread(() -> { //new thread for database access
-                    TaskEntity createdTask = this.taskCrudManager.createTask(receivedTask);
-
-                    this.runOnUiThread(() -> this.listViewAdapter.add(createdTask)); //go back to ui thread
-                }).start();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data); //if request code is something else, let method in parent class handle it
-        }
-    }
-
-    /**
      * Creates toast for user feedback
      */
     private void toastMsg(String msg) {
@@ -116,8 +77,9 @@ public class OverviewActivity extends AppCompatActivity {
      */
     private void callDetailViewForCreate(View view) {
         Intent detailviewIntent = new Intent(this, DetailViewActivity.class);
-        //starts a new activity from which we want to get a result
-        startActivityForResult(detailviewIntent, CALL_DETAIL_VIEW_FOR_CREATE);
+        //launch a new activity from which we want to get a result
+        detailViewForCreateLauncher.launch(detailviewIntent);
+
     }
 
     /**
@@ -126,14 +88,14 @@ public class OverviewActivity extends AppCompatActivity {
     private void callDetailViewForEdit(TaskEntity selectedItem) {
         Intent callDetailViewForEdit = new Intent(this, DetailViewActivity.class);
         callDetailViewForEdit.putExtra(ARG_TASK, selectedItem);
-        startActivityForResult(callDetailViewForEdit, CALL_DETAIL_VIEW_FOR_EDIT);
+        detailViewForEditLauncher.launch(callDetailViewForEdit);
     }
 
-      /** 1: parent view where click happened
-        2: item (view) auf das geklickt wurde
-        3: position des elements in ansicht
-        4: id für aufruf direkt auf datenbank (hier nicht verwendet)
-    */
+    /** 1: parent view where click happened
+     2: item (view) auf das geklickt wurde
+     3: position des elements in ansicht
+     4: id für aufruf direkt auf datenbank (hier nicht verwendet)
+     */
     private AdapterView.OnItemClickListener clickOnList() {
         return (parent, view, position, id) -> {
             //get the TaskEntity from the data list that corresponds to the view position in the ListView
@@ -141,5 +103,39 @@ public class OverviewActivity extends AppCompatActivity {
             callDetailViewForEdit(selectedTask);
         };
     }
+
+    public ActivityResultLauncher<Intent> detailViewForCreateLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
+        if (activityResultObject.getResultCode() == Activity.RESULT_OK) {
+            Log.i(LOG_TAG, "Successfully received edited task from DetailView");
+            TaskEntity receivedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
+            new Thread(() -> { //new thread for database access
+                TaskEntity createdTask = taskCrudManager.createTask(receivedTask);
+
+                runOnUiThread(() -> listViewAdapter.add(createdTask)); //go back to ui thread
+            }).start();
+        }
+    });
+
+    public ActivityResultLauncher<Intent> detailViewForEditLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
+        switch (activityResultObject.getResultCode()) {
+            case Activity.RESULT_OK:
+                Log.i(LOG_TAG, "Successfully received edited task from DetailView");
+                TaskEntity editedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
+
+                new Thread(() -> {
+                    taskCrudManager.updateTask(editedTask);
+                    //get the index of the editedTask in the task list
+                    int index = this.taskList.indexOf(editedTask);
+                    //replace TaskEntity at that position in the task list
+                    this.taskList.set(index, editedTask);
+                    runOnUiThread(() -> listViewAdapter.notifyDataSetChanged());
+                }).start();
+                toastMsg("Edited " + editedTask.getTitle());
+                break;
+            case Activity.RESULT_CANCELED:
+                toastMsg("Edits were not saved");
+                break;
+        }
+    });
 
 }

@@ -125,6 +125,15 @@
             app:layout_constraintStart_toEndOf="@+id/createdDateLabel"
             app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
 
+        <DatePicker
+            android:id="@+id/simpleDatePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:datePickerMode="spinner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/saveBtn"
+            />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
 
