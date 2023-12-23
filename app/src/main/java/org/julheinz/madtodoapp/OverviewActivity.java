@@ -16,22 +16,22 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.julheinz.data.TaskCrudManager;
 import org.julheinz.entities.TaskEntity;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.julheinz.viewmodel.OverviewViewModel;
 
 public class OverviewActivity extends AppCompatActivity {
-    private TaskCrudManager taskCrudManager;
 
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
-    private final List<TaskEntity> taskList = new ArrayList<>();
+
     private ArrayAdapter<TaskEntity> listViewAdapter;
     private ProgressBar progressBar;
+
+    private OverviewViewModel viewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,27 +41,42 @@ public class OverviewActivity extends AppCompatActivity {
         FloatingActionButton addTaskBtn = findViewById(R.id.saveBtn);
         addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
 
+        //instantiate the view model or reuse if already exists
+        viewModel = new ViewModelProvider(this).get(OverviewViewModel.class);
+
         ListView listView = findViewById(R.id.listView); //listview element in overview_activity.xml = container for list
-        this.listViewAdapter = new TaskListAdapter(this, R.id.listView, taskList, this.getLayoutInflater()); //instantiate adapter
+        this.listViewAdapter = new TaskListAdapter(this, R.id.listView, viewModel.getTasks(), this.getLayoutInflater()); //instantiate adapter
         listView.setAdapter(this.listViewAdapter);
 
         /// click listener for click on task in list. arguments:
         listView.setOnItemClickListener(clickOnList());
 
         this.progressBar = findViewById(R.id.progressBar); //show progressbar while loading of data
-        this.progressBar.setVisibility(View.VISIBLE);
 
-        taskCrudManager = new TaskCrudManager(this); //manages data base operations
+        TaskCrudManager taskCrudManager = new TaskCrudManager(this); //manages data base operations
+        viewModel.setCrudOperations(taskCrudManager);
 
-        new Thread(() -> { //new thread for getting tasks from database
+        //änderungen auf mutablelivedata beobachten diese klasse ist der observer vom wert von processingstate
+        viewModel.getProcessingState().observe(this, processingState -> {
+            //das hier wird auf dem ui thread gemacht
+            switch (processingState) {
+                case RUNNING:
+                    break;
+                case RUNNING_LONG:
+                    progressBar.setVisibility(View.VISIBLE);
+                    break;
+                case DONE:
+                    this.progressBar.setVisibility(View.GONE);
+                    this.listViewAdapter.notifyDataSetChanged();
+                    break;
+            }
+        });
 
-            List<TaskEntity> tasksFromDB = taskCrudManager.readAllTasks(); //get tasks from database
-
-            this.runOnUiThread(() -> { //ui elements may only be edited in thread that created them.
-                this.listViewAdapter.addAll(tasksFromDB); // show in list
-                this.progressBar.setVisibility(View.GONE); //hide progressbar when loading of data done
-            });
-        }).start();
+        if (this.viewModel.isInitial()) { //if there isn't already a view model, the data has to be loaded from here
+            this.progressBar.setVisibility(View.VISIBLE);
+            this.viewModel.readAllTasks();
+            this.viewModel.setInitial(false);
+        }
 
     }
 
@@ -108,11 +123,8 @@ public class OverviewActivity extends AppCompatActivity {
         if (activityResultObject.getResultCode() == Activity.RESULT_OK) {
             Log.i(LOG_TAG, "Successfully received edited task from DetailView");
             TaskEntity receivedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
-            new Thread(() -> { //new thread for database access
-                TaskEntity createdTask = taskCrudManager.createTask(receivedTask);
+            viewModel.createTask(receivedTask);
 
-                runOnUiThread(() -> listViewAdapter.add(createdTask)); //go back to ui thread
-            }).start();
         }
     });
 
@@ -121,15 +133,7 @@ public class OverviewActivity extends AppCompatActivity {
             case Activity.RESULT_OK:
                 Log.i(LOG_TAG, "Successfully received edited task from DetailView");
                 TaskEntity editedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
-
-                new Thread(() -> {
-                    taskCrudManager.updateTask(editedTask);
-                    //get the index of the editedTask in the task list
-                    int index = this.taskList.indexOf(editedTask);
-                    //replace TaskEntity at that position in the task list
-                    this.taskList.set(index, editedTask);
-                    runOnUiThread(() -> listViewAdapter.notifyDataSetChanged());
-                }).start();
+                this.viewModel.updateTask(editedTask);
                 toastMsg("Edited " + editedTask.getTitle());
                 break;
             case Activity.RESULT_CANCELED:
