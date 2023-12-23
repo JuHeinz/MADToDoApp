@@ -94,7 +94,7 @@
             android:checked="@={activity.taskEntity.fav}"
             android:gravity="center|center_vertical"
             android:text="@string/is_fav_label"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/saveBtn"
             app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
 
         <com.google.android.material.button.MaterialButton
@@ -105,9 +105,9 @@
             android:text="@string/saveBtn_label"
             android:textAlignment="center"
             app:icon="@android:drawable/ic_menu_save"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/isFavCheckbox"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/isFavCheckbox" />
+            app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
 
         <TextView
             android:id="@+id/createdDateLabel"

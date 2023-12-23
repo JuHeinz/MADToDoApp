@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,11 +47,17 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
         if (existingViewToBeRecycled != null) {
             taskView = existingViewToBeRecycled; //if there is a view to be recycled, use it.
             //there will always be an already inflated view because of the else statement.
-            taskBinding = (ListItemBinding)taskView.getTag(); //get data binder from recycled view
+            taskBinding = (ListItemBinding) taskView.getTag(); //get data binder from recycled view
         } else {
             taskBinding = DataBindingUtil.inflate(inflater, R.layout.list_item, null, false); //if there is no view to be recycled, inflate a new one
             taskView = taskBinding.getRoot(); //set task view to the view created by inflating
             taskView.setTag(taskBinding); //set data binding for view
+        }
+        ImageView favStar = taskView.findViewById(R.id.favOutput);
+        if (!task.isFav()) {
+            favStar.setImageResource(R.drawable.baseline_star_border_24);
+        } else {
+            favStar.setImageResource(R.drawable.baseline_star_24);
         }
 
         taskBinding.setTask(task);
