@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-    <!-- Data Binding -->
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data>
 
         <variable
@@ -17,79 +16,76 @@
 
         <Button
             android:id="@+id/backBtn"
+            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> activity.cancelEdit()}"
             android:text="@string/backBtn_label"
+            app:icon="@android:drawable/ic_menu_revert"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-        />
 
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/taskTitleInput"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:hint="@string/title_hint"
-            android:inputType="text"
-            android:text="@={activity.taskEntity.title}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
+            app:endIconMode="clear_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/backBtn" />
+            app:layout_constraintTop_toBottomOf="@id/backBtn"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:gravity="start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:text="@={activity.taskEntity.title}" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
             android:id="@+id/isDoneCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="@={activity.taskEntity.done}"
-            android:gravity="center"
+            android:text="@string/is_done_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/isDoneLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:text="@string/is_done_label"
-            app:layout_constraintStart_toStartOf="@id/isDoneCheckBox"
-            app:layout_constraintTop_toBottomOf="@+id/isDoneCheckBox" />
-
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/descriptionInput"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:hint="@string/description_hint"
-            android:inputType="textMultiLine"
-            android:text="@={activity.taskEntity.description}"
+            app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/taskTitleInput" />
+            app:layout_constraintTop_toBottomOf="@id/taskTitleInput"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:gravity="start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:lines="10"
+                android:minLines="5"
+                android:text="@={activity.taskEntity.description}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <EditText
             android:id="@+id/dueDateInput"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:hint="@string/due_date_hint"
+            android:importantForAutofill="no"
             android:inputType="date"
+            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/descriptionInput"
-            tools:layout_conversion_absoluteHeight="45dp"
-            tools:layout_conversion_absoluteWidth="210dp" />
-
-        <TextView
-            android:id="@+id/isFavLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/is_fav_label"
-            app:layout_constraintStart_toStartOf="@id/isFavCheckbox"
-            app:layout_constraintTop_toBottomOf="@+id/isFavCheckbox" />
+            app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
 
         <CheckBox
             android:id="@+id/isFavCheckbox"
@@ -97,8 +93,21 @@
             android:layout_height="wrap_content"
             android:checked="@={activity.taskEntity.fav}"
             android:gravity="center|center_vertical"
+            android:text="@string/is_fav_label"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> activity.saveTask()}"
+            android:text="@string/saveBtn_label"
+            android:textAlignment="center"
+            app:icon="@android:drawable/ic_menu_save"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/isFavCheckbox" />
 
         <TextView
             android:id="@+id/createdDateLabel"
@@ -106,26 +115,15 @@
             android:layout_height="wrap_content"
             android:text="@string/created_date_label"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/isFavLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
 
         <TextView
             android:id="@+id/createdDateOutput"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:ems="10"
             app:layout_constraintStart_toEndOf="@+id/createdDateLabel"
-            app:layout_constraintTop_toBottomOf="@+id/isFavLabel" />
-
-        <Button
-            android:id="@+id/addTaskBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:onClick="@{() -> activity.saveTask()}"
-            android:text="@string/saveBtn_label"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/createdDateOutput" />
+            app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

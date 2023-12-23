@@ -38,7 +38,7 @@ public class OverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.overview_activity);
 
-        FloatingActionButton addTaskBtn = findViewById(R.id.addTaskBtn);
+        FloatingActionButton addTaskBtn = findViewById(R.id.saveBtn);
         addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
 
         ListView listView = findViewById(R.id.listView); //listview element in overview_activity.xml = container for list
