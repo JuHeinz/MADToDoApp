@@ -1,41 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ProgressBar
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/progressBar"
-        android:gravity="center"
-        />
+    <data>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/saveBtn"
-        android:layout_width="wrap_content"
+        <variable
+            name="activity"
+            type="org.julheinz.madtodoapp.OverviewActivity" />
+    </data>
+
+    <FrameLayout xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/linearLayout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:contentDescription="@string/alt_text_addTaskBtn"
-        app:backgroundTint="@color/dark_blue"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:layout_conversion_absoluteHeight="544dp"
-        tools:layout_conversion_absoluteWidth="411dp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="188dp" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/saveBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:contentDescription="@string/alt_text_addTaskBtn"
+            android:onClick="@{() -> activity.callDetailViewForCreate()}"
+            app:backgroundTint="@color/dark_blue"
+            app:srcCompat="@android:drawable/ic_input_add" />
 
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_conversion_absoluteHeight="544dp"
+            tools:layout_conversion_absoluteWidth="411dp"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="188dp" />
 
-
-</FrameLayout>
+    </FrameLayout>
+</layout>

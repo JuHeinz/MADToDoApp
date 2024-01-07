@@ -16,12 +16,12 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.julheinz.data.TaskCrudManager;
 import org.julheinz.entities.TaskEntity;
+import org.julheinz.madtodoapp.databinding.OverviewActivityBinding;
 import org.julheinz.viewmodel.OverviewViewModel;
 
 import java.util.Objects;
@@ -36,15 +36,15 @@ public class OverviewActivity extends AppCompatActivity {
     private ArrayAdapter<TaskEntity> listViewAdapter;
     private ProgressBar progressBar;
     private OverviewViewModel viewModel;
+    private OverviewActivityBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.overview_activity);
 
-        //TODO: Use Databinding
-        FloatingActionButton addTaskBtn = findViewById(R.id.saveBtn);
-        addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
+        this.binding = DataBindingUtil.setContentView(this, R.layout.overview_activity);
+        this.binding.setActivity(this);
 
         viewModel = new ViewModelProvider(this).get(OverviewViewModel.class); // instantiate the view model or reuse if already exists
 
@@ -72,7 +72,7 @@ public class OverviewActivity extends AppCompatActivity {
             }
         });
 
-        if (this.viewModel.isInitial()) { //if there isn't already a view model, the data has to be loaded from here
+        if (this.viewModel.isInitial()) { //if there isn't already a view model, get data from db
             this.progressBar.setVisibility(View.VISIBLE);
             this.viewModel.readAllTasks();
             this.viewModel.setInitial(false);
@@ -89,7 +89,7 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * Starts DetailActivity for result after click on new task button
      */
-    private void callDetailViewForCreate(View view) {
+    public void callDetailViewForCreate() {
         Intent detailviewIntent = new Intent(this, DetailViewActivity.class);
         detailViewForCreateLauncher.launch(detailviewIntent); //launch a new activity from which we want to get a result
     }

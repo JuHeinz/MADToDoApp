@@ -20,7 +20,6 @@ public class DetailViewActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.detail_view);
 
         this.itemBinding = DataBindingUtil.setContentView(this, R.layout.detail_view); //bind this activity to detail_view.xml
         this.itemBinding.setActivity(this);

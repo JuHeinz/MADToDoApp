@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +15,8 @@ import androidx.databinding.DataBindingUtil;
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.ListItemBinding;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -23,6 +26,8 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
     //TODO: replace with recyclerView
     private final LayoutInflater inflater;
 
+    String createdDate;
+    TaskEntity task;
     public TaskListAdapter(Context parent, int layoutIdOfListView, List<TaskEntity> taskList, LayoutInflater inflater) {
         super(parent, layoutIdOfListView, taskList);
         this.inflater = inflater;
@@ -40,7 +45,7 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
     @Override
     public View getView(int position, @Nullable View existingViewToBeRecycled, @NonNull ViewGroup parent) {
 
-        TaskEntity task = getItem(position); //data to be rendered
+        task = getItem(position); //data to be rendered
         View taskView; //view that displays the data
         ListItemBinding taskBinding; //data binder
 
@@ -60,8 +65,16 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
             favStar.setImageResource(R.drawable.baseline_star_24);
         }
 
+        TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
+        dueDateOutput.setText(getCreatedDateFormatted());
         taskBinding.setTask(task);
         return taskView;
     }
 
+    public String getCreatedDateFormatted(){
+        DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("dd.M | hh:ss a");
+        LocalDateTime unconvertedDate = task.getCreatedDate();
+        this.createdDate = formatter.format(unconvertedDate);
+        return createdDate;
+    }
 }
