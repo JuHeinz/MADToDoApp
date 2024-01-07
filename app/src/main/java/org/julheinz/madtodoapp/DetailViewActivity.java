@@ -39,7 +39,7 @@ public class DetailViewActivity extends AppCompatActivity {
 
     public void saveTask() {
         Log.i(LOG_TAG, "Task saved:" + task.toString());
-        Intent returnToCallerWithValueIntent = new Intent();
+        Intent returnToCallerWithValueIntent = new Intent(Intent.ACTION_EDIT);
         returnToCallerWithValueIntent.putExtra(ARG_TASK, this.task); //return created/updated task to calling activity
         setResult(Activity.RESULT_OK, returnToCallerWithValueIntent);
         finish(); //close activity and return to caller
@@ -48,6 +48,15 @@ public class DetailViewActivity extends AppCompatActivity {
     public void cancelEdit() {
         Intent returnToCallerWhenCancelled = new Intent();
         setResult(Activity.RESULT_CANCELED, returnToCallerWhenCancelled);
+        finish(); //close activity and return to caller
+    }
+
+
+    public void deleteTask(){
+        Log.i(LOG_TAG, "Task deleted:" + task.toString());
+        Intent returnToCallerWithValueIntent = new Intent(Intent.ACTION_DELETE);
+        returnToCallerWithValueIntent.putExtra(ARG_TASK, this.task);
+        setResult(Activity.RESULT_OK, returnToCallerWithValueIntent);
         finish(); //close activity and return to caller
     }
 

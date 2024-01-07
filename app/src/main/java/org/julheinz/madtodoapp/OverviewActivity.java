@@ -24,13 +24,17 @@ import org.julheinz.data.TaskCrudManager;
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.viewmodel.OverviewViewModel;
 
+import java.util.Objects;
+
+/**
+ * Activity for overview over tasks. Data is not directly handled here but delegated to OverviewViewModel.
+ * It observes the view model and controls the UI.
+ */
 public class OverviewActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
-
     private ArrayAdapter<TaskEntity> listViewAdapter;
     private ProgressBar progressBar;
-
     private OverviewViewModel viewModel;
 
     @Override
@@ -38,27 +42,23 @@ public class OverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.overview_activity);
 
+        //TODO: Use Databinding
         FloatingActionButton addTaskBtn = findViewById(R.id.saveBtn);
         addTaskBtn.setOnClickListener(this::callDetailViewForCreate);
 
-        //instantiate the view model or reuse if already exists
-        viewModel = new ViewModelProvider(this).get(OverviewViewModel.class);
+        viewModel = new ViewModelProvider(this).get(OverviewViewModel.class); // instantiate the view model or reuse if already exists
 
-        ListView listView = findViewById(R.id.listView); //listview element in overview_activity.xml = container for list
+        ListView listView = findViewById(R.id.listView); // listview element in overview_activity.xml = container for list
         this.listViewAdapter = new TaskListAdapter(this, R.id.listView, viewModel.getTasks(), this.getLayoutInflater()); //instantiate adapter
         listView.setAdapter(this.listViewAdapter);
+        listView.setOnItemClickListener(clickOnList()); // click listener for tasks in list
 
-        /// click listener for click on task in list. arguments:
-        listView.setOnItemClickListener(clickOnList());
+        this.progressBar = findViewById(R.id.progressBar); // show progressbar while loading of data
 
-        this.progressBar = findViewById(R.id.progressBar); //show progressbar while loading of data
-
-        TaskCrudManager taskCrudManager = new TaskCrudManager(this); //manages data base operations
+        TaskCrudManager taskCrudManager = new TaskCrudManager(this); // manages data base operations
         viewModel.setCrudOperations(taskCrudManager);
 
-        //änderungen auf mutablelivedata beobachten diese klasse ist der observer vom wert von processingstate
-        viewModel.getProcessingState().observe(this, processingState -> {
-            //das hier wird auf dem ui thread gemacht
+        viewModel.getProcessingState().observe(this, processingState -> { // Observe changes on MutableLiveData, act according to its processing state
             switch (processingState) {
                 case RUNNING:
                     break;
@@ -77,7 +77,6 @@ public class OverviewActivity extends AppCompatActivity {
             this.viewModel.readAllTasks();
             this.viewModel.setInitial(false);
         }
-
     }
 
     /**
@@ -92,9 +91,7 @@ public class OverviewActivity extends AppCompatActivity {
      */
     private void callDetailViewForCreate(View view) {
         Intent detailviewIntent = new Intent(this, DetailViewActivity.class);
-        //launch a new activity from which we want to get a result
-        detailViewForCreateLauncher.launch(detailviewIntent);
-
+        detailViewForCreateLauncher.launch(detailviewIntent); //launch a new activity from which we want to get a result
     }
 
     /**
@@ -106,10 +103,8 @@ public class OverviewActivity extends AppCompatActivity {
         detailViewForEditLauncher.launch(callDetailViewForEdit);
     }
 
-    /** 1: parent view where click happened
-     2: item (view) auf das geklickt wurde
-     3: position des elements in ansicht
-     4: id für aufruf direkt auf datenbank (hier nicht verwendet)
+    /**
+     * returns click listener for list item which gets the taskEntity for the selected item and triggers an edit on it.
      */
     private AdapterView.OnItemClickListener clickOnList() {
         return (parent, view, position, id) -> {
@@ -124,22 +119,26 @@ public class OverviewActivity extends AppCompatActivity {
             Log.i(LOG_TAG, "Successfully received edited task from DetailView");
             TaskEntity receivedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
             viewModel.createTask(receivedTask);
-
         }
     });
 
     public ActivityResultLauncher<Intent> detailViewForEditLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
+        String action = activityResultObject.getData().getAction();
         switch (activityResultObject.getResultCode()) {
             case Activity.RESULT_OK:
-                Log.i(LOG_TAG, "Successfully received edited task from DetailView");
-                TaskEntity editedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
-                this.viewModel.updateTask(editedTask);
-                toastMsg("Edited " + editedTask.getTitle());
+                TaskEntity returnedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
+                // differenciate if detailview activity finished because the task was deleted or if it was edited
+                if(Objects.equals(action, "android.intent.action.DELETE")){
+                    this.viewModel.deleteTask(returnedTask);
+                    toastMsg("Deleted " + returnedTask.getTitle());
+                }else if(Objects.equals(action, "android.intent.action.EDIT")){
+                    this.viewModel.updateTask(returnedTask);
+                    toastMsg("Edited " + returnedTask.getTitle());
+                }
                 break;
             case Activity.RESULT_CANCELED:
                 toastMsg("Edits were not saved");
                 break;
         }
     });
-
 }

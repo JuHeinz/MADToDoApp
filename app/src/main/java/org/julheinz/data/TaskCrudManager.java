@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.room.Dao;
 import androidx.room.Database;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Room;
@@ -49,6 +50,8 @@ public class TaskCrudManager implements TaskCrudOperations {
         @Update
         void updateTaskInDb(TaskEntity task);
 
+        @Delete
+        void deleteTask(TaskEntity task);
     }
 
     /**
@@ -82,12 +85,13 @@ public class TaskCrudManager implements TaskCrudOperations {
     @Override
     public void updateTask(TaskEntity task) {
         crudOnDb.updateTaskInDb(task);
-        Log.d("Task updated: ", task.toString());
+        Log.i("Task updated: ", task.toString());
     }
 
     @Override
-    public boolean deleteTask(long id) {
-        //TODO: implement in room
+    public boolean deleteTask(TaskEntity task) {
+        crudOnDb.deleteTask(task);
+        Log.i("Task deleted: ", task.toString());
         return false;
     }
 

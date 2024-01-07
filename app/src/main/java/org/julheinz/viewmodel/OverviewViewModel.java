@@ -12,13 +12,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Saves the data for the OverviewActivity. sorgt dafür dass man nicht ständig einen neuen thread aufmachen muss und dann wieder runOnUiThread rufen muss
- * Sonst müsste man so sachen machen wie :
- *   new Thread(() -> { //new thread for database access
- *      askEntity createdTask = taskCrudManager.createTask(receivedTask);
- *      //go back to ui thread
- *      runOnUiThread(() -> listViewAdapter.add(createdTask));}).start();
- *      Enthält die Business Logik
+ * ViewModel for OverViewActivity: Calls business logic and manages data for the activity.
+ * Business logic: calling database operations.
+ * Data: list of taskEntities
+ * Should not hold any references to the activity or its UI, is observed by the OverviewActivity.
  */
 public class OverviewViewModel extends ViewModel {
 
@@ -26,11 +23,10 @@ public class OverviewViewModel extends ViewModel {
 
     private MutableLiveData<ProcessingState> processingState = new MutableLiveData<>();
 
-    //magisches threadmanagement von android
-    private final ExecutorService operationRunner = Executors.newFixedThreadPool(4);
+    private final ExecutorService operationRunner = Executors.newFixedThreadPool(4); // smart thread management
     private TaskCrudOperations crudOperations;
     private boolean initial = true;
-    private List<TaskEntity> taskList = new ArrayList<>();
+    private final List<TaskEntity> taskList = new ArrayList<>();
 
     public List<TaskEntity> getTasks() {
         return taskList;
@@ -46,10 +42,10 @@ public class OverviewViewModel extends ViewModel {
 
     public void createTask(TaskEntity taskEntity) {
         processingState.setValue(ProcessingState.RUNNING);
-        operationRunner.execute(() -> {
+        operationRunner.execute(() -> { // execute assigns a new or existing thread to this task
             TaskEntity createdTask = crudOperations.createTask(taskEntity);
             this.taskList.add(createdTask);
-            processingState.postValue(ProcessingState.DONE);
+            processingState.postValue(ProcessingState.DONE); //change live data
         });
     }
 
@@ -59,29 +55,31 @@ public class OverviewViewModel extends ViewModel {
 
     public void readAllTasks() {
         processingState.setValue(ProcessingState.RUNNING_LONG);
-
         operationRunner.execute(() -> {
             List<TaskEntity> tasksFromCrud = crudOperations.readAllTasks();
             taskList.addAll(tasksFromCrud);
-            //aus hintergrundthread dem processingstate einen neuen wert liefern
-            //im ui thread observed jemand diesen processingstate (mutable live data)
             processingState.postValue(ProcessingState.DONE);
         });
     }
+
 
     public void updateTask(TaskEntity editedTask) {
         processingState.setValue(ProcessingState.RUNNING);
         operationRunner.execute(() -> {
             crudOperations.updateTask(editedTask);
             int index = taskList.indexOf(editedTask);
-            //replace TaskEntity at that position in the task list
-            this.taskList.set(index, editedTask);
+            this.taskList.set(index, editedTask); //replace TaskEntity at that position in the task list
             processingState.postValue(ProcessingState.DONE);
         });
     }
 
-    void deleteTask(long id) {
-
+    public void deleteTask(TaskEntity taskToBeDeleted) {
+        processingState.setValue(ProcessingState.RUNNING);
+        operationRunner.execute(() -> {
+            crudOperations.deleteTask(taskToBeDeleted); // remove from database
+            this.taskList.remove(taskToBeDeleted); // remove from list view adapter
+            processingState.postValue(ProcessingState.DONE);
+        });
     }
 
     public void setCrudOperations(TaskCrudOperations crudOperations) {

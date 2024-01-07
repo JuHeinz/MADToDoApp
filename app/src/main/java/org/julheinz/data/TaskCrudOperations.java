@@ -14,5 +14,5 @@ public interface TaskCrudOperations {
 
     void updateTask(TaskEntity task);
 
-    boolean deleteTask(long id);
+    boolean deleteTask(TaskEntity task);
 }
