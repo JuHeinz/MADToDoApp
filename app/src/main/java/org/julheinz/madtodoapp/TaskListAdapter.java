@@ -14,9 +14,8 @@ import androidx.databinding.DataBindingUtil;
 
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.ListItemBinding;
+import org.julheinz.util.DateTimeFormatter;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -25,8 +24,6 @@ import java.util.List;
 public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
     //TODO: replace with recyclerView
     private final LayoutInflater inflater;
-
-    String createdDate;
     TaskEntity task;
     public TaskListAdapter(Context parent, int layoutIdOfListView, List<TaskEntity> taskList, LayoutInflater inflater) {
         super(parent, layoutIdOfListView, taskList);
@@ -66,15 +63,10 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
         }
 
         TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
-        dueDateOutput.setText(getCreatedDateFormatted());
+        dueDateOutput.setText(DateTimeFormatter.format(task.getDueDate()));
         taskBinding.setTask(task);
         return taskView;
     }
 
-    public String getCreatedDateFormatted(){
-        DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("dd.M | hh:ss a");
-        LocalDateTime unconvertedDate = task.getCreatedDate();
-        this.createdDate = formatter.format(unconvertedDate);
-        return createdDate;
-    }
+
 }

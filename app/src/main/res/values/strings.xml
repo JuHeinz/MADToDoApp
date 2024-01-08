@@ -1,15 +1,16 @@
 <resources>
     <string name="app_name">To Do App</string>
-    <string name="add_task">Add new task</string>
     <string name="title_hint">What needs to be done?</string>
     <string name="description_hint">Description (optional)</string>
-    <string name="due_date_hint">Due Date (optional)</string>
     <string name="created_date_label">Created:</string>
     <string name="saveBtn_label">Save</string>
     <string name="backBtn_label">Back</string>
-    <string name="is_fav_label">Favorite</string>
-    <string name="is_done_label">Done</string>
-    <string name="dd_mm_yyyy">DD/MM/YYYY</string>
+    <string name="is_fav_label">Favorite?</string>
+    <string name="is_done_label">Done?</string>
     <string name="alt_text_addTaskBtn">Add task</string>
-    <string name="delete">Delete</string>
+    <string name="deleteBtn_label">Delete</string>
+    <string name="set_due_time">Set Due Time</string>
+    <string name="set_due_date">Set Due Date</string>
+    <string name="dd_mm_yyyy">dd/mm/yyyy</string>
+    <string name="due">Due:</string>
 </resources>

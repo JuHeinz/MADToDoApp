@@ -9,6 +9,7 @@
         <variable
             name="viewmodel"
             type="org.julheinz.viewmodel.DetailviewViewModel" />
+
         <variable
             name="activity"
             type="org.julheinz.madtodoapp.DetailViewActivity" />
@@ -33,32 +34,30 @@
             android:id="@+id/taskTitleInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:error="@{viewmodel.errorStatus}"
             android:hint="@string/title_hint"
             app:endIconMode="clear_text"
-            android:error="@{viewmodel.errorStatus}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/backBtn"
-            >
+            app:layout_constraintTop_toBottomOf="@id/backBtn">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:gravity="start"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="start"
                 android:importantForAutofill="no"
-                android:singleLine="true"
-                android:text="@={viewmodel.taskEntity.title}"
                 android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.checkFieldInputValid(actionId)}"
                 android:onTextChanged="@{() -> viewmodel.onFieldInputChanged()}"
-                />
+                android:singleLine="true"
+                android:text="@={viewmodel.taskEntity.title}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/isDoneCheckBox"
-            android:visibility="@{activity.doneCheckboxVisibility}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="@={viewmodel.taskEntity.done}"
             android:text="@string/is_done_label"
+            android:visibility="@{activity.doneCheckboxVisibility}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -70,19 +69,17 @@
             app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/taskTitleInput"
-            >
+            app:layout_constraintTop_toBottomOf="@id/taskTitleInput">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:gravity="start"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="start"
                 android:importantForAutofill="no"
                 android:inputType="textMultiLine"
                 android:lines="10"
                 android:minLines="5"
-                android:text="@={viewmodel.taskEntity.description}"
-                />
+                android:text="@={viewmodel.taskEntity.description}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
@@ -107,21 +104,55 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
 
-        <TextView
-            android:id="@+id/createdDateLabel"
+        <LinearLayout
+            android:id="@+id/dateOutputs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/created_date_label"
+            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/setDueDateBtn" />
+            app:layout_constraintTop_toBottomOf="@id/setDueDateBtn">
 
-        <TextView
-            android:id="@+id/createdDateOutput"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            app:layout_constraintStart_toEndOf="@+id/createdDateLabel"
-            app:layout_constraintTop_toBottomOf="@+id/setDueDateBtn" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/createdDateLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/created_date_label" />
+
+                <TextView
+                    android:id="@+id/createdDateOutput"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text=""
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dueDateOutputLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/dueDateLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/due" />
+
+                <TextView
+                    android:id="@+id/dueDateOutput"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="" />
+            </LinearLayout>
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/setDueDateBtn"
@@ -148,11 +179,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> activity.confirmDeletionViaDialog()}"
-            android:text="@string/delete"
+            android:text="@string/deleteBtn_label"
             android:textAlignment="center"
+            android:visibility="@{activity.deleteButtonVisibility}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveBtn"
-            android:visibility="@{activity.deleteButtonVisibility}" />
+            app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

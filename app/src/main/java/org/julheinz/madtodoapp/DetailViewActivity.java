@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.DetailViewBinding;
+import org.julheinz.util.DateTimeFormatter;
 import org.julheinz.viewmodel.DetailviewViewModel;
 
 import java.util.Objects;
@@ -57,8 +59,12 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                 Log.i(LOG_TAG, "created new task " + task);
             }
             this.viewModel.setTaskEntity(task);
-            Log.i(LOG_TAG, "Giving task to view model:" + viewModel.getTaskEntity().toString());
         }
+
+        // databinding for dueDateOutput (not input!)
+        //TODO: Make it so it gets refreshed in detail view when changed. observe task instead of error message?
+        TextView dueDateOutput = findViewById(R.id.dueDateOutput);
+        dueDateOutput.setText(DateTimeFormatter.format(viewModel.getTaskEntity().getDueDate()));
     }
 
     public void saveTask() {
@@ -112,15 +118,23 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     }
 
     /**
-     * Listen to user finishing setting time in TimePickerFragment in TimepickerDialog.
-     *
-     * @param view      the view associated with this listener (Timepicker)
-     * @param hourOfDay the hour that was set
-     * @param minute    the minute that was set
+     * Listen to user finishing setting due time in TimePickerFragment in TimepickerDialog.
      */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         Log.i(LOG_TAG, "Set due time to: " + hourOfDay + ":" + minute);
+        int[] data = {minute, hourOfDay};
+        viewModel.setDueTimeIntegers(data);
+    }
+
+    /**
+     * Listen to user finishing setting due date in DatePickerDialog.
+     */
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        Log.i(LOG_TAG, "Set due date to: " + year + "/" + month + "/" + dayOfMonth);
+        int[] data = {dayOfMonth, month, year};
+        viewModel.setDueDateIntegers(data);
     }
 
     /**
@@ -146,19 +160,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     public void setDoneCheckboxVisibility(int doneCheckboxVisibility) {
         this.doneCheckboxVisibility = doneCheckboxVisibility;
     }
-
-    /**
-     * Listen to user finishing setting due date in DatePickerDialog.
-     *
-     * @param view       the picker associated with the dialog
-     * @param year       the selected year
-     * @param month      the selected month (0-11)
-     * @param dayOfMonth the selected day of the month (1-31, depending on
-     *                   month)
-     */
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        Log.i(LOG_TAG, "Set due date to: " + year + "/" + month + "/" + dayOfMonth);
-    }
 }
+
+
 
