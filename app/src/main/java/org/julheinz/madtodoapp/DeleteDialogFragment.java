@@ -26,6 +26,7 @@ public class DeleteDialogFragment extends DialogFragment {
     /**
      * Instantiate the listener and check if the host activity implements it.
      * Fragment.onAttach() is run when a fragment is created.
+     * @param context: host activity
      */
     @Override
     public void onAttach(@NonNull Context context) {
@@ -33,7 +34,7 @@ public class DeleteDialogFragment extends DialogFragment {
         try {
             listener = (DeleteDialogListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException("activity must implement DeleteDialogListener");
+            throw new ClassCastException(context + "activity must implement DeleteDialogListener");
         }
     }
 

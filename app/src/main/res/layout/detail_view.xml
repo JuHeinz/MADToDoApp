@@ -85,19 +85,6 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <EditText
-            android:id="@+id/dueDateInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/due_date_hint"
-            android:importantForAutofill="no"
-            android:inputType="date"
-            android:minHeight="48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
-
         <CheckBox
             android:id="@+id/isFavCheckbox"
             android:layout_width="wrap_content"
@@ -106,7 +93,7 @@
             android:gravity="center|center_vertical"
             android:text="@string/is_fav_label"
             app:layout_constraintStart_toEndOf="@+id/saveBtn"
-            app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
+            app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveBtn"
@@ -118,7 +105,7 @@
             app:icon="@android:drawable/ic_menu_save"
             app:layout_constraintEnd_toStartOf="@+id/isFavCheckbox"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dueDateInput" />
+            app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
 
         <TextView
             android:id="@+id/createdDateLabel"
@@ -126,7 +113,7 @@
             android:layout_height="wrap_content"
             android:text="@string/created_date_label"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/setDueDateBtn" />
 
         <TextView
             android:id="@+id/createdDateOutput"
@@ -134,16 +121,27 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             app:layout_constraintStart_toEndOf="@+id/createdDateLabel"
-            app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/setDueDateBtn" />
 
-        <DatePicker
-            android:id="@+id/simpleDatePicker"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/setDueDateBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:datePickerMode="spinner"
+            android:onClick="@{() -> activity.showDatePickerDialog()}"
+            android:text="@string/set_due_date"
+            android:textAlignment="center"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveBtn"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/deleteBtn" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/setDueTimeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> activity.showTimePickerDialog()}"
+            android:text="@string/set_due_time"
+            android:textAlignment="center"
+            app:layout_constraintStart_toEndOf="@id/setDueDateBtn"
+            app:layout_constraintTop_toBottomOf="@+id/deleteBtn" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/deleteBtn"
