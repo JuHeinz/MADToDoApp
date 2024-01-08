@@ -90,7 +90,7 @@ public class OverviewActivity extends AppCompatActivity {
      * Starts DetailActivity for result after click on new task button
      */
     public void callDetailViewForCreate() {
-        Intent detailviewIntent = new Intent(this, DetailViewActivity.class);
+        Intent detailviewIntent = new Intent(Intent.ACTION_INSERT, null, this, DetailViewActivity.class);
         detailViewForCreateLauncher.launch(detailviewIntent); //launch a new activity from which we want to get a result
     }
 
@@ -98,7 +98,7 @@ public class OverviewActivity extends AppCompatActivity {
      * Starts DetailActivity for result after click on existing task
      */
     private void callDetailViewForEdit(TaskEntity selectedItem) {
-        Intent callDetailViewForEdit = new Intent(this, DetailViewActivity.class);
+        Intent callDetailViewForEdit = new Intent(Intent.ACTION_EDIT, null,this, DetailViewActivity.class);
         callDetailViewForEdit.putExtra(ARG_TASK, selectedItem);
         detailViewForEditLauncher.launch(callDetailViewForEdit);
     }
