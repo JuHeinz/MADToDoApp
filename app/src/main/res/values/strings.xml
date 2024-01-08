@@ -11,4 +11,5 @@
     <string name="is_done_label">Done</string>
     <string name="dd_mm_yyyy">DD/MM/YYYY</string>
     <string name="alt_text_addTaskBtn">Add task</string>
+    <string name="delete">Delete</string>
 </resources>

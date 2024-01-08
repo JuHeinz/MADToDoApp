@@ -6,6 +6,9 @@
     <data>
 
         <variable
+            name="viewmodel"
+            type="org.julheinz.viewmodel.DetailviewViewModel" />
+        <variable
             name="activity"
             type="org.julheinz.madtodoapp.DetailViewActivity" />
     </data>
@@ -31,6 +34,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/title_hint"
             app:endIconMode="clear_text"
+            android:error="@{viewmodel.errorStatus}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/backBtn"
             >
@@ -40,14 +44,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:importantForAutofill="no"
-                android:text="@={activity.taskEntity.title}" />
+                android:singleLine="true"
+                android:text="@={viewmodel.taskEntity.title}"
+                android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.checkFieldInputValid(actionId)}"
+                android:onTextChanged="@{() -> viewmodel.onFieldInputChanged()}"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
+        <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/isDoneCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="@={activity.taskEntity.done}"
+            android:checked="@={viewmodel.taskEntity.done}"
             android:text="@string/is_done_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -71,7 +79,8 @@
                 android:inputType="textMultiLine"
                 android:lines="10"
                 android:minLines="5"
-                android:text="@={activity.taskEntity.description}" />
+                android:text="@={viewmodel.taskEntity.description}"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -91,7 +100,7 @@
             android:id="@+id/isFavCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="@={activity.taskEntity.fav}"
+            android:checked="@={viewmodel.taskEntity.fav}"
             android:gravity="center|center_vertical"
             android:text="@string/is_fav_label"
             app:layout_constraintStart_toEndOf="@+id/saveBtn"
@@ -139,7 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> activity.deleteTask()}"
-            android:text="Delete"
+            android:text="@string/delete"
             android:textAlignment="center"
             app:layout_constraintTop_toBottomOf="@+id/saveBtn"
             app:layout_constraintStart_toStartOf="parent"/>
