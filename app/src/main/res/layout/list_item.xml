@@ -35,14 +35,6 @@
                     android:focusable="false"
                     android:gravity="center_vertical"
                     android:text="@{task.title}" />
-
-                <ImageView
-                    android:id="@+id/favOutput"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="5dp"
-                    android:gravity="center_vertical"
-                    android:src="@drawable/baseline_star_border_24" />
             </LinearLayout>
 
             <TextView
@@ -75,6 +67,17 @@
                     android:gravity="center_vertical"
                     android:text="@string/dd_mm_yyyy" />
             </LinearLayout>
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/favOutput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@={task.fav}"
+                android:onClick="@{() -> activityViewModel.updateTask(task)}"
+                android:focusable="false"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dueDateRow"
+                android:text="@string/favorite" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

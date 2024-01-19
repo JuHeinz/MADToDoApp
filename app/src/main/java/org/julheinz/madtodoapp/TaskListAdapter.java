@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,12 +55,6 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
             taskBinding = DataBindingUtil.inflate(inflater, R.layout.list_item, null, false); //if there is no view to be recycled, inflate a new one
             taskView = taskBinding.getRoot(); //set task view to the view created by inflating
             taskView.setTag(taskBinding); //set data binding for view
-        }
-        ImageView favStar = taskView.findViewById(R.id.favOutput);
-        if (!task.isFav()) {
-            favStar.setImageResource(R.drawable.baseline_star_border_24);
-        } else {
-            favStar.setImageResource(R.drawable.baseline_star_24);
         }
 
         TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
