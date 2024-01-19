@@ -36,20 +36,19 @@ public class OverviewActivity extends AppCompatActivity {
     private ArrayAdapter<TaskEntity> listViewAdapter;
     private ProgressBar progressBar;
     private OverviewViewModel viewModel;
-    private OverviewActivityBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.overview_activity);
 
-        this.binding = DataBindingUtil.setContentView(this, R.layout.overview_activity);
-        this.binding.setActivity(this);
+        org.julheinz.madtodoapp.databinding.OverviewActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.overview_activity);
+        binding.setActivity(this);
 
         viewModel = new ViewModelProvider(this).get(OverviewViewModel.class); // instantiate the view model or reuse if already exists
 
         ListView listView = findViewById(R.id.listView); // listview element in overview_activity.xml = container for list
-        this.listViewAdapter = new TaskListAdapter(this, R.id.listView, viewModel.getTasks(), this.getLayoutInflater()); //instantiate adapter
+        this.listViewAdapter = new TaskListAdapter(this, R.id.listView, viewModel.getTasks(), this.getLayoutInflater(), viewModel); //instantiate adapter
         listView.setAdapter(this.listViewAdapter);
         listView.setOnItemClickListener(clickOnList()); // click listener for tasks in list
 

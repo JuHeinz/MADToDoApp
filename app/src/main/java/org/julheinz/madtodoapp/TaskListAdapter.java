@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil;
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.ListItemBinding;
 import org.julheinz.util.DateTimeFormatter;
+import org.julheinz.viewmodel.OverviewViewModel;
 
 import java.util.List;
 
@@ -22,12 +23,13 @@ import java.util.List;
  *  An adapter that manages what is shown in the list view. This is a custom adapter for my TaskEntity, extending an ArrayAdapter.
  */
 public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
-    //TODO: replace with recyclerView
     private final LayoutInflater inflater;
     TaskEntity task;
-    public TaskListAdapter(Context parent, int layoutIdOfListView, List<TaskEntity> taskList, LayoutInflater inflater) {
+    OverviewViewModel viewModel;
+    public TaskListAdapter(Context parent, int layoutIdOfListView, List<TaskEntity> taskList, LayoutInflater inflater, OverviewViewModel viewModel) {
         super(parent, layoutIdOfListView, taskList);
         this.inflater = inflater;
+        this.viewModel = viewModel;
     }
 
     /**
@@ -65,6 +67,7 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
         TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
         dueDateOutput.setText(DateTimeFormatter.format(task.getDueDate()));
         taskBinding.setTask(task);
+        taskBinding.setActivityViewModel(viewModel); // make it so that the databinding class for the listitem has access to the viewmodel of Overview Activity
         return taskView;
     }
 

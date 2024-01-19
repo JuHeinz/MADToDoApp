@@ -7,6 +7,9 @@
         <variable
             name="task"
             type="org.julheinz.entities.TaskEntity" />
+        <variable name="activityViewModel"
+            type="org.julheinz.viewmodel.OverviewViewModel" />
+
     </data>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,6 +31,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="@={task.done}"
+                    android:onClick="@{() -> activityViewModel.updateTask(task)}"
                     android:focusable="false"
                     android:gravity="center_vertical"
                     android:text="@{task.title}" />
