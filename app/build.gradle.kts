@@ -41,6 +41,10 @@ dependencies {
     implementation("androidx.room:room-common:2.6.1")
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.databinding:databinding-runtime:8.2.0")
+    // retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.7.1")
+    implementation ("com.squareup.retrofit2:converter-gson:2.7.1")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

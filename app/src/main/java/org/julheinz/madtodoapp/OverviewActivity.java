@@ -19,9 +19,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.julheinz.data.TaskCrudManager;
+import org.julheinz.data.RetrofitTaskCrudOperations;
+import org.julheinz.data.RoomTaskCrudOperations;
+import org.julheinz.data.TaskCrudOperations;
 import org.julheinz.entities.TaskEntity;
-import org.julheinz.madtodoapp.databinding.OverviewActivityBinding;
 import org.julheinz.viewmodel.OverviewViewModel;
 
 import java.util.Objects;
@@ -54,8 +55,10 @@ public class OverviewActivity extends AppCompatActivity {
 
         this.progressBar = findViewById(R.id.progressBar); // show progressbar while loading of data
 
-        TaskCrudManager taskCrudManager = new TaskCrudManager(this); // manages data base operations
-        viewModel.setCrudOperations(taskCrudManager);
+        //connect view model to crudOperations
+        TaskCrudOperations taskCrudOperations = new RetrofitTaskCrudOperations(); // manages data base operations
+        //TaskCrudOperations taskCrudOperations = new RoomTaskCrudOperations(this); // manages data base operations
+        viewModel.setCrudOperations(taskCrudOperations);
 
         viewModel.getProcessingState().observe(this, processingState -> { // Observe changes on MutableLiveData, act according to its processing state
             switch (processingState) {

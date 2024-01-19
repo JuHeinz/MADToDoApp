@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface TaskCrudOperations {
 
-    TaskEntity createTask(TaskEntity taskEntity);
+    TaskEntity createTask(TaskEntity task);
 
     TaskEntity readTask(long id);
 
     List<TaskEntity> readAllTasks();
 
-    void updateTask(TaskEntity task);
+    boolean updateTask(TaskEntity task);
 
     boolean deleteTask(TaskEntity task);
 }

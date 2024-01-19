@@ -22,19 +22,21 @@ import java.util.List;
 /**
  * CRUD operations on task database via ROOM
  */
-public class TaskCrudManager implements TaskCrudOperations {
+public class RoomTaskCrudOperations implements TaskCrudOperations {
+
+
     private static long idCount = 0;
     private final List<TaskEntity> taskList = new ArrayList<>();
     private final DataAccessOperationsOnDb crudOnDb;
 
-    public TaskCrudManager(Activity owner) {
+    public RoomTaskCrudOperations(Activity owner) {
         //create a database
         TaskDatabase db = Room.databaseBuilder(owner.getApplicationContext(), TaskDatabase.class, "task-db").build();
         this.crudOnDb = db.getDao();
     }
 
     /**
-     * ROOM DAO Interface. Implemented by ROOM during runtime to access database.
+     * ROOM DAO Interface. Implemented by ROOM via code generation to access database.
      */
     @Dao
     public interface DataAccessOperationsOnDb {
@@ -65,11 +67,11 @@ public class TaskCrudManager implements TaskCrudOperations {
     }
 
     @Override
-    public TaskEntity createTask(TaskEntity taskEntity) {
-        long id = crudOnDb.createTaskInDB(taskEntity);
-        taskEntity.setId(id);
-        taskList.add(taskEntity);
-        return taskEntity;
+    public TaskEntity createTask(TaskEntity task) {
+        long id = crudOnDb.createTaskInDB(task);
+        task.setId(id);
+        taskList.add(task);
+        return task;
     }
 
     @Override
@@ -83,9 +85,10 @@ public class TaskCrudManager implements TaskCrudOperations {
     }
 
     @Override
-    public void updateTask(TaskEntity task) {
+    public boolean updateTask(TaskEntity task) {
         crudOnDb.updateTaskInDb(task);
         Log.i("Task updated: ", task.toString());
+        return true;
     }
 
     @Override

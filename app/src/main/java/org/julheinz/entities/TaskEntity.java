@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -16,6 +18,7 @@ public class TaskEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
+    @SerializedName("name")
     private String title;
 
     private String description;
@@ -24,7 +27,7 @@ public class TaskEntity implements Serializable {
 
     private LocalDateTime dueDate;
     private boolean done;
-
+    @SerializedName("favorite")
     private boolean fav;
     private LocalDateTime doneDate;
 
