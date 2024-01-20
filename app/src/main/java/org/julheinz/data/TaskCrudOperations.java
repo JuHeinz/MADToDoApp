@@ -15,4 +15,7 @@ public interface TaskCrudOperations {
     boolean updateTask(TaskEntity task);
 
     boolean deleteTask(TaskEntity task);
+
+    boolean deleteAllTasks(boolean deleteLocalTasks);
+
 }

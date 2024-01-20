@@ -179,8 +179,11 @@ public class OverviewActivity extends AppCompatActivity {
             return true;
         } else if (item.getItemId() == R.id.deleteAllLocal) {
             showSnackbar("Delete local items selected");
+            viewModel.deleteAllLocalTasks();
+
             return true;
         } else if (item.getItemId() == R.id.deleteAllRemote) {
+            viewModel.deleteAllRemoteTasks();
             showSnackbar("Delete remote items selected");
             return true;
         } else {

@@ -4,7 +4,7 @@ import org.julheinz.entities.TaskEntity;
 
 import java.util.List;
 
-public class SyncTaskCrudOperations implements TaskCrudOperations{
+public class SyncTaskCrudOperations implements TaskCrudOperations {
 
     private TaskCrudOperations localOperations;
     private TaskCrudOperations remoteOperations;
@@ -28,7 +28,26 @@ public class SyncTaskCrudOperations implements TaskCrudOperations{
 
     @Override
     public List<TaskEntity> readAllTasks() {
-        return localOperations.readAllTasks();
+        List<TaskEntity> taskList;
+
+        List<TaskEntity> remoteTasks = remoteOperations.readAllTasks();
+        List<TaskEntity> localTasks = localOperations.readAllTasks();
+
+        //  liegen lokale Todos vor, dann werden alle Todos auf Seiten der Web Applikation gelöscht und die lokalen Todos an die Web Applikation übertragen.
+        if (!localTasks.isEmpty()) {
+            remoteOperations.deleteAllTasks(false);
+
+            for (TaskEntity localTask : localTasks) {
+                remoteOperations.createTask(localTask);
+            }
+        } else { //liegen keine lokalen Todos vor, dann werden alle Todos von der Web Applikation auf die lokale Datenbank übertragen.
+            for (TaskEntity remoteTask : remoteTasks) {
+
+                localOperations.createTask(remoteTask);
+                //TODO: only render once this has been done, else list will be empty cause repopulating local DB takes a second
+            }
+        }
+        return localTasks;
     }
 
     @Override
@@ -44,4 +63,15 @@ public class SyncTaskCrudOperations implements TaskCrudOperations{
         remoteOperations.deleteTask(task);
         return true;
     }
+
+    @Override
+    public boolean deleteAllTasks(boolean deleteLocalTasks) {
+        if(deleteLocalTasks){
+            localOperations.deleteAllTasks(deleteLocalTasks);
+        }else{
+            remoteOperations.deleteAllTasks(deleteLocalTasks);
+        }
+        return true;
+    }
+
 }

@@ -1,6 +1,5 @@
 package org.julheinz.data;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -25,6 +24,7 @@ import java.util.List;
  */
 public class RoomTaskCrudOperations implements TaskCrudOperations {
 
+    private static String LOG_TAG = RoomTaskCrudOperations.class.getSimpleName();
 
     private final List<TaskEntity> taskList = new ArrayList<>();
     private final DataAccessOperationsOnDb crudOnDb;
@@ -87,15 +87,26 @@ public class RoomTaskCrudOperations implements TaskCrudOperations {
     @Override
     public boolean updateTask(TaskEntity task) {
         crudOnDb.updateTaskInDb(task);
-        Log.i("Task updated: ", task.toString());
+        Log.i(LOG_TAG,"Task updated: " + task.toString());
         return true;
     }
 
     @Override
     public boolean deleteTask(TaskEntity task) {
         crudOnDb.deleteTask(task);
-        Log.i("Task deleted: ", task.toString());
+        Log.i(LOG_TAG,"Task deleted: " + task.toString());
         return false;
     }
+
+    @Override
+    public boolean deleteAllTasks(boolean deleteLocalTasks) {
+        Log.i(LOG_TAG, "All local tasks deleted");
+        List<TaskEntity> tasks = this.readAllTasks();
+        for(TaskEntity task : tasks){
+            this.deleteTask(task);
+        }
+        return true;
+    }
+
 
 }

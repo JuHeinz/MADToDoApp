@@ -111,6 +111,14 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations{
         }
     }
 
-
+    @Override
+    public boolean deleteAllTasks(boolean deleteLocalTasks) {
+        Log.i(LOG_TAG, "All local tasks deleted");
+        List<TaskEntity> tasks = this.readAllTasks();
+        for(TaskEntity task : tasks){
+            this.deleteTask(task);
+        }
+        return true;
+    }
 
 }

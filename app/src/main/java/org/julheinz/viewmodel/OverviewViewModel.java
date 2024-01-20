@@ -20,7 +20,6 @@ import java.util.concurrent.Executors;
  */
 public class OverviewViewModel extends ViewModel {
 
-
     public enum ProcessingState {RUNNING, RUNNING_LONG, DONE}
 
     private MutableLiveData<ProcessingState> processingState = new MutableLiveData<>();
@@ -32,7 +31,7 @@ public class OverviewViewModel extends ViewModel {
 
     private Comparator<TaskEntity> currentSortMode;
 
-    public OverviewViewModel(){
+    public OverviewViewModel() {
         this.currentSortMode = SORT_BY_DONE;
     }
 
@@ -71,7 +70,6 @@ public class OverviewViewModel extends ViewModel {
             processingState.postValue(ProcessingState.DONE);
         });
     }
-
 
     public void updateTask(TaskEntity editedTask) {
         processingState.setValue(ProcessingState.RUNNING);
@@ -113,14 +111,31 @@ public class OverviewViewModel extends ViewModel {
         this.currentSortMode = currentSortMode;
     }
 
-    public void sortTasksAfterUserInput(){
+    public void sortTasksAfterUserInput() {
         processingState.setValue(ProcessingState.RUNNING);
         applyTaskSorting();
         processingState.setValue(ProcessingState.DONE);
     }
 
-    public void applyTaskSorting(){
+    public void applyTaskSorting() {
         this.taskList.sort(currentSortMode);
+    }
 
+    public void deleteAllRemoteTasks() {
+        processingState.setValue(ProcessingState.RUNNING);
+        operationRunner.execute(() -> {
+            crudOperations.deleteAllTasks(false);
+            this.taskList.clear();
+            processingState.postValue(ProcessingState.DONE);
+        });
+    }
+
+    public void deleteAllLocalTasks() {
+        processingState.setValue(ProcessingState.RUNNING);
+        operationRunner.execute(() -> {
+            crudOperations.deleteAllTasks(true);
+            this.taskList.clear();
+            processingState.postValue(ProcessingState.DONE);
+        });
     }
 }
