@@ -23,18 +23,14 @@ public class TaskEntity implements Serializable {
 
     private String description;
 
-    private LocalDateTime createdDate;
-
-    private LocalDateTime dueDate;
+    @SerializedName("expiry")
+    private long dueDate;
     private boolean done;
-    @SerializedName("favorite")
+    @SerializedName("favourite")
     private boolean fav;
-    private LocalDateTime doneDate;
 
-    public TaskEntity() {
-        this.createdDate = LocalDateTime.now();
-        this.dueDate = LocalDateTime.now();
-        this.doneDate = null;
+    public TaskEntity() {;
+        this.dueDate = 784681200;
     }
 
     public long getId() {
@@ -63,21 +59,6 @@ public class TaskEntity implements Serializable {
         Log.i("TaskEntity", "Changed done: " + this.done);
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public LocalDateTime getDoneDate() {
-        return doneDate;
-    }
-
-    public void setDoneDate(LocalDateTime doneDate) {
-        this.doneDate = doneDate;
-    }
 
     public String getDescription() {
         return description;
@@ -87,11 +68,11 @@ public class TaskEntity implements Serializable {
         this.description = description;
     }
 
-    public LocalDateTime getDueDate() {
+    public long getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDateTime dueDate) {
+    public void setDueDate(long dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -106,7 +87,7 @@ public class TaskEntity implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", createdDate=" + createdDate + ", dueDate=" + dueDate + ", done=" + done + ", fav=" + fav + ", doneDate=" + doneDate + '}';
+        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", dueDate=" + dueDate + ", done=" + done + ", fav=" + fav + '}';
     }
 
     // Override equals so that two TaskEntities with the same id are seen as equal, not exact same instance. Needed because TaskEntities get serialized

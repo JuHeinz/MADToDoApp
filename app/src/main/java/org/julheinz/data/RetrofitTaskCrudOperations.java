@@ -35,7 +35,7 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations{
     }
 
     /**
-     * Describes which operations are available by the web server, is implemented by a class retrofit creates during runtime (dynamic proxy)
+     * Describes which operations are available by the web server, is implemented by a class retrofit created during runtime (dynamic proxy)
      */
     public interface TaskWebApiResource{
 
@@ -48,10 +48,10 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations{
         @GET("/api/todos/{todoId}")
         Call<TaskEntity> read(@Path("todoId")long id); //@Path connects placeholder todoId in URL with parameter id
 
-        @PUT("/api/todos/{todoID}")
+        @PUT("/api/todos/{todoId}")
         Call<TaskEntity> update(@Path("todoId")long id, @Body TaskEntity task);
 
-        @DELETE("/api/todos/{todoID}")
+        @DELETE("/api/todos/{todoId}")
         Call<Boolean> delete(@Path("todoId")long id);
     }
 
@@ -60,9 +60,13 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations{
     @Override
     public TaskEntity createTask(TaskEntity task) {
         try {
-            return webApiResource.create(task).execute().body();
+            Log.d(LOG_TAG, "Trying to create task " + task.toString() + " in retrofit");
+            TaskEntity result = webApiResource.create(task).execute().body();
             //.execute() = execute call
             //.body() = get body of response
+            Log.d(LOG_TAG, "Created " + result.toString() + " in retrofit");
+            return result;
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +95,7 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations{
     @Override
     public boolean updateTask(TaskEntity task) {
         try {
-            webApiResource.update(task.getId(), task).execute().body();
+            webApiResource.update(task.getId(), task).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

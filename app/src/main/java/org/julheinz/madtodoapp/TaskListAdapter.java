@@ -57,8 +57,8 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
             taskView.setTag(taskBinding); //set data binding for view
         }
 
-        TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
-        dueDateOutput.setText(DateTimeFormatter.format(task.getDueDate()));
+        //TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
+        //dueDateOutput.setText(DateTimeFormatter.format(task.getDueDate()));
         taskBinding.setTask(task);
         taskBinding.setActivityViewModel(viewModel); // make it so that the databinding class for the listitem has access to the viewmodel of Overview Activity
         return taskView;

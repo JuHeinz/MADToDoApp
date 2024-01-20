@@ -63,8 +63,8 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
 
         // databinding for dueDateOutput (not input!)
         //TODO: Make it so it gets refreshed in detail view when changed. observe task instead of error message?
-        TextView dueDateOutput = findViewById(R.id.dueDateOutput);
-        dueDateOutput.setText(DateTimeFormatter.format(viewModel.getTaskEntity().getDueDate()));
+        //TextView dueDateOutput = findViewById(R.id.dueDateOutput);
+        //dueDateOutput.setText(DateTimeFormatter.format(viewModel.getTaskEntity().getDueDate()));
     }
 
     public void saveTask() {

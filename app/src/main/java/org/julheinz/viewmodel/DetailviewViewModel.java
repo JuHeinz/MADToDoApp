@@ -82,6 +82,7 @@ public class DetailviewViewModel extends ViewModel {
      * Combine time and date from pickers into localDatetime
      */
     public LocalDateTime getDueDateTime() {
+        //TODO: change all this to how prof did it
         if (getDueTimeIntegers() != null && getDueDateIntegers() != null) {
             int minute = dueTimeIntegers[0];
             int hourOfDay = dueTimeIntegers[1];
@@ -95,7 +96,7 @@ public class DetailviewViewModel extends ViewModel {
             dueDateTime = LocalDateTime.now();
         }
         Log.d(LOG_TAG, "Due DateTime: " + dueDateTime);
-        taskEntity.setDueDate(dueDateTime);
+        taskEntity.setDueDate(784681200);
         return dueDateTime;
     }
 
