@@ -6,21 +6,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.julheinz.data.RetrofitTaskCrudOperations;
-import org.julheinz.data.RoomTaskCrudOperations;
+import com.google.android.material.snackbar.Snackbar;
+
 import org.julheinz.data.TaskCrudOperations;
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.viewmodel.OverviewViewModel;
@@ -83,8 +85,8 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * Creates toast for user feedback
      */
-    private void toastMsg(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    private void showSnackbar(String msg) {
+        Snackbar.make(findViewById(R.id.listView), msg, Snackbar.LENGTH_SHORT).show();
     }
 
     /**
@@ -131,15 +133,37 @@ public class OverviewActivity extends AppCompatActivity {
                 // differenciate if detailview activity finished because the task was deleted or if it was edited
                 if(Objects.equals(action, "android.intent.action.DELETE")){
                     this.viewModel.deleteTask(returnedTask);
-                    toastMsg("Deleted " + returnedTask.getTitle());
+                    showSnackbar("Deleted " + returnedTask.getTitle());
                 }else if(Objects.equals(action, "android.intent.action.EDIT")){
                     this.viewModel.updateTask(returnedTask);
-                    toastMsg("Edited " + returnedTask.getTitle());
+                    showSnackbar("Edited " + returnedTask.getTitle());
                 }
                 break;
             case Activity.RESULT_CANCELED:
-                toastMsg("Edits were not saved");
+                showSnackbar("Edits were not saved");
                 break;
         }
     });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        if(item.getItemId() == R.id.sortItems){
+            showSnackbar("Sorting items selected");
+            return true;
+        } else if (item.getItemId() == R.id.deleteAllLocal){
+            showSnackbar("Delete local items selected");
+            return true;
+        } else if (item.getItemId() == R.id.deleteAllRemote){
+            showSnackbar("Delete remote items selected");
+            return true;
+        } else {
+            showSnackbar("No valid item in menu selected");
+            return super.onOptionsItemSelected(item);
+        }
+    }
 }

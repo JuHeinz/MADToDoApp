@@ -14,4 +14,7 @@
     <string name="dd_mm_yyyy">dd/mm/yyyy</string>
     <string name="due">Due:</string>
     <string name="favorite">Favorite?</string>
+    <string name="sort">Sort</string>
+    <string name="delete_all_local">Delete all local</string>
+    <string name="delete_all_remote">Delete all remote</string>
 </resources>

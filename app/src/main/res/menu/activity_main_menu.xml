@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="@string/sort"
+        android:id="@+id/sortItems"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:title="@string/delete_all_local"
+        android:id="@+id/deleteAllLocal"
+        app:showAsAction="never" />
+
+    <item
+        android:title="@string/delete_all_remote"
+        android:id="@+id/deleteAllRemote"
+        app:showAsAction="never" />
+
+</menu>
