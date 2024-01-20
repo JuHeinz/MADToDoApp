@@ -55,9 +55,8 @@ public class OverviewActivity extends AppCompatActivity {
 
         this.progressBar = findViewById(R.id.progressBar); // show progressbar while loading of data
 
-        //connect view model to crudOperations
-        TaskCrudOperations taskCrudOperations = new RetrofitTaskCrudOperations(); // manages data base operations
-        //TaskCrudOperations taskCrudOperations = new RoomTaskCrudOperations(this); // manages data base operations
+
+        TaskCrudOperations taskCrudOperations = ((TaskApplication)getApplication()).getCrudOperations(); //connect view model to crudOperations
         viewModel.setCrudOperations(taskCrudOperations);
 
         viewModel.getProcessingState().observe(this, processingState -> { // Observe changes on MutableLiveData, act according to its processing state

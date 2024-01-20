@@ -1,6 +1,7 @@
 package org.julheinz.data;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.room.Dao;
@@ -25,11 +26,10 @@ import java.util.List;
 public class RoomTaskCrudOperations implements TaskCrudOperations {
 
 
-    private static long idCount = 0;
     private final List<TaskEntity> taskList = new ArrayList<>();
     private final DataAccessOperationsOnDb crudOnDb;
 
-    public RoomTaskCrudOperations(Activity owner) {
+    public RoomTaskCrudOperations(Context owner) {
         //create a database
         TaskDatabase db = Room.databaseBuilder(owner.getApplicationContext(), TaskDatabase.class, "task-db").build();
         this.crudOnDb = db.getDao();
