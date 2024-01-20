@@ -1,6 +1,7 @@
 package org.julheinz.madtodoapp;
 
 import static org.julheinz.madtodoapp.DetailViewActivity.ARG_TASK;
+import static org.julheinz.viewmodel.OverviewViewModel.SORT_BY_DONE;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -153,7 +154,15 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         if(item.getItemId() == R.id.sortItems){
-            showSnackbar("Sorting items selected");
+            if(viewModel.getCurrentSortMode()  == OverviewViewModel.SORT_BY_DONE){
+                showSnackbar("Sorting items by favorite then date");
+                viewModel.setCurrentSortMode(OverviewViewModel.SORT_FAV_DUE);
+            }else {
+                showSnackbar("Sorting items by done status");
+                viewModel.setCurrentSortMode(SORT_BY_DONE);
+            }
+            viewModel.sortTasksAfterUserInput();
+
             return true;
         } else if (item.getItemId() == R.id.deleteAllLocal){
             showSnackbar("Delete local items selected");

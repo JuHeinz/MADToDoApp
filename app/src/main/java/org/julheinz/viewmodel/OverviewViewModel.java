@@ -7,6 +7,7 @@ import org.julheinz.data.TaskCrudOperations;
 import org.julheinz.entities.TaskEntity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,6 +20,7 @@ import java.util.concurrent.Executors;
  */
 public class OverviewViewModel extends ViewModel {
 
+
     public enum ProcessingState {RUNNING, RUNNING_LONG, DONE}
 
     private MutableLiveData<ProcessingState> processingState = new MutableLiveData<>();
@@ -27,6 +29,12 @@ public class OverviewViewModel extends ViewModel {
     private TaskCrudOperations crudOperations;
     private boolean initial = true;
     private final List<TaskEntity> taskList = new ArrayList<>();
+
+    private Comparator<TaskEntity> currentSortMode;
+
+    public OverviewViewModel(){
+        this.currentSortMode = SORT_BY_DONE;
+    }
 
     public List<TaskEntity> getTasks() {
         return taskList;
@@ -45,6 +53,7 @@ public class OverviewViewModel extends ViewModel {
         operationRunner.execute(() -> { // execute assigns a new or existing thread to this task
             TaskEntity createdTask = crudOperations.createTask(taskEntity);
             this.taskList.add(createdTask);
+            applyTaskSorting();
             processingState.postValue(ProcessingState.DONE); //change live data
         });
     }
@@ -58,6 +67,7 @@ public class OverviewViewModel extends ViewModel {
         operationRunner.execute(() -> {
             List<TaskEntity> tasksFromCrud = crudOperations.readAllTasks();
             taskList.addAll(tasksFromCrud);
+            applyTaskSorting();
             processingState.postValue(ProcessingState.DONE);
         });
     }
@@ -69,6 +79,7 @@ public class OverviewViewModel extends ViewModel {
             crudOperations.updateTask(editedTask);
             int index = taskList.indexOf(editedTask);
             this.taskList.set(index, editedTask); //replace TaskEntity at that position in the task list
+            applyTaskSorting(); //call sorting here sorting is updated after done or fav press in overview
             processingState.postValue(ProcessingState.DONE);
         });
     }
@@ -88,5 +99,28 @@ public class OverviewViewModel extends ViewModel {
 
     public MutableLiveData<ProcessingState> getProcessingState() {
         return processingState;
+    }
+
+    public static Comparator<TaskEntity> SORT_BY_DONE = Comparator.comparing(TaskEntity::isDone);
+    //TODO: check if data is sorted correctly by date
+    public static Comparator<TaskEntity> SORT_FAV_DUE = Comparator.comparing(TaskEntity::isFav).reversed().thenComparing(TaskEntity::getDueDate);
+
+    public Comparator<TaskEntity> getCurrentSortMode() {
+        return currentSortMode;
+    }
+
+    public void setCurrentSortMode(Comparator<TaskEntity> currentSortMode) {
+        this.currentSortMode = currentSortMode;
+    }
+
+    public void sortTasksAfterUserInput(){
+        processingState.setValue(ProcessingState.RUNNING);
+        applyTaskSorting();
+        processingState.setValue(ProcessingState.DONE);
+    }
+
+    public void applyTaskSorting(){
+        this.taskList.sort(currentSortMode);
+
     }
 }
