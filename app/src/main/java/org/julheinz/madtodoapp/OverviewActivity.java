@@ -29,6 +29,8 @@ import org.julheinz.entities.TaskEntity;
 import org.julheinz.viewmodel.OverviewViewModel;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Activity for overview over tasks. Data is not directly handled here but delegated to OverviewViewModel.
@@ -58,34 +60,44 @@ public class OverviewActivity extends AppCompatActivity {
 
         this.progressBar = findViewById(R.id.progressBar); // show progressbar while loading of data
 
+        Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations(); //at some point a TaskCrudOperations Object can be read from this
+        TaskCrudOperations taskCrudOperations = null; //get waits until the other thread is done and the future obj has a value
+        try {
+            taskCrudOperations = crudOperationsFuture.get();
 
-        TaskCrudOperations taskCrudOperations = ((TaskApplication)getApplication()).getCrudOperations(); //connect view model to crudOperations
-        viewModel.setCrudOperations(taskCrudOperations);
+            viewModel.setCrudOperations(taskCrudOperations); //connect view model to crudOperations
 
-        viewModel.getProcessingState().observe(this, processingState -> { // Observe changes on MutableLiveData, act according to its processing state
-            switch (processingState) {
-                case RUNNING:
-                    break;
-                case RUNNING_LONG:
-                    progressBar.setVisibility(View.VISIBLE);
-                    break;
-                case DONE:
-                    this.progressBar.setVisibility(View.GONE);
-                    this.listViewAdapter.notifyDataSetChanged();
-                    break;
+            viewModel.getProcessingState().observe(this, processingState -> { // Observe changes on MutableLiveData, act according to its processing state
+                switch (processingState) {
+                    case RUNNING:
+                        break;
+                    case RUNNING_LONG:
+                        progressBar.setVisibility(View.VISIBLE);
+                        break;
+                    case DONE:
+                        this.progressBar.setVisibility(View.GONE);
+                        this.listViewAdapter.notifyDataSetChanged();
+                        break;
+                }
+            });
+
+            if (this.viewModel.isInitial()) { //if there isn't already a view model, get data from db
+                if(((TaskApplication) getApplication()).isInOfflineMode()){
+                    showSnackbar("Offline! Changes will not be synced to server.");
+                }else{
+                    showSnackbar("Changes will be synced to server.");
+                }
+                this.progressBar.setVisibility(View.VISIBLE);
+                this.viewModel.readAllTasks();
+                this.viewModel.setInitial(false);
             }
-        });
-
-        if (this.viewModel.isInitial()) { //if there isn't already a view model, get data from db
-            this.progressBar.setVisibility(View.VISIBLE);
-            this.viewModel.readAllTasks();
-            this.viewModel.setInitial(false);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Creates toast for user feedback
-     */
+
     private void showSnackbar(String msg) {
         Snackbar.make(findViewById(R.id.listView), msg, Snackbar.LENGTH_SHORT).show();
     }
@@ -102,7 +114,7 @@ public class OverviewActivity extends AppCompatActivity {
      * Starts DetailActivity for result after click on existing task
      */
     private void callDetailViewForEdit(TaskEntity selectedItem) {
-        Intent callDetailViewForEdit = new Intent(Intent.ACTION_EDIT, null,this, DetailViewActivity.class);
+        Intent callDetailViewForEdit = new Intent(Intent.ACTION_EDIT, null, this, DetailViewActivity.class);
         callDetailViewForEdit.putExtra(ARG_TASK, selectedItem);
         detailViewForEditLauncher.launch(callDetailViewForEdit);
     }
@@ -132,10 +144,10 @@ public class OverviewActivity extends AppCompatActivity {
             case Activity.RESULT_OK:
                 TaskEntity returnedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
                 // differenciate if detailview activity finished because the task was deleted or if it was edited
-                if(Objects.equals(action, "android.intent.action.DELETE")){
+                if (Objects.equals(action, "android.intent.action.DELETE")) {
                     this.viewModel.deleteTask(returnedTask);
                     showSnackbar("Deleted " + returnedTask.getTitle());
-                }else if(Objects.equals(action, "android.intent.action.EDIT")){
+                } else if (Objects.equals(action, "android.intent.action.EDIT")) {
                     this.viewModel.updateTask(returnedTask);
                     showSnackbar("Edited " + returnedTask.getTitle());
                 }
@@ -145,29 +157,30 @@ public class OverviewActivity extends AppCompatActivity {
                 break;
         }
     });
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        if(item.getItemId() == R.id.sortItems){
-            if(viewModel.getCurrentSortMode()  == OverviewViewModel.SORT_BY_DONE){
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.sortItems) {
+            if (viewModel.getCurrentSortMode() == OverviewViewModel.SORT_BY_DONE) {
                 showSnackbar("Sorting items by favorite then date");
                 viewModel.setCurrentSortMode(OverviewViewModel.SORT_FAV_DUE);
-            }else {
+            } else {
                 showSnackbar("Sorting items by done status");
                 viewModel.setCurrentSortMode(SORT_BY_DONE);
             }
             viewModel.sortTasksAfterUserInput();
 
             return true;
-        } else if (item.getItemId() == R.id.deleteAllLocal){
+        } else if (item.getItemId() == R.id.deleteAllLocal) {
             showSnackbar("Delete local items selected");
             return true;
-        } else if (item.getItemId() == R.id.deleteAllRemote){
+        } else if (item.getItemId() == R.id.deleteAllRemote) {
             showSnackbar("Delete remote items selected");
             return true;
         } else {
