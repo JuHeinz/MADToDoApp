@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:onClick="@{() -> activity.cancelEdit()}"
             android:text="@string/backBtn_label"
-            app:icon="@android:drawable/ic_menu_revert"
+            app:icon="@drawable/arrow_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -99,7 +99,7 @@
             android:onClick="@{() -> activity.saveTask()}"
             android:text="@string/saveBtn_label"
             android:textAlignment="center"
-            app:icon="@android:drawable/ic_menu_save"
+            app:icon="@drawable/save"
             app:layout_constraintEnd_toStartOf="@+id/isFavCheckbox"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
@@ -140,6 +140,7 @@
             android:onClick="@{() -> activity.showDatePickerDialog()}"
             android:text="@string/set_due_date"
             android:textAlignment="center"
+            app:icon="@drawable/event"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deleteBtn" />
 
@@ -150,6 +151,7 @@
             android:onClick="@{() -> activity.showTimePickerDialog()}"
             android:text="@string/set_due_time"
             android:textAlignment="center"
+            app:icon="@drawable/event"
             app:layout_constraintStart_toEndOf="@id/setDueDateBtn"
             app:layout_constraintTop_toBottomOf="@+id/deleteBtn" />
 
@@ -161,6 +163,7 @@
             android:text="@string/deleteBtn_label"
             android:textAlignment="center"
             android:visibility="@{activity.deleteButtonVisibility}"
+            app:icon="@drawable/delete"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
 

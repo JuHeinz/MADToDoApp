@@ -4,7 +4,8 @@
     <item
         android:title="@string/sort"
         android:id="@+id/sortItems"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/sort_icon"/>
 
     <item
         android:title="@string/delete_all_local"
