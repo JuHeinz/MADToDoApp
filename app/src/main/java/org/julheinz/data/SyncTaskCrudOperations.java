@@ -6,9 +6,11 @@ import org.julheinz.entities.TaskEntity;
 
 import java.util.List;
 
+/**
+ * CRUD operations for the tasks, synchronized for local and remote databases if remote available.
+ */
 public class SyncTaskCrudOperations implements TaskCrudOperations {
     private static final String LOG_TAG = SyncTaskCrudOperations.class.getSimpleName();
-
     private final TaskCrudOperations localOperations;
     private final TaskCrudOperations remoteOperations;
 
@@ -29,52 +31,12 @@ public class SyncTaskCrudOperations implements TaskCrudOperations {
         return localOperations.readTask(id);
     }
 
+    /**
+     * Get list of tasks always from local db because it has priority. Local db gets only modified when it is empty.
+     **/
     @Override
     public List<TaskEntity> readAllTasks() {
         return localOperations.readAllTasks();
-    }
-    /**
-     * If both local and remote DB are available, do the following:
-     * If the local DB is not empty, empty the remote db and populate it with the tasks from the local db
-     * If the local DB is empty, get remote tasks and apply to local DB
-     */
-    @Override
-    public List<TaskEntity> syncData(){
-        Log.d(LOG_TAG, "Syncing data");
-        List<TaskEntity> localTasks = localOperations.readAllTasks();
-
-        if (localTasks.isEmpty()) {
-            Log.i(LOG_TAG, "Local database is empty. Attempting to get from remote");
-           populateLocalFromRemote();
-        } else {
-            Log.i(LOG_TAG, "Overwriting remote db with data from local db");
-            overwriteRemoteWithLocal();
-        }
-        return localOperations.readAllTasks();
-    }
-
-
-    /**
-     *    liegen keine lokalen Todos vor, dann werden alle Todos von der Web Applikation auf die lokale Datenbank übertragen.
-     */
-    public void populateLocalFromRemote(){
-        List<TaskEntity> remoteTasks = remoteOperations.readAllTasks();
-        for (TaskEntity remoteTask : remoteTasks) {
-            localOperations.createTask(remoteTask);
-            //TODO: only render once this has been done, else list will be empty cause repopulating local DB takes a second
-        }
-    }
-
-    /**
-     *  liegen lokale Todos vor, dann werden alle Todos auf Seiten der Web Applikation gelöscht und die lokalen Todos an die Web Applikation übertragen.
-     */
-    public void overwriteRemoteWithLocal(){
-        List<TaskEntity> localTasks = localOperations.readAllTasks();
-
-        remoteOperations.deleteAllTasks(false);
-        for (TaskEntity localTask : localTasks) {
-            remoteOperations.createTask(localTask);
-        }
     }
 
     @Override
@@ -93,12 +55,52 @@ public class SyncTaskCrudOperations implements TaskCrudOperations {
 
     @Override
     public boolean deleteAllTasks(boolean deleteLocalTasks) {
-        if(deleteLocalTasks){
+        if (deleteLocalTasks) {
             localOperations.deleteAllTasks(true);
-        }else{
+        } else {
             remoteOperations.deleteAllTasks(false);
         }
         return true;
     }
 
+    /**
+     * If the local DB is not empty, empty the remote db and populate it with the tasks from the local db
+     * If the local DB is empty, get remote tasks and apply to local DB
+     */
+    @Override
+    public List<TaskEntity> syncData() {
+        Log.d(LOG_TAG, "Syncing data");
+        List<TaskEntity> localTasks = localOperations.readAllTasks();
+
+        if (localTasks.isEmpty()) {
+            Log.i(LOG_TAG, "Local database is empty. Attempting to get from remote.");
+            populateLocalFromRemote();
+        } else {
+            Log.i(LOG_TAG, "Overwriting remote db with data from local db");
+            overwriteRemoteWithLocal();
+        }
+        return localOperations.readAllTasks();
+    }
+
+    /**
+     * add all tasks from the remote database to the local one
+     */
+    private void populateLocalFromRemote() {
+        List<TaskEntity> remoteTasks = remoteOperations.readAllTasks();
+        for (TaskEntity remoteTask : remoteTasks) {
+            localOperations.createTask(remoteTask);
+        }
+    }
+
+    /**
+     * delete remote database and add all local tasks
+     */
+    private void overwriteRemoteWithLocal() {
+        List<TaskEntity> localTasks = localOperations.readAllTasks();
+
+        remoteOperations.deleteAllTasks(false);
+        for (TaskEntity localTask : localTasks) {
+            remoteOperations.createTask(localTask);
+        }
+    }
 }

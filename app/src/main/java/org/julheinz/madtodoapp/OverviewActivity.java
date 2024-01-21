@@ -132,7 +132,7 @@ public class OverviewActivity extends AppCompatActivity {
         };
     }
 
-    public ActivityResultLauncher<Intent> detailViewForCreateLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
+    public final ActivityResultLauncher<Intent> detailViewForCreateLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
         if (activityResultObject.getResultCode() == Activity.RESULT_OK) {
             Log.i(LOG_TAG, "Successfully received edited task from DetailView");
             TaskEntity receivedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 /**
  * ViewModel for OverViewActivity: Calls business logic and manages data for the activity.
  * Business logic: calling database operations.
@@ -113,7 +112,6 @@ public class OverviewViewModel extends ViewModel {
             message = "Can't sync databases because we are offline.";
             Log.d(LOG_TAG, message);
             processingState.postValue(ProcessingState.DONE);
-
         }
         return message;
     }
@@ -126,7 +124,7 @@ public class OverviewViewModel extends ViewModel {
         return processingState;
     }
 
-    public static Comparator<TaskEntity> SORT_BY_DONE = Comparator.comparing(TaskEntity::isDone);
+    public static final Comparator<TaskEntity> SORT_BY_DONE = Comparator.comparing(TaskEntity::isDone);
     //TODO: check if data is sorted correctly by date
     public static Comparator<TaskEntity> SORT_FAV_DUE = Comparator.comparing(TaskEntity::isFav).reversed().thenComparing(TaskEntity::getDueDate);
 
@@ -157,7 +155,7 @@ public class OverviewViewModel extends ViewModel {
                 processingState.postValue(ProcessingState.DONE);
             });
             message = "Emptied remote database";
-        }else{
+        } else {
             processingState.postValue(ProcessingState.DONE);
             message = "Can't empty remote database because we are offline.";
         }

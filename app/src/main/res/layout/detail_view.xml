@@ -104,19 +104,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
 
-        <LinearLayout
-            android:id="@+id/dateOutputs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/setDueDateBtn">
+
 
             <LinearLayout
                 android:id="@+id/dueDateOutputLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/setDueDateBtn">
+
 
                 <TextView
                     android:id="@+id/dueDateLabel"
@@ -131,7 +128,7 @@
                     android:layout_marginStart="5dp"
                     android:text="" />
             </LinearLayout>
-        </LinearLayout>
+
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/setDueDateBtn"

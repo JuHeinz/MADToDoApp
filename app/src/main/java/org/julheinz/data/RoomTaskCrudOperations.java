@@ -15,7 +15,6 @@ import androidx.room.Update;
 
 import org.julheinz.entities.TaskEntity;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,21 +86,21 @@ public class RoomTaskCrudOperations implements TaskCrudOperations {
     @Override
     public boolean updateTask(TaskEntity task) {
         crudOnDb.updateTaskInDb(task);
-        Log.i(LOG_TAG,"Task updated: " + task.toString());
+        Log.i(LOG_TAG, "Task updated: " + task.toString());
         return true;
     }
 
     @Override
     public boolean deleteTask(TaskEntity task) {
         crudOnDb.deleteTask(task);
-        Log.i(LOG_TAG,"Task deleted: " + task.toString());
+        Log.i(LOG_TAG, "Task deleted: " + task.toString());
         return false;
     }
 
     @Override
     public boolean deleteAllTasks(boolean deleteLocalTasks) {
         List<TaskEntity> tasks = this.readAllTasks();
-        for(TaskEntity task : tasks){
+        for (TaskEntity task : tasks) {
             this.deleteTask(task);
         }
         Log.i(LOG_TAG, "All local tasks deleted");

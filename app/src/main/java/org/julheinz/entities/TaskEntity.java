@@ -9,7 +9,6 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 //Entity annotation for ROOM to make a table for this class
@@ -29,7 +28,7 @@ public class TaskEntity implements Serializable {
     @SerializedName("favourite")
     private boolean fav;
 
-    public TaskEntity() {;
+    public TaskEntity() {
         this.dueDate = 784681200;
     }
 

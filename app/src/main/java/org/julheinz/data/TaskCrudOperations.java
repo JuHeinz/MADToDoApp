@@ -19,5 +19,4 @@ public interface TaskCrudOperations {
     boolean deleteAllTasks(boolean deleteLocalTasks);
 
     List<TaskEntity> syncData();
-
 }

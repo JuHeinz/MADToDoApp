@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public class TaskApplication extends Application {
-    private String LOG_TAG = TaskApplication.class.getSimpleName();
+    private final String LOG_TAG = TaskApplication.class.getSimpleName();
     private TaskCrudOperations crudOperations;
 
     /**
@@ -36,7 +36,7 @@ public class TaskApplication extends Application {
                 try {
                     //check if connection is open
                     HttpURLConnection connection = (HttpURLConnection) new URL("http://10.0.2.2:8080/api/todos").openConnection();
-                    Log.d(LOG_TAG, "created connections" + connection);
+                    Log.d(LOG_TAG, "Created connection: " + connection);
                     connection.setRequestMethod("GET");
                     connection.setConnectTimeout(500);
                     connection.setReadTimeout(500);
