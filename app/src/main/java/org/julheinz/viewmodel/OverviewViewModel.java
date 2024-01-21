@@ -1,8 +1,11 @@
 package org.julheinz.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import org.julheinz.data.SyncTaskCrudOperations;
 import org.julheinz.data.TaskCrudOperations;
 import org.julheinz.entities.TaskEntity;
 
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 /**
  * ViewModel for OverViewActivity: Calls business logic and manages data for the activity.
  * Business logic: calling database operations.
@@ -19,10 +23,11 @@ import java.util.concurrent.Executors;
  * Should not hold any references to the activity or its UI, is observed by the OverviewActivity.
  */
 public class OverviewViewModel extends ViewModel {
+    private static final String LOG_TAG = OverviewViewModel.class.getSimpleName();
 
     public enum ProcessingState {RUNNING, RUNNING_LONG, DONE}
 
-    private MutableLiveData<ProcessingState> processingState = new MutableLiveData<>();
+    private final MutableLiveData<ProcessingState> processingState = new MutableLiveData<>();
 
     private final ExecutorService operationRunner = Executors.newFixedThreadPool(4); // smart thread management
     private TaskCrudOperations crudOperations;
@@ -91,6 +96,28 @@ public class OverviewViewModel extends ViewModel {
         });
     }
 
+    public String syncDatabases() {
+        String message;
+        processingState.setValue(ProcessingState.RUNNING_LONG);
+        if (this.crudOperations instanceof SyncTaskCrudOperations) {
+            Log.d(LOG_TAG, "Syncing databases");
+            operationRunner.execute(() -> {
+                List<TaskEntity> newLocalData = crudOperations.syncData(); //get data from remote db or overwrite remote db, eother way return local data
+                taskList.clear(); //clear current in memory list
+                taskList.addAll(newLocalData); //fill in memory list with (potentially updated) data from local db
+                applyTaskSorting();
+                processingState.postValue(ProcessingState.DONE);
+            });
+            message = "Databases synced";
+        } else {
+            message = "Can't sync databases because we are offline.";
+            Log.d(LOG_TAG, message);
+            processingState.postValue(ProcessingState.DONE);
+
+        }
+        return message;
+    }
+
     public void setCrudOperations(TaskCrudOperations crudOperations) {
         this.crudOperations = crudOperations;
     }
@@ -121,20 +148,26 @@ public class OverviewViewModel extends ViewModel {
         this.taskList.sort(currentSortMode);
     }
 
-    public void deleteAllRemoteTasks() {
+    public String deleteAllRemoteTasks() {
+        String message;
         processingState.setValue(ProcessingState.RUNNING);
-        operationRunner.execute(() -> {
-            crudOperations.deleteAllTasks(false);
-            this.taskList.clear();
+        if (this.crudOperations instanceof SyncTaskCrudOperations) {
+            operationRunner.execute(() -> {
+                crudOperations.deleteAllTasks(false);
+                processingState.postValue(ProcessingState.DONE);
+            });
+            message = "Emptied remote database";
+        }else{
             processingState.postValue(ProcessingState.DONE);
-        });
+            message = "Can't empty remote database because we are offline.";
+        }
+        return message;
     }
 
     public void deleteAllLocalTasks() {
         processingState.setValue(ProcessingState.RUNNING);
         operationRunner.execute(() -> {
             crudOperations.deleteAllTasks(true);
-            this.taskList.clear();
             processingState.postValue(ProcessingState.DONE);
         });
     }

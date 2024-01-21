@@ -3,7 +3,6 @@ package org.julheinz.data;
 import android.util.Log;
 
 import org.julheinz.entities.TaskEntity;
-import org.julheinz.madtodoapp.OverviewActivity;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,7 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.OPTIONS;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -113,12 +111,16 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations{
 
     @Override
     public boolean deleteAllTasks(boolean deleteLocalTasks) {
-        Log.i(LOG_TAG, "All local tasks deleted");
         List<TaskEntity> tasks = this.readAllTasks();
         for(TaskEntity task : tasks){
             this.deleteTask(task);
         }
+        Log.i(LOG_TAG, "All remote tasks deleted");
         return true;
     }
 
+    @Override
+    public List<TaskEntity> syncData() {
+        return null;
+    }
 }

@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class RoomTaskCrudOperations implements TaskCrudOperations {
 
-    private static String LOG_TAG = RoomTaskCrudOperations.class.getSimpleName();
+    private static final String LOG_TAG = RoomTaskCrudOperations.class.getSimpleName();
 
     private final List<TaskEntity> taskList = new ArrayList<>();
     private final DataAccessOperationsOnDb crudOnDb;
@@ -100,13 +100,16 @@ public class RoomTaskCrudOperations implements TaskCrudOperations {
 
     @Override
     public boolean deleteAllTasks(boolean deleteLocalTasks) {
-        Log.i(LOG_TAG, "All local tasks deleted");
         List<TaskEntity> tasks = this.readAllTasks();
         for(TaskEntity task : tasks){
             this.deleteTask(task);
         }
+        Log.i(LOG_TAG, "All local tasks deleted");
         return true;
     }
 
-
+    @Override
+    public List<TaskEntity> syncData() {
+        return null;
+    }
 }

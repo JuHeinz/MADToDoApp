@@ -15,6 +15,7 @@
     <string name="due">Due:</string>
     <string name="favorite">Favorite?</string>
     <string name="sort">Sort</string>
-    <string name="delete_all_local">Delete all local</string>
-    <string name="delete_all_remote">Delete all remote</string>
+    <string name="delete_all_local">Empty local database</string>
+    <string name="delete_all_remote">Empty remote database</string>
+    <string name="sync_databases">Sync databases</string>
 </resources>

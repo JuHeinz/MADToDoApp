@@ -61,9 +61,9 @@ public class OverviewActivity extends AppCompatActivity {
         this.progressBar = findViewById(R.id.progressBar); // show progressbar while loading of data
 
         Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations(); //at some point a TaskCrudOperations Object can be read from this
-        TaskCrudOperations taskCrudOperations = null; //get waits until the other thread is done and the future obj has a value
+        TaskCrudOperations taskCrudOperations;
         try {
-            taskCrudOperations = crudOperationsFuture.get();
+            taskCrudOperations = crudOperationsFuture.get(); //get waits until the other thread is done and the future obj has a value
 
             viewModel.setCrudOperations(taskCrudOperations); //connect view model to crudOperations
 
@@ -82,13 +82,13 @@ public class OverviewActivity extends AppCompatActivity {
             });
 
             if (this.viewModel.isInitial()) { //if there isn't already a view model, get data from db
+                this.progressBar.setVisibility(View.VISIBLE);
                 if(((TaskApplication) getApplication()).isInOfflineMode()){
                     showSnackbar("Offline! Changes will not be synced to server.");
-                }else{
-                    showSnackbar("Changes will be synced to server.");
+
                 }
-                this.progressBar.setVisibility(View.VISIBLE);
                 this.viewModel.readAllTasks();
+                this.viewModel.syncDatabases();
                 this.viewModel.setInitial(false);
             }
         } catch (ExecutionException | InterruptedException e) {
@@ -101,6 +101,8 @@ public class OverviewActivity extends AppCompatActivity {
     private void showSnackbar(String msg) {
         Snackbar.make(findViewById(R.id.listView), msg, Snackbar.LENGTH_SHORT).show();
     }
+
+
 
     /**
      * Starts DetailActivity for result after click on new task button
@@ -175,19 +177,20 @@ public class OverviewActivity extends AppCompatActivity {
                 viewModel.setCurrentSortMode(SORT_BY_DONE);
             }
             viewModel.sortTasksAfterUserInput();
-
             return true;
         } else if (item.getItemId() == R.id.deleteAllLocal) {
-            showSnackbar("Delete local items selected");
+            showSnackbar("Local data was deleted.");
             viewModel.deleteAllLocalTasks();
-
             return true;
         } else if (item.getItemId() == R.id.deleteAllRemote) {
-            viewModel.deleteAllRemoteTasks();
-            showSnackbar("Delete remote items selected");
+            String message = viewModel.deleteAllRemoteTasks();
+            showSnackbar(message);
             return true;
-        } else {
-            showSnackbar("No valid item in menu selected");
+        } else if (item.getItemId() == R.id.syncDB) {
+            String message =  viewModel.syncDatabases();
+            showSnackbar(message);
+            return true;
+    } else {
             return super.onOptionsItemSelected(item);
         }
     }

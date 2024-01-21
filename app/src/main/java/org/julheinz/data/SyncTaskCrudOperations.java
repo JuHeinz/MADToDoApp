@@ -1,13 +1,16 @@
 package org.julheinz.data;
 
+import android.util.Log;
+
 import org.julheinz.entities.TaskEntity;
 
 import java.util.List;
 
 public class SyncTaskCrudOperations implements TaskCrudOperations {
+    private static final String LOG_TAG = SyncTaskCrudOperations.class.getSimpleName();
 
-    private TaskCrudOperations localOperations;
-    private TaskCrudOperations remoteOperations;
+    private final TaskCrudOperations localOperations;
+    private final TaskCrudOperations remoteOperations;
 
     public SyncTaskCrudOperations(TaskCrudOperations localOperations, TaskCrudOperations remoteOperations) {
         this.localOperations = localOperations;
@@ -28,26 +31,50 @@ public class SyncTaskCrudOperations implements TaskCrudOperations {
 
     @Override
     public List<TaskEntity> readAllTasks() {
-        List<TaskEntity> taskList;
-
-        List<TaskEntity> remoteTasks = remoteOperations.readAllTasks();
+        return localOperations.readAllTasks();
+    }
+    /**
+     * If both local and remote DB are available, do the following:
+     * If the local DB is not empty, empty the remote db and populate it with the tasks from the local db
+     * If the local DB is empty, get remote tasks and apply to local DB
+     */
+    @Override
+    public List<TaskEntity> syncData(){
+        Log.d(LOG_TAG, "Syncing data");
         List<TaskEntity> localTasks = localOperations.readAllTasks();
 
-        //  liegen lokale Todos vor, dann werden alle Todos auf Seiten der Web Applikation gelöscht und die lokalen Todos an die Web Applikation übertragen.
-        if (!localTasks.isEmpty()) {
-            remoteOperations.deleteAllTasks(false);
-
-            for (TaskEntity localTask : localTasks) {
-                remoteOperations.createTask(localTask);
-            }
-        } else { //liegen keine lokalen Todos vor, dann werden alle Todos von der Web Applikation auf die lokale Datenbank übertragen.
-            for (TaskEntity remoteTask : remoteTasks) {
-
-                localOperations.createTask(remoteTask);
-                //TODO: only render once this has been done, else list will be empty cause repopulating local DB takes a second
-            }
+        if (localTasks.isEmpty()) {
+            Log.i(LOG_TAG, "Local database is empty. Attempting to get from remote");
+           populateLocalFromRemote();
+        } else {
+            Log.i(LOG_TAG, "Overwriting remote db with data from local db");
+            overwriteRemoteWithLocal();
         }
-        return localTasks;
+        return localOperations.readAllTasks();
+    }
+
+
+    /**
+     *    liegen keine lokalen Todos vor, dann werden alle Todos von der Web Applikation auf die lokale Datenbank übertragen.
+     */
+    public void populateLocalFromRemote(){
+        List<TaskEntity> remoteTasks = remoteOperations.readAllTasks();
+        for (TaskEntity remoteTask : remoteTasks) {
+            localOperations.createTask(remoteTask);
+            //TODO: only render once this has been done, else list will be empty cause repopulating local DB takes a second
+        }
+    }
+
+    /**
+     *  liegen lokale Todos vor, dann werden alle Todos auf Seiten der Web Applikation gelöscht und die lokalen Todos an die Web Applikation übertragen.
+     */
+    public void overwriteRemoteWithLocal(){
+        List<TaskEntity> localTasks = localOperations.readAllTasks();
+
+        remoteOperations.deleteAllTasks(false);
+        for (TaskEntity localTask : localTasks) {
+            remoteOperations.createTask(localTask);
+        }
     }
 
     @Override
@@ -67,9 +94,9 @@ public class SyncTaskCrudOperations implements TaskCrudOperations {
     @Override
     public boolean deleteAllTasks(boolean deleteLocalTasks) {
         if(deleteLocalTasks){
-            localOperations.deleteAllTasks(deleteLocalTasks);
+            localOperations.deleteAllTasks(true);
         }else{
-            remoteOperations.deleteAllTasks(deleteLocalTasks);
+            remoteOperations.deleteAllTasks(false);
         }
         return true;
     }
