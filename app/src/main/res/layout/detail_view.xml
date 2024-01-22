@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -16,6 +15,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/DetailView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -90,7 +90,29 @@
             android:gravity="center|center_vertical"
             android:text="@string/is_fav_label"
             app:layout_constraintStart_toEndOf="@+id/saveBtn"
-            app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
+            app:layout_constraintTop_toBottomOf="@+id/dueDateOutputLayout" />
+
+        <LinearLayout
+            android:id="@+id/dueDateOutputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/descriptionInput">
+
+            <TextView
+                android:id="@+id/dueDateLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/due" />
+
+            <TextView
+                android:id="@+id/dueDateOutput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="" />
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveBtn"
@@ -102,67 +124,7 @@
             app:icon="@drawable/save"
             app:layout_constraintEnd_toStartOf="@+id/isFavCheckbox"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
-
-
-
-            <LinearLayout
-                android:id="@+id/dueDateOutputLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/setDueDateBtn">
-
-
-                <TextView
-                    android:id="@+id/dueDateLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/due" />
-
-                <TextView
-                    android:id="@+id/dueDateOutput"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:text="" />
-            </LinearLayout>
-
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/setDueDateBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{() -> activity.showDatePickerDialog()}"
-            android:text="@string/set_due_date"
-            android:textAlignment="center"
-            app:icon="@drawable/event"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/deleteBtn" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/setDueTimeBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{() -> activity.showTimePickerDialog()}"
-            android:text="@string/set_due_time"
-            android:textAlignment="center"
-            app:icon="@drawable/event"
-            app:layout_constraintStart_toEndOf="@id/setDueDateBtn"
-            app:layout_constraintTop_toBottomOf="@+id/deleteBtn" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/deleteBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{() -> activity.confirmDeletionViaDialog()}"
-            android:text="@string/deleteBtn_label"
-            android:textAlignment="center"
-            android:visibility="@{activity.deleteButtonVisibility}"
-            app:icon="@drawable/delete"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/dueDateOutputLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

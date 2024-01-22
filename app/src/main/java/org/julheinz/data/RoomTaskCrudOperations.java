@@ -10,7 +10,6 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.TypeConverters;
 import androidx.room.Update;
 
 import org.julheinz.entities.TaskEntity;
@@ -57,9 +56,7 @@ public class RoomTaskCrudOperations implements TaskCrudOperations {
 
     /**
      * Is used by ROOM to create database on basis of the class/entity we give it
-     * Use converter because ROOM can't save LocalDateTimeObjects
      */
-    @TypeConverters({LocalDateTimeConverter.class})
     @Database(entities = {TaskEntity.class}, version = 1)
     public static abstract class TaskDatabase extends RoomDatabase {
         public abstract DataAccessOperationsOnDb getDao();

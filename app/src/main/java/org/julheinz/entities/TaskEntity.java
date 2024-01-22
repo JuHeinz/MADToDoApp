@@ -5,10 +5,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.julheinz.data.HashSetConverter;
+
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 
 //Entity annotation for ROOM to make a table for this class
@@ -23,14 +27,13 @@ public class TaskEntity implements Serializable {
     private String description;
 
     @SerializedName("expiry")
-    private long dueDate;
+    private long dueDate = System.currentTimeMillis();
     private boolean done;
     @SerializedName("favourite")
     private boolean fav;
 
-    public TaskEntity() {
-        this.dueDate = 784681200;
-    }
+    @TypeConverters(HashSetConverter.class)
+    private HashSet<String> contacts = new HashSet<>();
 
     public long getId() {
         return id;
@@ -58,7 +61,6 @@ public class TaskEntity implements Serializable {
         Log.i("TaskEntity", "Changed done: " + this.done);
     }
 
-
     public String getDescription() {
         return description;
     }
@@ -83,10 +85,25 @@ public class TaskEntity implements Serializable {
         this.fav = fav;
     }
 
+
+    public HashSet<String> getContacts() {
+        if (contacts == null) {
+            contacts = new HashSet<>();
+        }
+        return contacts;
+    }
+
+    public void setContacts(HashSet<String> contacts) {
+        if (contacts == null) {
+            return;
+        }
+        this.contacts = contacts;
+    }
+
     @NonNull
     @Override
     public String toString() {
-        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", dueDate=" + dueDate + ", done=" + done + ", fav=" + fav + '}';
+        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", dueDate=" + dueDate + ", done=" + done + ", fav=" + fav + ". contacts:" + contacts;
     }
 
     // Override equals so that two TaskEntities with the same id are seen as equal, not exact same instance. Needed because TaskEntities get serialized

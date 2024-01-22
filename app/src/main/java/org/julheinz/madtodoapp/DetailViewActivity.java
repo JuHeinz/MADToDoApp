@@ -40,7 +40,6 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     public static final String ARG_TASK = "task";
     private DetailviewViewModel viewModel;
     public int doneCheckboxVisibility;
-    public int deleteButtonVisibility;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +66,9 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
             TaskEntity task = taskFromIntent;
             if (taskFromIntent == null) { //in case this activity gets called to create a task instead of edit one, create a new TaskEntity
                 task = new TaskEntity();
-                Log.i(LOG_TAG, "created new task " + task);
+                Log.i(LOG_TAG, "created new empty task: " + task );
+            }else{
+                Log.i(LOG_TAG, "got task from overview " + task);
             }
             this.viewModel.setTaskEntity(task);
         }
@@ -133,9 +134,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
      */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        Log.i(LOG_TAG, "Set due time to: " + hourOfDay + ":" + minute);
-        int[] data = {minute, hourOfDay};
-        viewModel.setDueTimeIntegers(data);
+        this.viewModel.getDateTimeHelper().setDueTime(hourOfDay, minute);
     }
 
     /**
@@ -144,24 +143,14 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Log.i(LOG_TAG, "Set due date to: " + year + "/" + month + "/" + dayOfMonth);
-        int[] data = {dayOfMonth, month, year};
-        viewModel.setDueDateIntegers(data);
+        this.viewModel.getDateTimeHelper().setDueDate(year, month, dayOfMonth);
     }
 
     /**
      * Show different elements if activity was called for task creation
      */
     public void prepareLayoutForCreate() {
-        setDeleteButtonVisibility(View.GONE);
         setDoneCheckboxVisibility(View.GONE);
-    }
-
-    public int getDeleteButtonVisibility() {
-        return deleteButtonVisibility;
-    }
-
-    public void setDeleteButtonVisibility(int deleteButtonVisibility) {
-        this.deleteButtonVisibility = deleteButtonVisibility;
     }
 
     public int getDoneCheckboxVisibility() {
@@ -186,6 +175,12 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         }else if(item.getItemId() == R.id.deleteTask){
             //TODO: don't show this item in menu if task is being created
             this.confirmDeletionViaDialog();
+            return true;
+        }else if(item.getItemId() == R.id.setDate){
+            this.showDatePickerDialog();
+            return true;
+        }else if(item.getItemId() == R.id.setTime){
+            this.showTimePickerDialog();
             return true;
         }else{
             return super.onOptionsItemSelected(item);
@@ -236,7 +231,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                 int contactIdColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
                 long contactID = cursor.getLong(contactIdColumnIndex);
                 Log.i(LOG_TAG, "Contact: " +  contactID + " " + contactName);
-
+                this.viewModel.getTaskEntity().getContacts().add(String.valueOf(contactID));
                 //check if permission to read contacts has already been granted
                 int hasReadContactPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
                 if(hasReadContactPermission != PackageManager.PERMISSION_GRANTED){
@@ -295,6 +290,8 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     private void showSnackbar(String msg) {
         Snackbar.make(findViewById(R.id.DetailView), msg, Snackbar.LENGTH_SHORT).show();
     }
+
+
 }
 
 

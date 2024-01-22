@@ -1,7 +1,6 @@
 package org.julheinz.viewmodel;
 
 import android.util.Log;
-import android.view.Menu;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.lifecycle.MutableLiveData;
@@ -9,14 +8,13 @@ import androidx.lifecycle.ViewModel;
 
 import org.julheinz.entities.TaskEntity;
 
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class DetailviewViewModel extends ViewModel {
     private static final String LOG_TAG = DetailviewViewModel.class.getSimpleName();
-    private int[] dueDateIntegers;
-    private int[] dueTimeIntegers;
-    LocalDateTime dueDateTime;
+
+    private final DateTimeHelper dateTimeHelper = new DateTimeHelper(System.currentTimeMillis());
 
     private TaskEntity taskEntity;
     private MutableLiveData<String> errorStatus = new MutableLiveData<>();
@@ -55,50 +53,40 @@ public class DetailviewViewModel extends ViewModel {
         return false; // return false so other listeners can process the event
     }
 
-    public int[] getDueDateIntegers() {
-        return dueDateIntegers;
+
+    public DateTimeHelper getDateTimeHelper() {
+        return dateTimeHelper;
     }
 
-    /**
-     * @param dueDateIntegers array with dayOfMonth, month, year
-     */
-    public void setDueDateIntegers(int[] dueDateIntegers) {
-        this.dueDateIntegers = dueDateIntegers;
-        this.getDueDateTime();
-    }
+    public class DateTimeHelper {
+        private final GregorianCalendar calendar;
 
-    public int[] getDueTimeIntegers() {
-        return dueTimeIntegers;
-    }
-
-    /**
-     * @param dueTimeIntegers array with minute and hour
-     */
-    public void setDueTimeIntegers(int[] dueTimeIntegers) {
-        this.dueTimeIntegers = dueTimeIntegers;
-        this.getDueDateTime();
-    }
-
-    /**
-     * Combine time and date from pickers into localDatetime
-     */
-    public LocalDateTime getDueDateTime() {
-        //TODO: change all this to how prof did it
-        if (getDueTimeIntegers() != null && getDueDateIntegers() != null) {
-            int minute = dueTimeIntegers[0];
-            int hourOfDay = dueTimeIntegers[1];
-            int dayOfMonth = dueDateIntegers[0];
-            int month = dueDateIntegers[1] + 1; // +1 because date picker returns month 0 - 11
-            int year = dueDateIntegers[2];
-            dueDateTime = LocalDateTime.of(year, Month.of(month), dayOfMonth, hourOfDay, minute);
-        } else {
-            /* because this method is called any time either the time or date picker is finished,
-            now() is set as a default value until both pickers have returned values */
-            dueDateTime = LocalDateTime.now();
+        public DateTimeHelper(long dateAsLong) {
+            calendar = new GregorianCalendar();
+            calendar.setTime(new Date(dateAsLong));
         }
-        Log.d(LOG_TAG, "Due DateTime: " + dueDateTime);
-        taskEntity.setDueDate(784681200);
-        return dueDateTime;
-    }
 
+        public long getDateTimeAsLongValue() {
+            long dateTime = calendar.getTime().getTime();
+            Log.i(LOG_TAG, "Date and time are: " + dateTime);
+            return dateTime;
+
+        }
+
+        public void setDueDate(int year, int month, int dayOfMonth){
+            calendar.set(GregorianCalendar.YEAR, year);
+            calendar.set(GregorianCalendar.MONTH, month);
+            calendar.set(GregorianCalendar.DAY_OF_MONTH, dayOfMonth);
+            taskEntity.setDueDate(this.getDateTimeAsLongValue());
+
+        }
+
+        public void setDueTime(int hour, int minute){
+            calendar.set(GregorianCalendar.HOUR, hour);
+            calendar.set(GregorianCalendar.MINUTE, minute);
+            taskEntity.setDueDate(this.getDateTimeAsLongValue());
+        }
+
+
+    }
 }
