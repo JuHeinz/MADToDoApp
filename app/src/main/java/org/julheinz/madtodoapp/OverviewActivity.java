@@ -162,7 +162,7 @@ public class OverviewActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+        getMenuInflater().inflate(R.menu.activity_overview_menu, menu);
         return true;
     }
 

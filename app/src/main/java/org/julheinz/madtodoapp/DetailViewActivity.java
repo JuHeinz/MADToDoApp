@@ -1,24 +1,37 @@
 package org.julheinz.madtodoapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.DetailViewBinding;
 import org.julheinz.viewmodel.DetailviewViewModel;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class DetailViewActivity extends AppCompatActivity implements DeleteDialogFragment.DeleteDialogListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
@@ -157,6 +170,130 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
 
     public void setDoneCheckboxVisibility(int doneCheckboxVisibility) {
         this.doneCheckboxVisibility = doneCheckboxVisibility;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.activity_detailview_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.addContact){
+            selectContact();
+            return true;
+        }else if(item.getItemId() == R.id.deleteTask){
+            //TODO: don't show this item in menu if task is being created
+            this.confirmDeletionViaDialog();
+            return true;
+        }else{
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void selectContact(){
+        //Intent to call the app which is registered to handle contacts on the device
+        Intent selectContactOIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        selectContactLauncher.launch(selectContactOIntent);
+    }
+
+
+    /**
+     * This is field. ActivityResultLauncher to launch the intent to the contacts app and handle the result
+     * Has two arguments:
+     * 1. How the activity should be called (with result)
+     * 2. what to do with the result
+     */
+    private final ActivityResultLauncher<Intent> selectContactLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() == Activity.RESULT_OK && (result.getData() != null) ){
+                    onContactSelected(result.getData());
+                }else{
+                    String message = "Something went wrong with getting the contact";
+                    showSnackbar(message);
+                    Log.i(LOG_TAG, message);
+                }
+            }
+    );
+
+
+    /**
+     * Get the ids of the selected contacts from the intent returned from the contacts app.
+     * @param returnIntentFromContactsApp the contact that was returned from the contact app, wrapped in an intent
+     */
+    private void onContactSelected(Intent returnIntentFromContactsApp){
+        Uri contactUri = returnIntentFromContactsApp.getData(); //get the uri for the contact e.g. content://com.android.contacts/contacts/lookup/0r6-344C2A445C3A4E3E2A/6
+
+        // ContentResolver.query accesses the content in the given uri, acts like accessing a relational db.
+        // That's why we can use java's cursor class (which is usually used to access the result set of a db query)
+
+        try(Cursor cursor = getContentResolver().query(contactUri, null, null, null)){
+            if (cursor.moveToFirst()) {
+                int displayNameColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME); //get the index for the column for the contact name
+                String contactName = cursor.getString(displayNameColumnIndex);
+                int contactIdColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
+                long contactID = cursor.getLong(contactIdColumnIndex);
+                Log.i(LOG_TAG, "Contact: " +  contactID + " " + contactName);
+
+                //check if permission to read contacts has already been granted
+                int hasReadContactPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
+                if(hasReadContactPermission != PackageManager.PERMISSION_GRANTED){
+                    //if not, ask user for permission
+                    requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 10);
+                    return;
+                }
+
+                showDetailsForContactId(contactID);
+            }
+        }
+        //TODO: set list of contact IDs in TaskEntity
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.i(LOG_TAG, "onRequestPermissionsResult: " + Arrays.asList(permissions) + ": " + Arrays.toString(grantResults));
+    }
+
+    //TODO: get list of contact IDs from TaskEntity
+    /**
+     * get phone number and email from selected contact
+     * @param contactId id for contact in android
+     */
+    private void showDetailsForContactId(long contactId){
+        //get phone book data, like in sql SELECT * FROM Phone WHERE contactId = contactId
+        // 1. what table to select from, here phone
+        // 2. what columns to get: null means all (like * in SQL)
+        // 3. query
+        // 4. what gets inserted at ? for the above query, as String array
+        // 5. sort order
+        String[] contactIDs = new String[]{String.valueOf(contactId)};
+        try(Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, "contact_id=?", contactIDs, null)){
+            while(cursor.moveToNext()){
+                int phoneNumberColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                int phoneNumberTypeColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
+                String currentPhoneNumber = cursor.getString(phoneNumberColumnIndex);
+                int currentNumberType = cursor.getInt(phoneNumberTypeColumnIndex);
+                boolean isMobileNumber = currentNumberType == ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
+                Log.i(LOG_TAG, currentPhoneNumber + " " + " is Mobile? " + isMobileNumber);
+            }
+        }
+
+        //get email
+        try(Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, "contact_id=?", contactIDs, null)){
+            while(cursor.moveToNext()){
+                int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
+                String email = cursor.getString(emailColumnIndex);
+                Log.i(LOG_TAG, "Email: " + email);
+            }
+
+        }
+        //TODO: Show email, name and phone in ui somewhere
+    }
+    private void showSnackbar(String msg) {
+        Snackbar.make(findViewById(R.id.DetailView), msg, Snackbar.LENGTH_SHORT).show();
     }
 }
 
