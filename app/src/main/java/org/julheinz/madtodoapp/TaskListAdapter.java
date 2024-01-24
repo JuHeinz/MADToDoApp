@@ -1,10 +1,12 @@
 package org.julheinz.madtodoapp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,12 +16,17 @@ import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.ListItemBinding;
 import org.julheinz.viewmodel.OverviewViewModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
  *  An adapter that manages what is shown in the list view. This is a custom adapter for my TaskEntity, extending an ArrayAdapter.
  */
 public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
+    private static final String LOG_TAG = TaskListAdapter.class.getSimpleName();
+
     private final LayoutInflater inflater;
     TaskEntity task;
     final OverviewViewModel viewModel;
@@ -55,8 +62,16 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
             taskView.setTag(taskBinding); //set data binding for view
         }
 
-        //TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
-        //dueDateOutput.setText(DateTimeFormatter.format(task.getDueDate()));
+        //Due date output
+        String pattern = "dd/MM/yyyy HH:mm";
+        DateFormat df = new SimpleDateFormat(pattern);
+        Date dateFormatted = new Date(task.getDueDate());
+        TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
+        //change color red if task is overdue
+        if(System.currentTimeMillis() > task.getDueDate()){
+            dueDateOutput.setTextColor(Color.RED);
+        }
+        dueDateOutput.setText(df.format(dateFormatted));
         taskBinding.setTask(task);
         taskBinding.setActivityViewModel(viewModel); // make it so that the databinding class for the listitem has access to the viewmodel of Overview Activity
         return taskView;
