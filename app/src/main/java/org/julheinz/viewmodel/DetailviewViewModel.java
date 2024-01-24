@@ -14,7 +14,7 @@ import java.util.GregorianCalendar;
 public class DetailviewViewModel extends ViewModel {
     private static final String LOG_TAG = DetailviewViewModel.class.getSimpleName();
 
-    private final DateTimeHelper dateTimeHelper = new DateTimeHelper(System.currentTimeMillis());
+    private final MutableLiveData<DateTimeHelper> dateTimeHelper = new MutableLiveData<>(new DateTimeHelper(System.currentTimeMillis()));
 
     private TaskEntity taskEntity;
     private MutableLiveData<String> errorStatus = new MutableLiveData<>();
@@ -54,7 +54,7 @@ public class DetailviewViewModel extends ViewModel {
     }
 
 
-    public DateTimeHelper getDateTimeHelper() {
+    public MutableLiveData<DateTimeHelper> getDateTimeHelper() {
         return dateTimeHelper;
     }
 
@@ -78,15 +78,38 @@ public class DetailviewViewModel extends ViewModel {
             calendar.set(GregorianCalendar.MONTH, month);
             calendar.set(GregorianCalendar.DAY_OF_MONTH, dayOfMonth);
             taskEntity.setDueDate(this.getDateTimeAsLongValue());
+            dateTimeHelper.setValue(this); //set the dateTimeHelper of the view model to this instance of the helper because only if a field in view model changes is the mutable live data changed and the ui is changed
 
         }
 
         public void setDueTime(int hour, int minute){
-            calendar.set(GregorianCalendar.HOUR, hour);
+            calendar.set(GregorianCalendar.HOUR_OF_DAY, hour);
             calendar.set(GregorianCalendar.MINUTE, minute);
             taskEntity.setDueDate(this.getDateTimeAsLongValue());
+            dateTimeHelper.setValue(this);
         }
 
+        public int getYear(){
+            return calendar.get(GregorianCalendar.YEAR);
+        }
 
+        public int getMonth(){
+            return calendar.get(GregorianCalendar.MONTH);
+        }
+
+        public int getDayOfMonth(){
+            return calendar.get(GregorianCalendar.DAY_OF_MONTH);
+        }
+
+        public int getHourOfDay(){
+            return calendar.get(GregorianCalendar.HOUR_OF_DAY);
+
+        }
+
+        public int getMinute(){
+            return  calendar.get(GregorianCalendar.MINUTE);
+
+        }
+        
     }
 }

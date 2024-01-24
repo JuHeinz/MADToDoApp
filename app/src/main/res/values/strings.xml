@@ -8,8 +8,8 @@
     <string name="is_done_label">Done?</string>
     <string name="alt_text_addTaskBtn">Add task</string>
     <string name="deleteBtn_label">Delete</string>
-    <string name="set_due_time">Set Due Time</string>
-    <string name="set_due_date">Set Due Date</string>
+    <string name="due_time">Due Time</string>
+    <string name="due_date">Due Date</string>
     <string name="dd_mm_yyyy">dd/mm/yyyy</string>
     <string name="due">Due:</string>
     <string name="favorite">Favorite?</string>

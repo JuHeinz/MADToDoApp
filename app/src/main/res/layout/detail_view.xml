@@ -17,15 +17,16 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/DetailView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingHorizontal="4dp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/backBtn"
-            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> activity.cancelEdit()}"
             android:text="@string/backBtn_label"
+            app:backgroundTint="@color/grey"
             app:icon="@drawable/arrow_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -82,49 +83,63 @@
                 android:text="@={viewmodel.taskEntity.description}" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
-            android:id="@+id/isFavCheckbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="@={viewmodel.taskEntity.fav}"
-            android:gravity="center|center_vertical"
-            android:text="@string/is_fav_label"
-            app:layout_constraintStart_toEndOf="@+id/saveBtn"
-            app:layout_constraintTop_toBottomOf="@+id/dueDateOutputLayout" />
 
         <LinearLayout
-            android:id="@+id/dueDateOutputLayout"
-            android:layout_width="wrap_content"
+            android:id="@+id/dueDateLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/descriptionInput">
 
-            <TextView
-                android:id="@+id/dueDateLabel"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dueTimeBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/due" />
+                android:onClick="@{() -> activity.showTimePickerDialog()}"
+                android:text="@{viewmodel.dateTimeHelper.hourOfDay + `:` + viewmodel.dateTimeHelper.minute}"
+                android:textAlignment="viewStart"
+                android:textColor="@color/dark_blue"
+                app:backgroundTint="@color/white"
+                app:icon="@drawable/schedule_icon"
+                app:iconTint="@color/dark_blue" />
 
-            <TextView
-                android:id="@+id/dueDateOutput"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dueDateBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="" />
+                android:layout_marginStart="1dp"
+                android:onClick="@{() -> activity.showDatePickerDialog()}"
+                android:text="@{viewmodel.dateTimeHelper.dayOfMonth + `.` + (viewmodel.dateTimeHelper.month+1) + `.` + viewmodel.dateTimeHelper.year}"
+                android:textAlignment="viewStart"
+                android:textColor="@color/dark_blue"
+                app:backgroundTint="@color/white"
+                app:icon="@drawable/event"
+                app:iconTint="@color/dark_blue" />
+
+            <CheckBox
+                android:id="@+id/isFavCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@={viewmodel.taskEntity.fav}"
+                android:gravity="center|end"
+                android:text="@string/is_fav_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
+
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveBtn"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="@{() -> activity.saveTask()}"
             android:text="@string/saveBtn_label"
             android:textAlignment="center"
             app:icon="@drawable/save"
-            app:layout_constraintEnd_toStartOf="@+id/isFavCheckbox"
+            app:iconGravity="textStart"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dueDateOutputLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/dueDateLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

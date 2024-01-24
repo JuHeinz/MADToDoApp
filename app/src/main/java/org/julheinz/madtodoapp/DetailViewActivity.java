@@ -134,7 +134,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
      */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        this.viewModel.getDateTimeHelper().setDueTime(hourOfDay, minute);
+        this.viewModel.getDateTimeHelper().getValue().setDueTime(hourOfDay, minute);
     }
 
     /**
@@ -143,7 +143,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Log.i(LOG_TAG, "Set due date to: " + year + "/" + month + "/" + dayOfMonth);
-        this.viewModel.getDateTimeHelper().setDueDate(year, month, dayOfMonth);
+        this.viewModel.getDateTimeHelper().getValue().setDueDate(year, month, dayOfMonth);
     }
 
     /**
@@ -175,12 +175,6 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         }else if(item.getItemId() == R.id.deleteTask){
             //TODO: don't show this item in menu if task is being created
             this.confirmDeletionViaDialog();
-            return true;
-        }else if(item.getItemId() == R.id.setDate){
-            this.showDatePickerDialog();
-            return true;
-        }else if(item.getItemId() == R.id.setTime){
-            this.showTimePickerDialog();
             return true;
         }else{
             return super.onOptionsItemSelected(item);
