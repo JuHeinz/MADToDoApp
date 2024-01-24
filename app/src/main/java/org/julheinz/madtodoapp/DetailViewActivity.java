@@ -37,7 +37,6 @@ import org.julheinz.viewmodel.DetailviewViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,8 +47,8 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     private DetailviewViewModel viewModel;
     public int doneCheckboxVisibility;
 
-    public List<ContactEntity> contactsList;
-
+    public List<ContactEntity> localContactsList = new ArrayList<>(); //list of contacts for this task
+    ArrayAdapter<ContactEntity> listViewAdapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,9 +77,22 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                 Log.i(LOG_TAG, "created new empty task: " + task );
             }else{
                 Log.i(LOG_TAG, "got task from overview " + task);
+
             }
             this.viewModel.setTaskEntity(task);
+            for (String contactId : task.getContacts()){
+                localContactsList.add(new ContactEntity(contactId));
+            }
         }
+
+        this.viewModel.getContactListLiveData().observe(this, list ->{
+            Log.i(LOG_TAG, "new contact added. all contacts:" + list );
+
+            for (String contactId : list){
+                localContactsList.add(new ContactEntity(contactId));
+            }
+            listViewAdapter.notifyDataSetChanged();
+        });
 
         // listen to what the most recent user event is and act accordingly. user event gets set in layout databound to viewmodel
         this.viewModel.getUserEvent().observe(this, event ->{
@@ -103,18 +115,11 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
             }
         });
 
-        //List view for contacts
-        HashSet<String> contacts = this.viewModel.getTaskEntity().getContacts();
-        contactsList = new ArrayList<>();
-        for(String contact : contacts){
-            //create contact entities
-            ContactEntity contactEntity = new ContactEntity(contact);
-            contactsList.add(contactEntity);
-            Log.i(LOG_TAG, "creating contact " + contactEntity);
-        }
+
 
         ListView listView = findViewById(R.id.contactListView); // listview element in detailview_activity.xml = container for list
-        ArrayAdapter<ContactEntity> listViewAdapter = new ContactListAdapter(this, R.id.contactListView, contactsList,  this.getLayoutInflater()); //instantiate adapter
+      //instantiate adapter
+        listViewAdapter = new ContactListAdapter(this, R.id.contactListView, localContactsList,  this.getLayoutInflater());
         listView.setAdapter(listViewAdapter);
 
     }
@@ -271,7 +276,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                 int contactIdColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
                 long contactID = cursor.getLong(contactIdColumnIndex);
                 Log.i(LOG_TAG, "Contact: " +  contactID + " " + contactName);
-                this.viewModel.getTaskEntity().getContacts().add(String.valueOf(contactID)); //save contactID in taskEntity
+                this.viewModel.addToContactList(String.valueOf(contactID)); //save contactID in taskEntity
                 //check if permission to read contacts has already been granted
                 int hasReadContactPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
                 if(hasReadContactPermission != PackageManager.PERMISSION_GRANTED){

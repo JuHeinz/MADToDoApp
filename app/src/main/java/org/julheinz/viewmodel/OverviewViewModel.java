@@ -125,7 +125,6 @@ public class OverviewViewModel extends ViewModel {
     }
 
     public static final Comparator<TaskEntity> SORT_BY_DONE = Comparator.comparing(TaskEntity::isDone);
-    //TODO: check if data is sorted correctly by date
     public static Comparator<TaskEntity> SORT_FAV_DUE = Comparator.comparing(TaskEntity::isFav).reversed().thenComparing(TaskEntity::getDueDate);
 
     public Comparator<TaskEntity> getCurrentSortMode() {
