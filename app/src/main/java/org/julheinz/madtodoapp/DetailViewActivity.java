@@ -51,7 +51,6 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     private DetailviewViewModel viewModel;
     public int doneCheckboxVisibility;
 
-    TaskEntity task;
 
     public List<ContactEntity> localContactsList = new ArrayList<>(); //list of contactEntities for this task, used in ListView
     ArrayAdapter<ContactEntity> listViewAdapter;
@@ -73,16 +72,16 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         if (this.viewModel.getTaskEntity() == null) {
             //in case this activity gets called to edit a task, get the TaskEntity from intent
             TaskEntity taskFromIntent = (TaskEntity) detailViewIntentFromOverview.getSerializableExtra(ARG_TASK); // get TaskEntity (not same instance because it is serializable)
-            task = taskFromIntent;
+            TaskEntity task = taskFromIntent;
             if (taskFromIntent == null) { //in case this activity gets called to create a task instead of edit one, create a new TaskEntity
                 task = new TaskEntity();
                 Log.i(LOG_TAG, "created new empty task: " + task );
             }else{
                 Log.i(LOG_TAG, "got task from overview " + task);
             }
+            this.viewModel.setTaskEntity(task);
         }
 
-        this.viewModel.setTaskEntity(task);
         itemBinding.setViewmodel(this.viewModel);
         itemBinding.setActivity(this);
         itemBinding.setLifecycleOwner(this); // enable observing of view model
@@ -143,9 +142,9 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         // if action is called for creating a task, change layout
         if (Objects.equals(action, "android.intent.action.INSERT")) {
             prepareLayoutForCreate();
-            getSupportActionBar().setTitle("New task");
+            Objects.requireNonNull(getSupportActionBar()).setTitle("New task");
         }else{
-            getSupportActionBar().setTitle(viewModel.getTaskEntity().getTitle());
+            Objects.requireNonNull(getSupportActionBar()).setTitle(viewModel.getTaskEntity().getTitle());
 
         }
 
