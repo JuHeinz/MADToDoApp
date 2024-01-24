@@ -12,9 +12,17 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class DetailviewViewModel extends ViewModel {
+
+    /**
+     *     enums that communicate user action to acitvity, so that the layout does not have to reference activity directly
+     */
+    public enum DetailViewUserEvent{
+        SET_DATE, SET_TIME, DELETE, FAVORITE, CANCEL, SAVE
+    }
+    private MutableLiveData<DetailViewUserEvent> userEvent = new MutableLiveData();
     private static final String LOG_TAG = DetailviewViewModel.class.getSimpleName();
 
-    private final MutableLiveData<DateTimeHelper> dateTimeHelper = new MutableLiveData<>(new DateTimeHelper(System.currentTimeMillis()));
+    private final MutableLiveData<DateTimeHelper> dateTimeHelper = new MutableLiveData<>(new DateTimeHelper(System.currentTimeMillis())); //TODO: Set time to time from task when task already has time
 
     private TaskEntity taskEntity;
     private MutableLiveData<String> errorStatus = new MutableLiveData<>();
@@ -53,10 +61,30 @@ public class DetailviewViewModel extends ViewModel {
         return false; // return false so other listeners can process the event
     }
 
+    public MutableLiveData<DetailViewUserEvent> getUserEvent() {
+        return userEvent;
+    }
 
     public MutableLiveData<DateTimeHelper> getDateTimeHelper() {
         return dateTimeHelper;
     }
+
+    public void onSetDueDate(){
+        this.userEvent.setValue(DetailViewUserEvent.SET_DATE);
+    }
+
+    public void onSetDueTime(){
+        this.userEvent.setValue(DetailViewUserEvent.SET_TIME);
+    }
+
+    public void onCancel(){
+        this.userEvent.setValue(DetailViewUserEvent.CANCEL);
+    }
+
+    public void onSave(){
+        this.userEvent.setValue(DetailViewUserEvent.SAVE);
+    }
+
 
     public class DateTimeHelper {
         private final GregorianCalendar calendar;
@@ -110,6 +138,8 @@ public class DetailviewViewModel extends ViewModel {
             return  calendar.get(GregorianCalendar.MINUTE);
 
         }
-        
+
     }
+
+
 }

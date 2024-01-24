@@ -73,10 +73,27 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
             this.viewModel.setTaskEntity(task);
         }
 
-        // databinding for dueDateOutput (not input!)
-        //TODO: Make it so it gets refreshed in detail view when changed. observe task instead of error message?
-        //TextView dueDateOutput = findViewById(R.id.dueDateOutput);
-        //dueDateOutput.setText(DateTimeFormatter.format(viewModel.getTaskEntity().getDueDate()));
+        // listen to what the most recent user event is and act accordingly. user event gets set in layout databound to viewmodel
+        this.viewModel.getUserEvent().observe(this, event ->{
+            switch (event){
+                case SET_DATE:
+                    showDatePickerDialog();
+                    break;
+                case SET_TIME:
+                    showTimePickerDialog();
+                    break;
+                case CANCEL:
+                    cancelEdit();
+                    break;
+                case SAVE:
+                    saveTask();
+                    break;
+                case FAVORITE:
+                    //TODO: Method for toggling icon
+                    break;
+            }
+        });
+
     }
 
     public void saveTask() {
@@ -108,12 +125,17 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         DialogFragment dialogFragment = new DeleteDialogFragment();
         dialogFragment.show(getSupportFragmentManager(), "DeleteDialogFragment");
     }
-
+    /**
+     * Listener for confirm button in Confirm Deletion Dialog
+     */
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         deleteTask();
     }
 
+    /**
+     * Listener for cancel button in Confirm Deletion Dialog
+     */
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         dialog.dismiss();
@@ -151,6 +173,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
      */
     public void prepareLayoutForCreate() {
         setDoneCheckboxVisibility(View.GONE);
+        //TODO: hide delete option in menu
     }
 
     public int getDoneCheckboxVisibility() {
