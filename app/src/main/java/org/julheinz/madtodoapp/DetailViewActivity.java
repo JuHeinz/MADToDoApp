@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.ListView;
 import android.widget.TimePicker;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,11 +29,16 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import org.julheinz.contacts.ContactListAdapter;
+import org.julheinz.entities.ContactEntity;
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.DetailViewBinding;
 import org.julheinz.viewmodel.DetailviewViewModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 
 public class DetailViewActivity extends AppCompatActivity implements DeleteDialogFragment.DeleteDialogListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
@@ -40,6 +47,8 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     public static final String ARG_TASK = "task";
     private DetailviewViewModel viewModel;
     public int doneCheckboxVisibility;
+
+    public List<ContactEntity> contactsList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,6 +102,20 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                     break;
             }
         });
+
+        //List view for contacts
+        HashSet<String> contacts = this.viewModel.getTaskEntity().getContacts();
+        contactsList = new ArrayList<>();
+        for(String contact : contacts){
+            //create contact entities
+            ContactEntity contactEntity = new ContactEntity(contact);
+            contactsList.add(contactEntity);
+            Log.i(LOG_TAG, "creating contact " + contactEntity);
+        }
+
+        ListView listView = findViewById(R.id.contactListView); // listview element in detailview_activity.xml = container for list
+        ArrayAdapter<ContactEntity> listViewAdapter = new ContactListAdapter(this, R.id.contactListView, contactsList,  this.getLayoutInflater()); //instantiate adapter
+        listView.setAdapter(listViewAdapter);
 
     }
 
@@ -248,7 +271,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                 int contactIdColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
                 long contactID = cursor.getLong(contactIdColumnIndex);
                 Log.i(LOG_TAG, "Contact: " +  contactID + " " + contactName);
-                this.viewModel.getTaskEntity().getContacts().add(String.valueOf(contactID));
+                this.viewModel.getTaskEntity().getContacts().add(String.valueOf(contactID)); //save contactID in taskEntity
                 //check if permission to read contacts has already been granted
                 int hasReadContactPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
                 if(hasReadContactPermission != PackageManager.PERMISSION_GRANTED){
@@ -257,10 +280,9 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                     return;
                 }
 
-                showDetailsForContactId(contactID);
+
             }
         }
-        //TODO: set list of contact IDs in TaskEntity
     }
 
     @Override
@@ -269,7 +291,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         Log.i(LOG_TAG, "onRequestPermissionsResult: " + Arrays.asList(permissions) + ": " + Arrays.toString(grantResults));
     }
 
-    //TODO: get list of contact IDs from TaskEntity
+    //TODO: this should return the data only for one id, when that id is supposed to be SMSed or emailed
     /**
      * get phone number and email from selected contact
      * @param contactId id for contact in android
@@ -302,11 +324,11 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
             }
 
         }
-        //TODO: Show email, name and phone in ui somewhere
     }
     private void showSnackbar(String msg) {
         Snackbar.make(findViewById(R.id.DetailView), msg, Snackbar.LENGTH_SHORT).show();
     }
+
 
 
 }
