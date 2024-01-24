@@ -26,7 +26,10 @@
             android:layout_height="wrap_content"
             android:onClick="@{() -> viewmodel.onCancel()}"
             android:text="@string/backBtn_label"
-            app:backgroundTint="@color/grey"
+            android:textAlignment="viewStart"
+            android:textColor="@color/dark_blue"
+            app:backgroundTint="@color/white"
+            app:iconTint="@color/dark_blue"
             app:icon="@drawable/arrow_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -80,11 +83,13 @@
                 android:inputType="textMultiLine"
                 android:lines="10"
                 android:minLines="5"
-                android:text="@={viewmodel.taskEntity.description}" />
+                android:text="@={viewmodel.taskEntity.description}"
+                android:layout_marginBottom="10dp"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/dueDateLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,7 +107,11 @@
                 android:textColor="@color/dark_blue"
                 app:backgroundTint="@color/white"
                 app:icon="@drawable/schedule_icon"
-                app:iconTint="@color/dark_blue" />
+                app:iconTint="@color/dark_blue"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+
+                />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dueDateBtn"
@@ -114,20 +123,25 @@
                 android:textAlignment="viewStart"
                 android:textColor="@color/dark_blue"
                 app:backgroundTint="@color/white"
+                app:iconTint="@color/dark_blue"
                 app:icon="@drawable/event"
-                app:iconTint="@color/dark_blue" />
+                app:layout_constraintStart_toEndOf="@id/dueTimeBtn"
+                app:layout_constraintTop_toTopOf="parent"
 
-            <CheckBox
-                android:id="@+id/isFavCheckbox"
+                />
+
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/material_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@={viewmodel.taskEntity.fav}"
-                android:gravity="center|end"
                 android:text="@string/is_fav_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
+                android:checked="@={viewmodel.taskEntity.fav}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveBtn"
@@ -139,7 +153,7 @@
             app:icon="@drawable/save"
             app:iconGravity="textStart"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dueDateLayout" />
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -19,47 +20,60 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
-                android:id="@+id/firstRow"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                >
-
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/taskCheckBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="@={task.done}"
-                    android:onClick="@{() -> activityViewModel.updateTask(task)}"
-                    android:focusable="false"
-                    android:gravity="center_vertical"
-                    android:text="@{task.title}" />
-            </LinearLayout>
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/doneCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@={task.done}"
+                android:focusable="false"
+                android:gravity="center_vertical"
+                android:onClick="@{() -> activityViewModel.updateTask(task)}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/descriptionOutput"
-                android:layout_width="match_parent"
+                android:id="@+id/titleOutput"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="clip_horizontal|center|start"
+                android:text="@={task.title}"
+                android:textColor="@color/dark_blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/fav_switch"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/doneCheckBox"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.49" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/fav_switch"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="@{task.description}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/firstRow" />
+                android:text="@string/is_fav_label"
+                android:checked="@={task.fav}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{() -> activityViewModel.updateTask(task)}"
+                android:focusable="false"
+                />
 
             <LinearLayout
                 android:id="@+id/dueDateRow"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/descriptionOutput">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fav_switch">
 
                 <ImageView
                     android:id="@+id/imageView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/event"
-                    android:importantForAccessibility="no" />
+                    android:importantForAccessibility="no"
+                    app:srcCompat="@drawable/event" />
 
                 <TextView
                     android:id="@+id/dueDateOutput"
@@ -68,17 +82,7 @@
                     android:gravity="center_vertical"
                     android:text="@string/dd_mm_yyyy" />
             </LinearLayout>
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/favOutput"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="@={task.fav}"
-                android:onClick="@{() -> activityViewModel.updateTask(task)}"
-                android:focusable="false"
-                android:gravity="center_vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dueDateRow"
-                android:text="@string/favorite" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

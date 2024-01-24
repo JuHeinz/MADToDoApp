@@ -86,6 +86,10 @@ public class OverviewActivity extends AppCompatActivity {
                 if(((TaskApplication) getApplication()).isInOfflineMode()){
                     showSnackbar("Offline! Changes will not be synced to server.");
 
+                    //TODO: Put this in log in view
+                    //Skip login view and go to OverviewActivity
+                    //startActivity(new Intent(this, OverviewActivity.class));
+
                 }
                 this.viewModel.readAllTasks();
                 this.viewModel.syncDatabases();

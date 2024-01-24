@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">To Do App</string>
-    <string name="title_hint">What needs to be done?</string>
+    <string name="title_hint">Title</string>
     <string name="description_hint">Description (optional)</string>
     <string name="saveBtn_label">Save</string>
     <string name="backBtn_label">Back</string>

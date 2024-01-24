@@ -106,7 +106,9 @@ public class DetailviewViewModel extends ViewModel {
             calendar.set(GregorianCalendar.MONTH, month);
             calendar.set(GregorianCalendar.DAY_OF_MONTH, dayOfMonth);
             taskEntity.setDueDate(this.getDateTimeAsLongValue());
-            dateTimeHelper.setValue(this); //set the dateTimeHelper of the view model to this instance of the helper because only if a field in view model changes is the mutable live data changed and the ui is changed
+            dateTimeHelper.setValue(this);
+            //set the dateTimeHelper of the view model to this instance of the helper,
+            // because only if a field in view model changes is the mutable live data changed and the ui is changed
 
         }
 
