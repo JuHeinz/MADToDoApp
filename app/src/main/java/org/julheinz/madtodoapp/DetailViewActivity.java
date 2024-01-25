@@ -290,6 +290,20 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     }
 
 
+    public String getContactName(long id){
+        String contactName = "";
+
+        String[] contactIDs = new String[]{String.valueOf((id))};
+        try(Cursor cursor = getContentResolver().query(ContactsContract.Data.CONTENT_URI, null, "contact_id=?", contactIDs, null)){
+            while(cursor.moveToNext()){
+                int displayNameColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME); //get the index for the column for the contact name
+                contactName = cursor.getString(displayNameColumnIndex);
+            }
+            return contactName;
+        }
+
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -303,6 +317,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
      */
     private String getMobileNr(long id){
         String currentPhoneNumber = "";
+        int currentNumberType = 0;
 
         //get phone book data, like in sql SELECT * FROM Phone WHERE contactId = contactId
         // 1. what table to select from, here phone
@@ -312,17 +327,20 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         // 5. sort order
         String[] contactIDs = new String[]{String.valueOf((id))};
         try(Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, "contact_id=?", contactIDs, null)){
-            int currentNumberType;
             while(cursor.moveToNext()){
                 int phoneNumberColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                 int phoneNumberTypeColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
                 currentPhoneNumber  = cursor.getString(phoneNumberColumnIndex);
                 currentNumberType = cursor.getInt(phoneNumberTypeColumnIndex);
-                boolean isMobileNumber = currentNumberType == ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
-                Log.i(LOG_TAG, "getMobileNr():"  + currentPhoneNumber + " " + " is Mobile:: " + isMobileNumber);
             }
         }
-        return currentPhoneNumber;
+        if(currentNumberType == ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE){
+            Log.i(LOG_TAG, "getMobileNr():"  + currentPhoneNumber);
+            return currentPhoneNumber;
+        }else {
+            Log.i(LOG_TAG, "getMobileNr(): No mobile nr. found.");
+            return "";
+        }
     }
 
     public String getEmail(long id){
@@ -350,8 +368,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         if(!localContactsList.contains(new ContactEntity(contactID, null, null, null))){
             String phone = getMobileNr(contactID);
             String email = getEmail(contactID);
-            //get name
-            String contactName = String.valueOf(contactID);
+            String contactName = getContactName(contactID);
             ContactEntity contactEntity = new ContactEntity(contactID, contactName,email, phone);
             localContactsList.add(contactEntity);
             Log.i(LOG_TAG, "Following contact has been added to local contacts list" + contactEntity);
