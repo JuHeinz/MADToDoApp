@@ -47,7 +47,9 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     private DetailviewViewModel viewModel;
     public int doneCheckboxVisibility;
 
-    public List<ContactEntity> localContactsList = new ArrayList<>(); //list of contacts for this task
+    TaskEntity task;
+
+    public List<ContactEntity> localContactsList = new ArrayList<>(); //list of contactEntities for this task, used in ListView
     ArrayAdapter<ContactEntity> listViewAdapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,25 +73,22 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         if (this.viewModel.getTaskEntity() == null) {
             //in case this activity gets called to edit a task, get the TaskEntity from intent
             TaskEntity taskFromIntent = (TaskEntity) detailViewIntentFromOverview.getSerializableExtra(ARG_TASK); // get TaskEntity (not same instance because it is serializable)
-            TaskEntity task = taskFromIntent;
+            task = taskFromIntent;
             if (taskFromIntent == null) { //in case this activity gets called to create a task instead of edit one, create a new TaskEntity
                 task = new TaskEntity();
                 Log.i(LOG_TAG, "created new empty task: " + task );
             }else{
                 Log.i(LOG_TAG, "got task from overview " + task);
-
-            }
-            this.viewModel.setTaskEntity(task);
-            for (String contactId : task.getContacts()){
-                localContactsList.add(new ContactEntity(contactId));
             }
         }
 
-        this.viewModel.getContactListLiveData().observe(this, list ->{
-            Log.i(LOG_TAG, "new contact added. all contacts:" + list );
+        this.viewModel.setTaskEntity(task);
 
-            for (String contactId : list){
-                localContactsList.add(new ContactEntity(contactId));
+        //observe changes on the live data
+        this.viewModel.getContactIdListLiveData().observe(this, listFromLiveData ->{
+            Log.i(LOG_TAG, "list of contacts has changed:" + listFromLiveData);
+            for (String contactId : listFromLiveData){
+                addToLocalContactEntityList(Long.parseLong(contactId)); // add newly added ids to LocalContentEntity list as ContentEntities
             }
             listViewAdapter.notifyDataSetChanged();
         });
@@ -275,20 +274,24 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                 String contactName = cursor.getString(displayNameColumnIndex);
                 int contactIdColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
                 long contactID = cursor.getLong(contactIdColumnIndex);
-                Log.i(LOG_TAG, "Contact: " +  contactID + " " + contactName);
-                this.viewModel.addToContactList(String.valueOf(contactID)); //save contactID in taskEntity
+                Log.i(LOG_TAG, "Contact selected by user: " +  contactID + " " + contactName);
                 //check if permission to read contacts has already been granted
+                //TODO: Something with permissions and returning from this method
                 int hasReadContactPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
                 if(hasReadContactPermission != PackageManager.PERMISSION_GRANTED){
                     //if not, ask user for permission
                     requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 10);
-                    return;
-                }
+                }else {
+                    this.viewModel.addToContactsListOfEntity(contactID);
+                    //this.viewModel.setContactIdListLiveData();
 
+                }
 
             }
         }
     }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -296,45 +299,72 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         Log.i(LOG_TAG, "onRequestPermissionsResult: " + Arrays.asList(permissions) + ": " + Arrays.toString(grantResults));
     }
 
-    //TODO: this should return the data only for one id, when that id is supposed to be SMSed or emailed
+
     /**
-     * get phone number and email from selected contact
-     * @param contactId id for contact in android
+     * get phone from selected contact
      */
-    private void showDetailsForContactId(long contactId){
+    private String getMobileNr(long id){
+        String currentPhoneNumber = "";
+
         //get phone book data, like in sql SELECT * FROM Phone WHERE contactId = contactId
         // 1. what table to select from, here phone
         // 2. what columns to get: null means all (like * in SQL)
         // 3. query
         // 4. what gets inserted at ? for the above query, as String array
         // 5. sort order
-        String[] contactIDs = new String[]{String.valueOf(contactId)};
+        String[] contactIDs = new String[]{String.valueOf((id))};
         try(Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, "contact_id=?", contactIDs, null)){
+            int currentNumberType;
             while(cursor.moveToNext()){
                 int phoneNumberColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                 int phoneNumberTypeColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
-                String currentPhoneNumber = cursor.getString(phoneNumberColumnIndex);
-                int currentNumberType = cursor.getInt(phoneNumberTypeColumnIndex);
+                currentPhoneNumber  = cursor.getString(phoneNumberColumnIndex);
+                currentNumberType = cursor.getInt(phoneNumberTypeColumnIndex);
                 boolean isMobileNumber = currentNumberType == ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
-                Log.i(LOG_TAG, currentPhoneNumber + " " + " is Mobile? " + isMobileNumber);
+                Log.i(LOG_TAG, "getMobileNr():"  + currentPhoneNumber + " " + " is Mobile:: " + isMobileNumber);
             }
         }
+        return currentPhoneNumber;
+    }
 
-        //get email
+    public String getEmail(long id){
+        String[] contactIDs = new String[]{String.valueOf(id)};
+        String email = "";
         try(Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, "contact_id=?", contactIDs, null)){
             while(cursor.moveToNext()){
                 int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
-                String email = cursor.getString(emailColumnIndex);
-                Log.i(LOG_TAG, "Email: " + email);
+                email = cursor.getString(emailColumnIndex);
+                Log.i(LOG_TAG, "getEmail(): " + email);
             }
-
         }
+        return email;
     }
+
     private void showSnackbar(String msg) {
         Snackbar.make(findViewById(R.id.DetailView), msg, Snackbar.LENGTH_SHORT).show();
     }
 
+    /**
+     * Create a contactEntity from an id, then add it to the list that is used by the listview
+     * @param contactID id of contact to be added
+     */
+    private void addToLocalContactEntityList(long contactID){
+        //check if contactEntity with that id already exists. (only id is relevant here, since equals is overwritten to only consider id)
+        if(!localContactsList.contains(new ContactEntity(contactID, null, null, null))){
+            String phone = getMobileNr(contactID);
+            String email = getEmail(contactID);
+            //get name
+            String contactName = String.valueOf(contactID);
+            ContactEntity contactEntity = new ContactEntity(contactID, contactName,email, phone);
+            localContactsList.add(contactEntity);
+            Log.i(LOG_TAG, "Following contact has been added to local contacts list" + contactEntity);
+            Log.i(LOG_TAG, "Local contact list after adding of entity:" + localContactsList.toString());
+            listViewAdapter.notifyDataSetChanged();
+        }else{
+            Log.i(LOG_TAG, "Contact already added");
+        }
 
+    }
 
 }
 

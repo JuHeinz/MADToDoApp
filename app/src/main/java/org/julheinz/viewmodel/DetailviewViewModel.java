@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModel;
 
 import org.julheinz.entities.TaskEntity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 
 public class DetailviewViewModel extends ViewModel {
 
@@ -27,28 +27,31 @@ public class DetailviewViewModel extends ViewModel {
 
     private TaskEntity taskEntity;
     private MutableLiveData<String> errorStatus = new MutableLiveData<>();
+    private MutableLiveData<HashSet<String>> contactIdListLiveData = new MutableLiveData<>();
 
-    public ArrayList<String> localContactList = new ArrayList<>();
 
-
-    private MutableLiveData<ArrayList<String>> liveData;
 
     public TaskEntity getTaskEntity() {
         return this.taskEntity;
     }
 
-    public MutableLiveData<ArrayList<String>> getContactListLiveData() {
-        return liveData;
+    public void addToContactsListOfEntity(long id){
+        taskEntity.getContacts().add(String.valueOf(id));
+        setContactIdListLiveData(); //refresh live data by getting contacts from entity again
+    }
+
+    public void setContactIdListLiveData() {
+        contactIdListLiveData.setValue(taskEntity.getContacts()); //the live data is always equal to the tasks' contact list
+    }
+
+    public MutableLiveData<HashSet<String>> getContactIdListLiveData() { //getter for the live data that is observed
+        return contactIdListLiveData;
     }
 
     public void setTaskEntity(TaskEntity taskEntity) {
-        Log.d(LOG_TAG, "setting taskEntity: " + taskEntity.toString() + "in viewmodel");
+        Log.i(LOG_TAG, "Setting taskEntity: " + taskEntity.toString() + "in view model");
         this.taskEntity = taskEntity;
-
-        //initialize live data with contacts from taskEntity
-        localContactList.addAll(taskEntity.getContacts());
-        this.liveData = new MutableLiveData<>(localContactList);
-
+        contactIdListLiveData = new MutableLiveData<>(taskEntity.getContacts()); //initialize live data with contacts from taskEntity
     }
 
     public MutableLiveData<String> getErrorStatus() {
@@ -99,25 +102,6 @@ public class DetailviewViewModel extends ViewModel {
     public void onSave(){
         this.userEvent.setValue(DetailViewUserEvent.SAVE);
     }
-
-    public void addToContactList(String id){
-        taskEntity.getContacts().add(id);
-        localContactList.add(id);
-        liveData.postValue(localContactList);
-    }
-
-    public void removeFromContactList(String id){
-
-    }
-
-    public ArrayList<String> getLocalContactList() {
-        return localContactList;
-    }
-
-    public void setLocalContactList(ArrayList<String> localContactList) {
-        this.localContactList = localContactList;
-    }
-
 
     public class DateTimeHelper {
         private final GregorianCalendar calendar;
