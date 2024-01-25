@@ -7,6 +7,9 @@
         <variable
             name="contact"
             type="org.julheinz.entities.ContactEntity" />
+        <variable
+            name="activity"
+            type="org.julheinz.madtodoapp.DetailViewActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,6 +54,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/deleteBtn"
             android:layout_width="wrap_content"
+            android:onClick="@{() -> activity.deleteContact(contact.id)}"
             android:layout_height="wrap_content"
             android:textAlignment="viewStart"
             app:icon="@drawable/delete"

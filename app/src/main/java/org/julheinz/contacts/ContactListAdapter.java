@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
 import org.julheinz.entities.ContactEntity;
+import org.julheinz.madtodoapp.DetailViewActivity;
 import org.julheinz.madtodoapp.R;
 import org.julheinz.madtodoapp.databinding.ContactListItemBinding;
 import org.julheinz.madtodoapp.databinding.ListItemBinding;
@@ -24,9 +25,12 @@ public class ContactListAdapter extends ArrayAdapter<ContactEntity> {
     private final LayoutInflater inflater;
     ContactEntity contact;
 
+    Context parentActivity;
+
     public ContactListAdapter(Context parent, int layoutIdOfListView, List<ContactEntity> contactList, LayoutInflater inflater) {
         super(parent, layoutIdOfListView, contactList);
         this.inflater = inflater;
+        this.parentActivity = parent;
     }
 
     /**
@@ -55,6 +59,8 @@ public class ContactListAdapter extends ArrayAdapter<ContactEntity> {
         }
 
         contactBinding.setContact(contact);
+        contactBinding.setActivity((DetailViewActivity) parentActivity); //set the "activity" variable in the databinding to the parent view of this list
+
         return contactView;
     }
 

@@ -40,6 +40,11 @@ public class DetailviewViewModel extends ViewModel {
         setContactIdListLiveData(); //refresh live data by getting contacts from entity again
     }
 
+    public void removeFromContactsListOfEntity(long id){
+        taskEntity.getContacts().remove(String.valueOf(id));
+        setContactIdListLiveData(); //refresh live data by getting contacts from entity again
+    }
+
     public void setContactIdListLiveData() {
         contactIdListLiveData.setValue(taskEntity.getContacts()); //the live data is always equal to the tasks' contact list
     }

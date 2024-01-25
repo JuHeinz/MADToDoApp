@@ -283,8 +283,6 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
                     requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 10);
                 }else {
                     this.viewModel.addToContactsListOfEntity(contactID);
-                    //this.viewModel.setContactIdListLiveData();
-
                 }
 
             }
@@ -346,7 +344,6 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
 
     /**
      * Create a contactEntity from an id, then add it to the list that is used by the listview
-     * @param contactID id of contact to be added
      */
     private void addToLocalContactEntityList(long contactID){
         //check if contactEntity with that id already exists. (only id is relevant here, since equals is overwritten to only consider id)
@@ -365,10 +362,16 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         }
 
     }
-    private void deleteFromLocalContactEntityList(long contactID){
+
+    /**
+     * Delete local contact Entity in list used for list view as well as contact in taskEntity in viewmodel
+     */
+    public void deleteContact(long contactID){
+        Log.i(LOG_TAG, "Attempting to remove contact with id" + contactID);
         ContactEntity contactToBeRemoved = new ContactEntity(contactID, null, null, null);
         localContactsList.remove(contactToBeRemoved);
         Log.i(LOG_TAG, "Local contact list after deleting of contact:" + localContactsList.toString());
+        viewModel.removeFromContactsListOfEntity(contactID); //also delete from entity, so the contact doesn't get saved
         listViewAdapter.notifyDataSetChanged();
     }
 

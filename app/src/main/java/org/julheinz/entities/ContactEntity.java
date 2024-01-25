@@ -58,8 +58,8 @@ public class ContactEntity {
 
 
 
-    public String getId() {
-        return String.valueOf(id);
+    public long getId() {
+        return id;
     }
 
     public void setId(long id) {
