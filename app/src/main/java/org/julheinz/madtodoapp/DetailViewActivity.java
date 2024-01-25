@@ -117,7 +117,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
 
 
         ListView listView = findViewById(R.id.contactListView); // listview element in detailview_activity.xml = container for list
-      //instantiate adapter
+        //instantiate adapter
         listViewAdapter = new ContactListAdapter(this, R.id.contactListView, localContactsList,  this.getLayoutInflater());
         listView.setAdapter(listViewAdapter);
 
@@ -364,6 +364,12 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
             Log.i(LOG_TAG, "Contact already added");
         }
 
+    }
+    private void deleteFromLocalContactEntityList(long contactID){
+        ContactEntity contactToBeRemoved = new ContactEntity(contactID, null, null, null);
+        localContactsList.remove(contactToBeRemoved);
+        Log.i(LOG_TAG, "Local contact list after deleting of contact:" + localContactsList.toString());
+        listViewAdapter.notifyDataSetChanged();
     }
 
 }
