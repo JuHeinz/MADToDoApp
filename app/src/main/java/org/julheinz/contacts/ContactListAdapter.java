@@ -19,6 +19,7 @@ import org.julheinz.madtodoapp.databinding.ContactListItemBinding;
 import org.julheinz.madtodoapp.databinding.ListItemBinding;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ContactListAdapter extends ArrayAdapter<ContactEntity> {
 
@@ -51,7 +52,13 @@ public class ContactListAdapter extends ArrayAdapter<ContactEntity> {
         if (existingViewToBeRecycled != null) {
             contactView = existingViewToBeRecycled; //if there is a view to be recycled, use it.
             //there will always be an already inflated view because of the else statement.
+
             contactBinding = (ContactListItemBinding) contactView.getTag(); //get data binder from recycled view
+            //reset button visibility so recycled views dont have the states of their previous owners
+            contactView.findViewById(R.id.emailBtn).setVisibility(View.VISIBLE);
+            contactView.findViewById(R.id.smsBtn).setVisibility(View.VISIBLE);
+
+
         } else {
             contactBinding = DataBindingUtil.inflate(inflater, R.layout.contact_list_item, null, false); //if there is no view to be recycled, inflate a new one
             contactView = contactBinding.getRoot(); //set task view to the view created by inflating
@@ -61,6 +68,13 @@ public class ContactListAdapter extends ArrayAdapter<ContactEntity> {
         contactBinding.setContact(contact);
         contactBinding.setActivity((DetailViewActivity) parentActivity); //set the "activity" variable in the databinding to the parent view of this list
 
+        if(contact.getEmail().isEmpty()){
+            contactView.findViewById(R.id.emailBtn).setVisibility(View.GONE);
+        }
+
+        if(contact.getPhoneNumber().isEmpty()){
+            contactView.findViewById(R.id.smsBtn).setVisibility(View.GONE);
+        }
         return contactView;
     }
 

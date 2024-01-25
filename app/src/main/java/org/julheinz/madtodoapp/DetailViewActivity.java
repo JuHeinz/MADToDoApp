@@ -35,8 +35,11 @@ import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.DetailViewBinding;
 import org.julheinz.viewmodel.DetailviewViewModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -390,6 +393,42 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         Log.i(LOG_TAG, "Local contact list after deleting of contact:" + localContactsList.toString());
         viewModel.removeFromContactsListOfEntity(contactID); //also delete from entity, so the contact doesn't get saved
         listViewAdapter.notifyDataSetChanged();
+    }
+
+    public void sendEmailToContact(String address){
+        Log.i(LOG_TAG, "Attempting to send email to adress" + address);
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // Only email apps handle this.
+        intent.putExtra(Intent.EXTRA_EMAIL, address);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "New task!");
+        intent.putExtra(Intent.EXTRA_TEXT, getMessageForContact());
+        startActivity(intent);
+    }
+
+    public void sendSMSToContact(String number){
+        Uri uri = Uri.parse("smsto:" + number);
+        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+        intent.putExtra("sms_body", getMessageForContact());
+        Log.i(LOG_TAG, "Attempting to send sms to nr: " + number);
+
+        startActivity(intent);
+    }
+
+    public String getMessageForContact(){
+        String pattern = "dd/MM/yyyy HH:mm";
+        DateFormat df = new SimpleDateFormat(pattern);
+        Date dateFormatted = new Date(viewModel.getTaskEntity().getDueDate());
+        String dueDate = df.format(dateFormatted);
+        String taskTitle = viewModel.getTaskEntity().getTitle();
+        String taskDescription = viewModel.getTaskEntity().getDescription();
+        String messageBody = "Here is a new task for you! Title: "  + taskTitle;
+        if(!taskDescription.isEmpty()){
+            messageBody = messageBody + " | Description: " + taskDescription;
+        }
+        if(!dueDate.isEmpty()){
+            messageBody = messageBody + " | Due: " + dueDate;
+        }
+        return messageBody;
     }
 
 }
