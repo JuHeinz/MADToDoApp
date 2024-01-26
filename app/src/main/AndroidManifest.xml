@@ -16,14 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name="org.julheinz.madtodoapp.OverviewActivity"
-            android:exported="true">
+        <activity android:name="org.julheinz.madtodoapp.OverviewActivity" />
+        <activity android:name="org.julheinz.madtodoapp.DetailViewActivity" />
+        <activity android:name="org.julheinz.madtodoapp.LogInActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="org.julheinz.madtodoapp.DetailViewActivity" />
     </application>
 </manifest>
