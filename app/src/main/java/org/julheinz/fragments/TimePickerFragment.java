@@ -1,4 +1,4 @@
-package org.julheinz.madtodoapp;
+package org.julheinz.fragments;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -10,11 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Calendar;
-import java.util.Date;
 
 public class TimePickerFragment extends DialogFragment {
     private static final String LOG_TAG = TimePickerFragment.class.getSimpleName();

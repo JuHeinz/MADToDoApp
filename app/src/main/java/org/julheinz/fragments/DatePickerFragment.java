@@ -1,4 +1,4 @@
-package org.julheinz.madtodoapp;
+package org.julheinz.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

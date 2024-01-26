@@ -30,7 +30,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.julheinz.contacts.ContactListAdapter;
+import org.julheinz.fragments.DatePickerFragment;
+import org.julheinz.fragments.DeleteDialogFragment;
+import org.julheinz.fragments.TimePickerFragment;
+import org.julheinz.listadapters.ContactListAdapter;
 import org.julheinz.entities.ContactEntity;
 import org.julheinz.entities.TaskEntity;
 import org.julheinz.madtodoapp.databinding.DetailViewBinding;

@@ -25,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.julheinz.data.TaskCrudOperations;
 import org.julheinz.entities.TaskEntity;
+import org.julheinz.listadapters.TaskListAdapter;
 import org.julheinz.viewmodel.OverviewViewModel;
 
 import java.util.Objects;
