@@ -36,7 +36,7 @@ public class OverviewViewModel extends ViewModel {
     private Comparator<TaskEntity> currentSortMode;
 
     public OverviewViewModel() {
-        this.currentSortMode = SORT_BY_DONE;
+        this.currentSortMode = SORT_DUE_FAV; //set one sort mode as default
     }
 
     public List<TaskEntity> getTasks() {
@@ -126,6 +126,7 @@ public class OverviewViewModel extends ViewModel {
 
     public static final Comparator<TaskEntity> SORT_BY_DONE = Comparator.comparing(TaskEntity::isDone);
     public static Comparator<TaskEntity> SORT_FAV_DUE = Comparator.comparing(TaskEntity::isFav).reversed().thenComparing(TaskEntity::getDueDate);
+    public static Comparator<TaskEntity> SORT_DUE_FAV = Comparator.comparing(TaskEntity::getDueDate).thenComparing(TaskEntity::isFav);
 
     public Comparator<TaskEntity> getCurrentSortMode() {
         return currentSortMode;
@@ -143,6 +144,7 @@ public class OverviewViewModel extends ViewModel {
 
     public void applyTaskSorting() {
         this.taskList.sort(currentSortMode);
+        this.taskList.sort(Comparator.comparing(TaskEntity::isDone));//done tasks to bottom
     }
 
     public String deleteAllRemoteTasks() {
