@@ -62,16 +62,6 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
             taskView.setTag(taskBinding); //set data binding for view
         }
 
-        //Due date output
-        String pattern = "dd/MM/yyyy HH:mm";
-        DateFormat df = new SimpleDateFormat(pattern);
-        Date dateFormatted = new Date(task.getDueDate());
-        TextView dueDateOutput = taskView.findViewById(R.id.dueDateOutput);
-        //change color red if task is overdue
-        if(System.currentTimeMillis() > task.getDueDate()){
-            dueDateOutput.setTextColor(Color.RED);
-        }
-        dueDateOutput.setText(df.format(dateFormatted));
         taskBinding.setTask(task);
         taskBinding.setActivityViewModel(viewModel); // make it so that the databinding class for the listitem has access to the viewmodel of Overview Activity
         return taskView;

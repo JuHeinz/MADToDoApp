@@ -12,6 +12,9 @@ import com.google.gson.annotations.SerializedName;
 import org.julheinz.data.HashSetConverter;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -98,6 +101,13 @@ public class TaskEntity implements Serializable {
             return;
         }
         this.contacts = contacts;
+    }
+
+    public String getDueDateFormatted(){
+        String pattern = "dd/MM/yyyy HH:mm";
+        DateFormat df = new SimpleDateFormat(pattern);
+        Date dateFormatted = new Date(dueDate);
+        return df.format(dateFormatted);
     }
 
     @NonNull
