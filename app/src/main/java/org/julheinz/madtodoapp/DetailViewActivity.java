@@ -66,10 +66,9 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
 
 
 
-        itemBinding.setLifecycleOwner(this); // enable observing of view model
         this.viewModel = new ViewModelProvider(this).get(DetailviewViewModel.class);
-        itemBinding.setViewmodel(this.viewModel);
-        itemBinding.setActivity(this);
+
+
 
         if (this.viewModel.getTaskEntity() == null) {
             //in case this activity gets called to edit a task, get the TaskEntity from intent
@@ -84,10 +83,11 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         }
 
         this.viewModel.setTaskEntity(task);
-
+        itemBinding.setViewmodel(this.viewModel);
+        itemBinding.setActivity(this);
+        itemBinding.setLifecycleOwner(this); // enable observing of view model
         //observe changes on the live data
         this.viewModel.getContactIdListLiveData().observe(this, listFromLiveData ->{
-            Log.i(LOG_TAG, "list of contacts has changed:" + listFromLiveData);
             for (String contactId : listFromLiveData){
                 addToLocalContactEntityList(Long.parseLong(contactId)); // add newly added ids to LocalContentEntity list as ContentEntities
             }
@@ -197,12 +197,12 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     }
 
     public void showTimePickerDialog() {
-        TimePickerFragment timePickerFragment = new TimePickerFragment();
+        TimePickerFragment timePickerFragment = new TimePickerFragment(viewModel.getTaskEntity().getDueDate());
         timePickerFragment.show(getSupportFragmentManager(), "timePickerDueDate");
     }
 
     public void showDatePickerDialog() {
-        DatePickerFragment datePickerFragment = new DatePickerFragment();
+        DatePickerFragment datePickerFragment = new DatePickerFragment(viewModel.getTaskEntity().getDueDate());
         datePickerFragment.show(getSupportFragmentManager(), "datePickerDueDate");
     }
 
@@ -352,10 +352,8 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
             }
         }
         if(currentNumberType == ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE){
-            Log.i(LOG_TAG, "getMobileNr():"  + currentPhoneNumber);
             return currentPhoneNumber;
         }else {
-            Log.i(LOG_TAG, "getMobileNr(): No mobile nr. found.");
             return "";
         }
     }
@@ -367,7 +365,6 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
             while(cursor.moveToNext()){
                 int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
                 email = cursor.getString(emailColumnIndex);
-                Log.i(LOG_TAG, "getEmail(): " + email);
             }
         }
         return email;
@@ -389,7 +386,6 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
             ContactEntity contactEntity = new ContactEntity(contactID, contactName,email, phone);
             localContactsList.add(contactEntity);
             Log.i(LOG_TAG, "Following contact has been added to local contacts list" + contactEntity);
-            Log.i(LOG_TAG, "Local contact list after adding of entity:" + localContactsList.toString());
             listViewAdapter.notifyDataSetChanged();
         }else{
             Log.i(LOG_TAG, "Contact already added");
@@ -429,10 +425,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     }
 
     public String getMessageForContact(){
-        String pattern = "dd/MM/yyyy HH:mm";
-        DateFormat df = new SimpleDateFormat(pattern);
-        Date dateFormatted = new Date(viewModel.getTaskEntity().getDueDate());
-        String dueDate = df.format(dateFormatted);
+        String dueDate = viewModel.getTaskEntity().getFullDueDateFormatted();
         String taskTitle = viewModel.getTaskEntity().getTitle();
         String taskDescription = viewModel.getTaskEntity().getDescription();
         String messageBody = "Here is a new task for you! Title: "  + taskTitle;

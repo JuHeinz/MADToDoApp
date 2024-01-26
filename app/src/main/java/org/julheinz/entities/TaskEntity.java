@@ -14,6 +14,11 @@ import org.julheinz.data.HashSetConverter;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -103,17 +108,16 @@ public class TaskEntity implements Serializable {
         this.contacts = contacts;
     }
 
-    public String getDueDateFormatted(){
-        String pattern = "dd/MM/yyyy HH:mm";
-        DateFormat df = new SimpleDateFormat(pattern);
-        Date dateFormatted = new Date(dueDate);
-        return df.format(dateFormatted);
+    public String getFullDueDateFormatted(){
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(getDueDate()), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy, kk:mm");
+        return formatter.format(dateTime);
     }
 
     @NonNull
     @Override
     public String toString() {
-        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", dueDate=" + dueDate + ", done=" + done + ", fav=" + fav + ". contacts:" + contacts;
+        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", dueDate=" + dueDate + "(" + getFullDueDateFormatted() + ")"+ ", done=" + done + ", fav=" + fav + ". contacts:" + contacts;
     }
 
     // Override equals so that two TaskEntities with the same id are seen as equal, not exact same instance. Needed because TaskEntities get serialized

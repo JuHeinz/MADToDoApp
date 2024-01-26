@@ -5,15 +5,25 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Date;
 
 public class TimePickerFragment extends DialogFragment {
+    private static final String LOG_TAG = TimePickerFragment.class.getSimpleName();
 
     TimePickerDialog.OnTimeSetListener listener;
+    long taskDate;
+    public TimePickerFragment(long taskDate){
+        this.taskDate = taskDate;
+    }
 
     /**
      * Get the listener from the host activity if it implements the TimePickerDialog.OnTimeSetListener.
@@ -40,11 +50,13 @@ public class TimePickerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // get current time as default values
-        final Calendar calendar = Calendar.getInstance();
-        int hourNow = calendar.get(Calendar.HOUR_OF_DAY);
-        int minuteNow = calendar.get(Calendar.MINUTE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(taskDate);
+        Log.d(LOG_TAG, "date:" + calendar.getTime());
+        int hour = calendar.get(Calendar.HOUR);
+        int minute = calendar.get(Calendar.MINUTE);
+        Log.d(LOG_TAG, "Creating time picker with default value: " + hour +":" + minute);
         // give the listener from the host activity to the dialog so it can call the listener when the user is finished
-        return new TimePickerDialog(getActivity(), listener, hourNow, minuteNow, DateFormat.is24HourFormat(getActivity()));
+        return new TimePickerDialog(getActivity(), listener, hour, minute, DateFormat.is24HourFormat(getActivity()));
     }
 }
