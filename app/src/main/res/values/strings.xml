@@ -19,4 +19,7 @@
     <string name="sync_databases">Sync databases</string>
     <string name="add_collaborator">Add collaborator</string>
     <string name="add">Add</string>
+    <string name="welcome_please_log_in">Welcome, please log in!</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
 </resources>

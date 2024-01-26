@@ -1,9 +1,6 @@
 package org.julheinz.madtodoapp;
 
 import static org.julheinz.madtodoapp.DetailViewActivity.ARG_TASK;
-import static org.julheinz.viewmodel.OverviewViewModel.SORT_BY_DONE;
-import static org.julheinz.viewmodel.OverviewViewModel.SORT_DUE_FAV;
-import static org.julheinz.viewmodel.OverviewViewModel.SORT_FAV_DUE;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -112,7 +109,7 @@ public class OverviewActivity extends AppCompatActivity {
                     viewModel.setCurrentSortMode(OverviewViewModel.SORT_FAV_DUE);
                 } else {
                     showSnackbar("Sorting date, then favorite");
-                    viewModel.setCurrentSortMode(SORT_DUE_FAV);
+                    viewModel.setCurrentSortMode(OverviewViewModel.SORT_DUE_FAV);
                 }
                 viewModel.sortTasksAfterUserInput();
                 return true;
