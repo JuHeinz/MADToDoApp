@@ -2,26 +2,31 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/addTask"
+        android:icon="@drawable/add_box"
+        android:title="@string/add"
+        app:showAsAction="always" />
 
     <item
-        android:title="@string/sort"
         android:id="@+id/sortItems"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/sort_icon"/>
+        android:icon="@drawable/sort_icon"
+        android:title="@string/sort"
+        app:showAsAction="ifRoom" />
 
     <item
-        android:title="@string/delete_all_local"
         android:id="@+id/deleteAllLocal"
+        android:title="@string/delete_all_local"
         app:showAsAction="never" />
 
     <item
-        android:title="@string/delete_all_remote"
         android:id="@+id/deleteAllRemote"
+        android:title="@string/delete_all_remote"
         app:showAsAction="never" />
 
     <item
-        android:title="@string/sync_databases"
         android:id="@+id/syncDB"
-        app:showAsAction="never"/>
+        android:title="@string/sync_databases"
+        app:showAsAction="never" />
 
 </menu>

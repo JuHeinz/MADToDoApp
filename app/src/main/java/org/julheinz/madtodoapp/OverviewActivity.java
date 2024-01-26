@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,8 +17,8 @@ import android.widget.ProgressBar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -99,6 +99,41 @@ public class OverviewActivity extends AppCompatActivity {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+
+        Toolbar topAppBar = findViewById(R.id.topAppBar);
+        setSupportActionBar(topAppBar);
+
+        topAppBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.sortItems) {
+                if (viewModel.getCurrentSortMode() == OverviewViewModel.SORT_BY_DONE) {
+                    showSnackbar("Sorting items by favorite then date");
+                    viewModel.setCurrentSortMode(OverviewViewModel.SORT_FAV_DUE);
+                } else {
+                    showSnackbar("Sorting items by done status");
+                    viewModel.setCurrentSortMode(SORT_BY_DONE);
+                }
+                viewModel.sortTasksAfterUserInput();
+                return true;
+            }else if(item.getItemId() == R.id.addTask){
+                callDetailViewForCreate();
+                return true;
+            }
+            else if (item.getItemId() == R.id.deleteAllLocal) {
+                showSnackbar("Local data was deleted.");
+                viewModel.deleteAllLocalTasks();
+                return true;
+            } else if (item.getItemId() == R.id.deleteAllRemote) {
+                String message = viewModel.deleteAllRemoteTasks();
+                showSnackbar(message);
+                return true;
+            } else if (item.getItemId() == R.id.syncDB) {
+                String message =  viewModel.syncDatabases();
+                showSnackbar(message);
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
 
 
@@ -170,32 +205,4 @@ public class OverviewActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.sortItems) {
-            if (viewModel.getCurrentSortMode() == OverviewViewModel.SORT_BY_DONE) {
-                showSnackbar("Sorting items by favorite then date");
-                viewModel.setCurrentSortMode(OverviewViewModel.SORT_FAV_DUE);
-            } else {
-                showSnackbar("Sorting items by done status");
-                viewModel.setCurrentSortMode(SORT_BY_DONE);
-            }
-            viewModel.sortTasksAfterUserInput();
-            return true;
-        } else if (item.getItemId() == R.id.deleteAllLocal) {
-            showSnackbar("Local data was deleted.");
-            viewModel.deleteAllLocalTasks();
-            return true;
-        } else if (item.getItemId() == R.id.deleteAllRemote) {
-            String message = viewModel.deleteAllRemoteTasks();
-            showSnackbar(message);
-            return true;
-        } else if (item.getItemId() == R.id.syncDB) {
-            String message =  viewModel.syncDatabases();
-            showSnackbar(message);
-            return true;
-    } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
 }

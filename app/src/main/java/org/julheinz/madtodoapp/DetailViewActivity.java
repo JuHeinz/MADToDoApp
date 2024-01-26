@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -23,6 +23,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -63,10 +64,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         Intent detailViewIntentFromOverview = getIntent();
         String action = detailViewIntentFromOverview.getAction();
 
-        // if action is called for creating a task, change layout
-        if (Objects.equals(action, "android.intent.action.INSERT")) {
-            prepareLayoutForCreate();
-        }
+
 
         itemBinding.setLifecycleOwner(this); // enable observing of view model
         this.viewModel = new ViewModelProvider(this).get(DetailviewViewModel.class);
@@ -118,11 +116,38 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         });
 
 
+        Toolbar topAppBar = findViewById(R.id.topAppBar);
+        setSupportActionBar(topAppBar);
+        topAppBar.setNavigationOnClickListener(v -> cancelEdit());
+
+        topAppBar.setOnMenuItemClickListener(item -> {
+            if(item.getItemId() == R.id.addContact){
+                selectContact();
+                return true;
+            }else if(item.getItemId() == R.id.deleteTask){
+                //TODO: don't show this item in menu if task is being created
+                confirmDeletionViaDialog();
+                return true;
+            }else{
+                return false;
+            }
+        });
+
+
 
         ListView listView = findViewById(R.id.contactListView); // listview element in detailview_activity.xml = container for list
         //instantiate adapter
         listViewAdapter = new ContactListAdapter(this, R.id.contactListView, localContactsList,  this.getLayoutInflater());
         listView.setAdapter(listViewAdapter);
+
+        // if action is called for creating a task, change layout
+        if (Objects.equals(action, "android.intent.action.INSERT")) {
+            prepareLayoutForCreate();
+            getSupportActionBar().setTitle("New task");
+        }else{
+            getSupportActionBar().setTitle(viewModel.getTaskEntity().getTitle());
+
+        }
 
     }
 
@@ -203,6 +228,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
      */
     public void prepareLayoutForCreate() {
         setDoneCheckboxVisibility(View.GONE);
+
         //TODO: hide delete option in menu
     }
 
@@ -220,19 +246,7 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.addContact){
-            selectContact();
-            return true;
-        }else if(item.getItemId() == R.id.deleteTask){
-            //TODO: don't show this item in menu if task is being created
-            this.confirmDeletionViaDialog();
-            return true;
-        }else{
-            return super.onOptionsItemSelected(item);
-        }
-    }
+
 
     private void selectContact(){
         //Intent to call the app which is registered to handle contacts on the device
