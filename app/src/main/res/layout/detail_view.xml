@@ -18,18 +18,15 @@
         android:id="@+id/DetailView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="4dp">
+        android:paddingHorizontal="10dp">
 
-        <com.google.android.material.button.MaterialButton
+        <Button
+            style="?attr/materialIconButtonStyle"
             android:id="@+id/backBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> viewmodel.onCancel()}"
-            android:text="@string/backBtn_label"
             android:textAlignment="viewStart"
-            android:textColor="@color/dark_blue"
-            app:backgroundTint="@color/white"
-            app:iconTint="@color/dark_blue"
             app:icon="@drawable/arrow_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -60,7 +57,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="@={viewmodel.taskEntity.done}"
-            android:text="@string/is_done_label"
             android:visibility="@{activity.doneCheckboxVisibility}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -84,7 +80,6 @@
                 android:lines="10"
                 android:minLines="5"
                 android:text="@={viewmodel.taskEntity.description}"
-                android:layout_marginBottom="10dp"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -95,56 +90,52 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/descriptionInput">
+            app:layout_constraintTop_toBottomOf="@id/descriptionInput"
+            android:paddingVertical="3dp">
 
-            <com.google.android.material.button.MaterialButton
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Assist"
                 android:id="@+id/dueTimeBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="@{() -> viewmodel.onSetDueTime()}"
                 android:text="@{viewmodel.dateTimeHelper.hourOfDay + `:` + viewmodel.dateTimeHelper.minute}"
-                android:textAlignment="viewStart"
-                android:textColor="@color/dark_blue"
-                app:backgroundTint="@color/white"
-                app:icon="@drawable/schedule_icon"
-                app:iconTint="@color/dark_blue"
+                app:chipIcon="@drawable/schedule_icon"
+                app:ensureMinTouchTargetSize="true"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-
                 />
 
-            <com.google.android.material.button.MaterialButton
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Assist"
                 android:id="@+id/dueDateBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="1dp"
                 android:onClick="@{() -> viewmodel.onSetDueDate()}"
                 android:text="@{viewmodel.dateTimeHelper.dayOfMonth + `.` + (viewmodel.dateTimeHelper.month+1) + `.` + viewmodel.dateTimeHelper.year}"
-                android:textAlignment="viewStart"
-                android:textColor="@color/dark_blue"
-                app:backgroundTint="@color/white"
-                app:iconTint="@color/dark_blue"
-                app:icon="@drawable/event"
+                app:chipIcon="@drawable/event"
                 app:layout_constraintStart_toEndOf="@id/dueTimeBtn"
                 app:layout_constraintTop_toTopOf="parent"
 
                 />
 
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/material_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/is_fav_label"
                 android:checked="@={viewmodel.taskEntity.fav}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                app:thumbIcon="@drawable/fav_switch_icons"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/saveBtn"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="@{() -> viewmodel.onSave()}"
@@ -155,13 +146,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dueDateLayout" />
 
+        <FrameLayout xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/linearLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/saveBtn"
+            >
         <ListView
             android:id="@+id/contactListView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="350dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/saveBtn"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
             />
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

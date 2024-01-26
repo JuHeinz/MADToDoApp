@@ -20,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.checkbox.MaterialCheckBox
+            <CheckBox
                 android:id="@+id/doneCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -32,57 +32,59 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/titleOutput"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="clip_horizontal|center|start"
-                android:text="@={task.title}"
-                android:textColor="@color/dark_blue"
-                android:textSize="16sp"
-                android:textStyle="bold"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/fav_switch"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/doneCheckBox"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.49" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+                <TextView
+                    android:id="@+id/titleOutput"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="clip_horizontal|center|start"
+                    android:text="@={task.title}"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/fav_switch"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:maxLines="1"
+                    android:ems="14"
+                    android:ellipsize="end"/>
+
+                <LinearLayout
+                    android:id="@+id/dueDateRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="@id/titleOutput"
+                    app:layout_constraintTop_toBottomOf="@+id/titleOutput">
+
+                    <TextView
+                        android:id="@+id/dueDateOutput"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/dd_mm_yyyy" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/fav_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/is_fav_label"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:checked="@={task.fav}"
+                android:focusable="false"
+                android:onClick="@{() -> activityViewModel.updateTask(task)}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:onClick="@{() -> activityViewModel.updateTask(task)}"
-                android:focusable="false"
-                />
-
-            <LinearLayout
-                android:id="@+id/dueDateRow"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fav_switch">
-
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:importantForAccessibility="no"
-                    app:srcCompat="@drawable/event" />
-
-                <TextView
-                    android:id="@+id/dueDateOutput"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/dd_mm_yyyy" />
-            </LinearLayout>
-
+                app:thumbIcon="@drawable/fav_switch_icons"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

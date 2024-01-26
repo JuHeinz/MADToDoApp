@@ -22,10 +22,9 @@
         <TextView
             android:id="@+id/nameOutput"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:gravity="clip_horizontal|center|start"
+            android:layout_height="wrap_content"
+            android:gravity="center|start"
             android:text="@{contact.name}"
-            android:textColor="@color/dark_blue"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -33,36 +32,50 @@
             app:layout_constraintTop_toTopOf="parent"
            />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/smsBtn"
+        <LinearLayout
+            android:id="@+id/buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            app:icon="@drawable/sms"
-            android:onClick="@{() -> activity.sendSMSToContact(contact.phoneNumber)}"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/nameOutput"
-            />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/emailBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            android:onClick="@{() -> activity.sendEmailToContact(contact.email)}"
-            app:icon="@drawable/mail"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/smsBtn"
-            />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/deleteBtn"
-            android:layout_width="wrap_content"
-            android:onClick="@{() -> activity.deleteContact(contact.id)}"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            app:icon="@drawable/delete"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/emailBtn"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+            <Button
+                style="?attr/materialIconButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/smsBtn"
+                app:icon="@drawable/sms"
+                app:ensureMinTouchTargetSize="true"
+                android:onClick="@{() -> activity.sendSMSToContact(contact.phoneNumber)}"
+                />
+            <Button
+                style="?attr/materialIconButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/emailBtn"
+                app:icon="@drawable/mail"
+                app:ensureMinTouchTargetSize="true"
+                android:onClick="@{() -> activity.sendEmailToContact(contact.email)}"
+                />
+
+            <Button
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/deleteBtn"
+                android:text=""
+                app:icon="@drawable/delete"
+                app:ensureMinTouchTargetSize="true"
+                android:onClick="@{() -> activity.deleteContact(contact.id)}"
+                android:textAlignment="viewStart"
+                />
+
+        </LinearLayout>
+
+
+
+
+
 
 
 

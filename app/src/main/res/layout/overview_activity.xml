@@ -31,7 +31,6 @@
             android:clickable="true"
             android:contentDescription="@string/alt_text_addTaskBtn"
             android:onClick="@{() -> activity.callDetailViewForCreate()}"
-            app:backgroundTint="@color/dark_blue"
             app:srcCompat="@android:drawable/ic_input_add" />
 
         <ListView
