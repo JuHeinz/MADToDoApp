@@ -30,10 +30,13 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
     private final LayoutInflater inflater;
     TaskEntity task;
     final OverviewViewModel viewModel;
+
+    final OverviewActivity activity;
     public TaskListAdapter(Context parent, int layoutIdOfListView, List<TaskEntity> taskList, LayoutInflater inflater, OverviewViewModel viewModel) {
         super(parent, layoutIdOfListView, taskList);
         this.inflater = inflater;
         this.viewModel = viewModel;
+        this.activity = (OverviewActivity) parent;
     }
 
     /**
@@ -63,7 +66,8 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
         }
 
         taskBinding.setTask(task);
-        taskBinding.setActivityViewModel(viewModel); // make it so that the databinding class for the listitem has access to the viewmodel of Overview Activity
+        taskBinding.setViewModel(viewModel); // make it so that the databinding class for the listitem has access to the viewmodel of Overview Activity
+        taskBinding.setActivity(activity); // make it so that the databinding class for the listitem has access to the Overview Activity
         return taskView;
     }
 

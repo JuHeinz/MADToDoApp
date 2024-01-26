@@ -205,4 +205,17 @@ public class OverviewActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Style view according to if task is overdue
+     * @param taskToBeCompared
+     * @return
+     */
+    public int calculateTaskDue(TaskEntity taskToBeCompared){
+        if(taskToBeCompared.getDueDate() > System.currentTimeMillis()){
+            return View.GONE;
+        }else{
+            return View.VISIBLE;
+        }
+    }
+
 }
