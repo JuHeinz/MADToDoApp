@@ -21,11 +21,13 @@ public class LoginViewModel extends ViewModel {
         return waitingForAuthenticate;
     }
 
-    public MutableLiveData<Boolean> getLoginSuccess() {
+    public MutableLiveData<AuthStatus> getLoginSuccess() {
         return loginSuccess;
     }
 
-    private final MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>(false);
+    public enum AuthStatus {BEFORE_ATTEMPT, SUCCESS, FAILURE}
+
+    private final MutableLiveData<AuthStatus> loginSuccess = new MutableLiveData<>(AuthStatus.BEFORE_ATTEMPT);
 
     private final MutableLiveData<Boolean> waitingForAuthenticate = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> inputsValid = new MutableLiveData<>(false);
@@ -34,8 +36,6 @@ public class LoginViewModel extends ViewModel {
     private final RetrofitUserOperations userOperations = new RetrofitUserOperations();
 
     private final ExecutorService operationRunner = Executors.newFixedThreadPool(4); // smart thread management
-
-
 
     public LoginEntity getEntity() {
         return entity;
@@ -79,6 +79,7 @@ public class LoginViewModel extends ViewModel {
 
     /**
      * check if the entered email is invalid
+     *
      * @param actionId the editor action that has triggered this method from the databinding
      * @return true if email is *in*valid (or the editor action was not done or next)
      */
@@ -89,12 +90,11 @@ public class LoginViewModel extends ViewModel {
                 this.emailErrorStatus.setValue("Email may not be empty");
                 setPasswordInputValid(false);
                 return true;
-            }else if(!Patterns.EMAIL_ADDRESS.matcher(enteredEmailAddress).matches()){
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(enteredEmailAddress).matches()) {
                 this.emailErrorStatus.setValue("Not a valid email pattern");
                 setPasswordInputValid(false);
                 return true;
-            }
-            else {
+            } else {
                 Log.i(LOG_TAG, "Valid email entered");
                 setEmailInputValid(true);
                 getInputsValid();
@@ -106,10 +106,11 @@ public class LoginViewModel extends ViewModel {
 
     /**
      * check if the entered password is invalid
+     *
      * @param actionId the editor action that has triggered this method from the databinding
      * @return true if password is *in*valid (or the editor action was not done or next)
      */
-    public boolean checkPasswordInputInvalid(int actionId){
+    public boolean checkPasswordInputInvalid(int actionId) {
         checkEmailInputInvalid(actionId); //check email input again in case user left email input without clicking next
         String regexOnlyNumbers = "^[0-9]*$";
         if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
@@ -117,18 +118,15 @@ public class LoginViewModel extends ViewModel {
                 this.passwordErrorStatus.setValue("Password may not be empty!");
                 setPasswordInputValid(false);
                 return true;
-            }
-            else if(entity.getEnteredPassword().length() != 6){
+            } else if (entity.getEnteredPassword().length() != 6) {
                 this.passwordErrorStatus.setValue("Password must be of length 6!");
                 setPasswordInputValid(false);
                 return true;
-            }
-            else if(!entity.getEnteredPassword().matches(regexOnlyNumbers)){
+            } else if (!entity.getEnteredPassword().matches(regexOnlyNumbers)) {
                 this.passwordErrorStatus.setValue("Password may only contain numbers!");
                 setPasswordInputValid(false);
                 return true;
-            }
-            else{
+            } else {
                 Log.i(LOG_TAG, "Valid password entered!");
                 setPasswordInputValid(true);
                 return false;
@@ -153,25 +151,22 @@ public class LoginViewModel extends ViewModel {
         getInputsValid();
     }
 
-
     public void setPasswordInputValid(boolean passwordInputValid) {
         isPasswordInputValid = passwordInputValid;
         getInputsValid();
     }
 
-    public void onLoginButtonClick(){
+    public void onLoginButtonClick() {
         //check again if both fields have valid input in case user left fields without clicking next or done
         boolean pwInvalid = checkPasswordInputInvalid(6);
         boolean emailInvalid = checkEmailInputInvalid(6);
-        if(emailInvalid || pwInvalid){
+        if (emailInvalid || pwInvalid) {
             Log.i(LOG_TAG, "One or both inputs invalid");
-
-        }else {
+        } else {
             Log.i(LOG_TAG, "Both inputs valid, trying to log in");
             UserEntity userEntity = new UserEntity(entity.getEnteredPassword(), entity.getEnteredEmail());
             authenticateUser(userEntity);
         }
-
     }
 
     public void authenticateUser(UserEntity user) {
@@ -185,10 +180,10 @@ public class LoginViewModel extends ViewModel {
                 throw new RuntimeException(e);
             }
             Log.i(LOG_TAG, "Authentication successful? " + isAuthenticated);
-            if(isAuthenticated){
-                loginSuccess.postValue(true);
-            }else {
-                loginSuccess.postValue(false);
+            if (isAuthenticated) {
+                loginSuccess.postValue(AuthStatus.SUCCESS);
+            } else {
+                loginSuccess.postValue(AuthStatus.FAILURE);
             }
             waitingForAuthenticate.postValue(false);
         });

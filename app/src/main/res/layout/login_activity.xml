@@ -78,6 +78,7 @@
                     android:text="@={viewmodel.entity.enteredPassword}"
                     />
 
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
@@ -88,6 +89,33 @@
                 android:layout_marginTop="10dp"
                 android:onClick="@{() -> viewmodel.onLoginButtonClick()}"
                 />
+            <LinearLayout
+                android:id="@+id/authErrorMsg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:visibility="gone"
+                >
+                <ImageView
+                    android:scaleType="fitXY"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/warning"
+                    app:tint="?attr/colorError"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/authentication_fail"
+                    android:textAlignment="viewStart"
+                    android:textColor="?attr/colorError"
+                    android:textStyle="bold"
+
+                    />
+            </LinearLayout>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

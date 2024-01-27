@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import java.util.concurrent.Future;
 
 public class LogInActivity extends AppCompatActivity {
     private ProgressBar progressBar;
+    private LinearLayout authErrorMsg;
 
     private static final String LOG_TAG = LogInActivity.class.getSimpleName();
 
@@ -68,17 +70,23 @@ public class LogInActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "Waiting for authentication");
                 progressBar.setVisibility(View.VISIBLE);
             }else{
-                Log.i(LOG_TAG, "Authentication returned with result");
                 this.progressBar.setVisibility(View.GONE);
             }
         });
 
         // REACTING TO LOGIN STATE
-        viewModel.getLoginSuccess().observe(this, success ->{
-            if(success){
+        this.authErrorMsg = findViewById(R.id.authErrorMsg);
+        this.authErrorMsg.setVisibility(View.GONE);
+        viewModel.getLoginSuccess().observe(this, status ->{
+            if(status == LoginViewModel.AuthStatus.SUCCESS){
+                this.authErrorMsg.setVisibility(View.GONE);
+
                 startActivity(new Intent(this, OverviewActivity.class));
-            }else{
+            }else if(status == LoginViewModel.AuthStatus.FAILURE){
+                this.authErrorMsg.setVisibility(View.VISIBLE);
                 Log.i(LOG_TAG, "Password or username is wrong!");
+            }else{
+                Log.i(LOG_TAG, "Before authentication attempt");
             }
         });
 
