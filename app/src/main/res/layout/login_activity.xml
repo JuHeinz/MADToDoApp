@@ -7,6 +7,9 @@
         <variable
             name="viewmodel"
             type="org.julheinz.viewmodel.LoginViewModel" />
+        <variable
+            name="entity"
+            type="org.julheinz.entities.LoginEntity" />
 
     </data>
 
@@ -35,6 +38,7 @@
                 android:id="@+id/emailField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:error="@{viewmodel.emailErrorStatus}"
                 android:hint="@string/email"
                 app:endIconMode="clear_text">
 
@@ -42,9 +46,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
+                    android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.isEmailInputValid(actionId)}"
                     android:onTextChanged="@{() -> viewmodel.onEmailInputChanged()}"
+                    android:text="@={viewmodel.entity.enteredEmail}" />
 
-                    />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -53,13 +58,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
+                android:error="@{viewmodel.passwordErrorStatus}"
                 app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
+                    android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.isPasswordInputValid(actionId)}"
                     android:onTextChanged="@{() -> viewmodel.onPasswordInputChanged()}"
+                    android:text="@={viewmodel.entity.enteredPassword}"
                     />
 
             </com.google.android.material.textfield.TextInputLayout>

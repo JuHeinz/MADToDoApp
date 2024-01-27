@@ -75,6 +75,7 @@ public class DetailviewViewModel extends ViewModel {
                 this.errorStatus.setValue("Field may not be empty.");
             }
         }
+        //TODO: return conditionally?
         return true; // false = focus can skip to next input field even if error, true = focus stays on field if error
     }
 

@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
+
 import org.julheinz.data.RoomTaskCrudOperations;
 import org.julheinz.data.TaskCrudOperations;
+import org.julheinz.entities.LoginEntity;
 import org.julheinz.madtodoapp.databinding.LoginActivityBinding;
 import org.julheinz.viewmodel.LoginViewModel;
 
@@ -23,18 +25,13 @@ public class LogInActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        LoginEntity loginEntity = new LoginEntity();
+
         LoginActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.login_activity);
         this.viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         binding.setViewmodel(viewModel);
-
-
-        this.viewModel.getEmailErrorStatus().observe(this, status ->{
-            Log.i(LOG_TAG, "Email Status is: " + status);
-        });
-
-        this.viewModel.getPasswordErrorStatus().observe(this, status ->{
-            Log.i(LOG_TAG, "Password Status is: " + status);
-        });
+        binding.setLifecycleOwner(this); // make it so databinding and viewmodel can communicate
+        this.viewModel.setEntity(loginEntity);
 
         //DETERMINE ONLINE STATUS
         Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations(); //at some point a TaskCrudOperations Object can be read from this
