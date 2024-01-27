@@ -50,10 +50,33 @@ public class LogInActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        // INPUT VALIDATION
         viewModel.getInputsValid().observe(this, isValid ->{
             Log.i(LOG_TAG, "Both inputs valid? " + isValid);
             Button btn = this.findViewById(R.id.logInBtn);
             btn.setEnabled(isValid);
+        });
+
+        // STATE DURING LOG IN AUTHENTICATION
+        viewModel.getWaitingForAuthenticate().observe(this, waiting -> { // Observe changes on MutableLiveData, act according to its state
+            if(waiting) {
+                Log.i(LOG_TAG, "Waiting for authentication");
+                //progressBar.setVisibility(View.VISIBLE);
+            }else{
+                Log.i(LOG_TAG, "Authentication returned with result");
+
+                //this.progressBar.setVisibility(View.GONE);
+
+            }
+        });
+
+        // REACTING TO LOGIN STATE
+        viewModel.getLoginSuccess().observe(this, success ->{
+            if(success){
+                startActivity(new Intent(this, OverviewActivity.class));
+            }else{
+                Log.i(LOG_TAG, "Password or username is wrong!");
+            }
         });
 
     }

@@ -7,15 +7,33 @@ import android.view.inputmethod.EditorInfo;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import org.julheinz.data.RetrofitUserOperations;
 import org.julheinz.entities.LoginEntity;
+import org.julheinz.entities.UserEntity;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LoginViewModel extends ViewModel {
     private static final String LOG_TAG = LoginViewModel.class.getSimpleName();
 
+    public MutableLiveData<Boolean> getWaitingForAuthenticate() {
+        return waitingForAuthenticate;
+    }
 
+    public MutableLiveData<Boolean> getLoginSuccess() {
+        return loginSuccess;
+    }
+
+    private final MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>(false);
+
+    private final MutableLiveData<Boolean> waitingForAuthenticate = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> inputsValid = new MutableLiveData<>(false);
     private boolean isEmailInputValid = false;
     private boolean isPasswordInputValid = false;
+    private final RetrofitUserOperations userOperations = new RetrofitUserOperations();
+
+    private final ExecutorService operationRunner = Executors.newFixedThreadPool(4); // smart thread management
 
 
 
@@ -150,7 +168,23 @@ public class LoginViewModel extends ViewModel {
 
         }else {
             Log.i(LOG_TAG, "Both inputs valid, trying to log in");
+            UserEntity userEntity = new UserEntity(entity.getEnteredPassword(), entity.getEnteredEmail());
+            authenticateUser(userEntity);
         }
 
+    }
+
+    public void authenticateUser(UserEntity user) {
+        waitingForAuthenticate.setValue(true);
+        operationRunner.execute(() -> {
+            boolean isAuthenticated = userOperations.authenticate(user);
+            Log.i(LOG_TAG, "Authentication successfull? " + isAuthenticated);
+            if(isAuthenticated){
+                loginSuccess.postValue(true);
+            }else {
+                loginSuccess.postValue(false);
+            }
+            waitingForAuthenticate.postValue(false);
+        });
     }
 }
