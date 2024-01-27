@@ -6,6 +6,10 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.julheinz.data.RoomTaskCrudOperations;
+import org.julheinz.data.TaskCrudOperations;
+import java.util.concurrent.Future;
+
 public class LogInActivity extends AppCompatActivity {
     private static final String LOG_TAG = LogInActivity.class.getSimpleName();
     @Override
@@ -13,12 +17,21 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
 
-        //TODO: This doesn't work cause application needs a few seconds to try and reach server
-        Log.d(LOG_TAG, "Offline mode? " + ((TaskApplication) getApplication()).isInOfflineMode());
-        if(((TaskApplication) getApplication()).isInOfflineMode()){
-            Log.i(LOG_TAG,"Offline! Skipping log in.");
-            //If offline, skip login view and go to OverviewActivity
-            startActivity(new Intent(this, OverviewActivity.class));
+
+        Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations(); //at some point a TaskCrudOperations Object can be read from this
+        TaskCrudOperations taskCrudOperations;
+        try {
+            taskCrudOperations = crudOperationsFuture.get(); //get waits until the other thread is done and the future obj has a value
+            if(taskCrudOperations instanceof RoomTaskCrudOperations){
+                Log.i(LOG_TAG,"Offline! Skipping log in.");
+                //If offline, skip login view and go to OverviewActivity
+                startActivity(new Intent(this, OverviewActivity.class));
+            }else{
+                Log.i(LOG_TAG,"Online, please log in.");
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
