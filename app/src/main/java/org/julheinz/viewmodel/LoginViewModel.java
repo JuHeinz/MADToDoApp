@@ -68,11 +68,17 @@ public class LoginViewModel extends ViewModel {
     }
 
     public boolean onEmailInputChanged() {
+        if(loginSuccess.getValue() == AuthStatus.FAILURE){
+            loginSuccess.postValue(AuthStatus.BEFORE_ATTEMPT);
+        }
         this.emailErrorStatus.setValue(null); // reset the errorStatus so error disappears once validated (e.g. enough letters entered)
         return false; // return false so other listeners can process the event
     }
 
     public boolean onPasswordInputChanged() {
+        if(loginSuccess.getValue() == AuthStatus.FAILURE){
+            loginSuccess.postValue(AuthStatus.BEFORE_ATTEMPT);
+        }
         this.passwordErrorStatus.setValue(null);
         return false;
     }

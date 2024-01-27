@@ -86,6 +86,7 @@ public class LogInActivity extends AppCompatActivity {
                 this.authErrorMsg.setVisibility(View.VISIBLE);
                 Log.i(LOG_TAG, "Password or username is wrong!");
             }else{
+                this.authErrorMsg.setVisibility(View.GONE);
                 Log.i(LOG_TAG, "Before authentication attempt");
             }
         });
