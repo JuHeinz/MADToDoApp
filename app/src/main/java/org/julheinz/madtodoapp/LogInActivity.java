@@ -3,6 +3,7 @@ package org.julheinz.madtodoapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -48,6 +49,12 @@ public class LogInActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+
+        viewModel.getInputsValid().observe(this, isValid ->{
+            Log.i(LOG_TAG, "Both inputs valid? " + isValid);
+            Button btn = this.findViewById(R.id.logInBtn);
+            btn.setEnabled(isValid);
+        });
 
     }
 

@@ -22,4 +22,5 @@
     <string name="welcome_please_log_in">Welcome, please log in!</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="login">Login</string>
 </resources>

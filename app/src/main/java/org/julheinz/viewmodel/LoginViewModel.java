@@ -12,6 +12,13 @@ import org.julheinz.entities.LoginEntity;
 public class LoginViewModel extends ViewModel {
     private static final String LOG_TAG = LoginViewModel.class.getSimpleName();
 
+
+    private final MutableLiveData<Boolean> inputsValid = new MutableLiveData<>(false);
+    private boolean isEmailInputValid = false;
+    private boolean isPasswordInputValid = false;
+
+
+
     public LoginEntity getEntity() {
         return entity;
     }
@@ -53,50 +60,97 @@ public class LoginViewModel extends ViewModel {
     }
 
     /**
-     * Check input in email field after user has clicked on next (not every input)
-     *
+     * check if the entered email is invalid
      * @param actionId the editor action that has triggered this method from the databinding
-     * @return true, so that the
+     * @return true if email is *in*valid (or the editor action was not done or next)
      */
-    public boolean isEmailInputValid(int actionId) {
+    public boolean checkEmailInputInvalid(int actionId) {
         if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
             String enteredEmailAddress = entity.getEnteredEmail();
             if (enteredEmailAddress.isEmpty()) {
                 this.emailErrorStatus.setValue("Email may not be empty");
+                setPasswordInputValid(false);
                 return true;
             }else if(!Patterns.EMAIL_ADDRESS.matcher(enteredEmailAddress).matches()){
                 this.emailErrorStatus.setValue("Not a valid email pattern");
+                setPasswordInputValid(false);
                 return true;
             }
             else {
                 Log.i(LOG_TAG, "Valid email entered");
+                setEmailInputValid(true);
+                getInputsValid();
                 return false;
             }
         }
         return true; // false = focus can skip to next input field even if error, true = focus stays on field if error
     }
 
-    public boolean isPasswordInputValid(int actionId){
+    /**
+     * check if the entered password is invalid
+     * @param actionId the editor action that has triggered this method from the databinding
+     * @return true if password is *in*valid (or the editor action was not done or next)
+     */
+    public boolean checkPasswordInputInvalid(int actionId){
+        checkEmailInputInvalid(actionId); //check email input again in case user left email input without clicking next
         String regexOnlyNumbers = "^[0-9]*$";
         if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
             if (entity.getEnteredPassword().isEmpty()) {
                 this.passwordErrorStatus.setValue("Password may not be empty!");
+                setPasswordInputValid(false);
                 return true;
             }
             else if(entity.getEnteredPassword().length() != 6){
                 this.passwordErrorStatus.setValue("Password must be of length 6!");
+                setPasswordInputValid(false);
                 return true;
             }
             else if(!entity.getEnteredPassword().matches(regexOnlyNumbers)){
                 this.passwordErrorStatus.setValue("Password may only contain numbers!");
+                setPasswordInputValid(false);
                 return true;
             }
             else{
                 Log.i(LOG_TAG, "Valid password entered!");
+                setPasswordInputValid(true);
                 return false;
             }
         }
         //false = focus can skip to next input field even if error, true = focus stays on field if error
         return true;
+    }
+
+    /**
+     * Returns a mutable live data of type boolean if both inputs are valid
+     */
+    public MutableLiveData<Boolean> getInputsValid() {
+        boolean result = isEmailInputValid && isPasswordInputValid;
+        Log.i(LOG_TAG, "Both inputs valid? " + result);
+        inputsValid.setValue(result);
+        return inputsValid;
+    }
+
+    public void setEmailInputValid(boolean emailInputValid) {
+        isEmailInputValid = emailInputValid;
+        getInputsValid();
+    }
+
+
+    public void setPasswordInputValid(boolean passwordInputValid) {
+        isPasswordInputValid = passwordInputValid;
+        getInputsValid();
+    }
+
+    public void onLoginButtonClick(){
+        //check again if both fields have valid input in case user left fields without clicking next or done
+        boolean pwInvalid = checkPasswordInputInvalid(6);
+        boolean emailInvalid = checkEmailInputInvalid(6);
+        if(emailInvalid || pwInvalid){
+            Log.i(LOG_TAG, "One or both inputs invalid");
+
+        }else {
+            Log.i(LOG_TAG, "Both inputs valid, trying to log in");
+        }
+
     }
 }

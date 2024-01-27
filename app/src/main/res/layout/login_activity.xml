@@ -21,7 +21,7 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -46,7 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.isEmailInputValid(actionId)}"
+                    android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.checkEmailInputInvalid(actionId)}"
                     android:onTextChanged="@{() -> viewmodel.onEmailInputChanged()}"
                     android:text="@={viewmodel.entity.enteredEmail}" />
 
@@ -65,13 +65,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.isPasswordInputValid(actionId)}"
+                    android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.checkPasswordInputInvalid(actionId)}"
                     android:onTextChanged="@{() -> viewmodel.onPasswordInputChanged()}"
                     android:text="@={viewmodel.entity.enteredPassword}"
                     />
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <Button
+                android:id="@+id/logInBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login"
+                android:layout_marginTop="10dp"
+                android:onClick="@{() -> viewmodel.onLoginButtonClick()}"
+                />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

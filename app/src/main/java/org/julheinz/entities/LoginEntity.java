@@ -1,6 +1,5 @@
 package org.julheinz.entities;
 
-import android.util.Log;
 
 
 /**
@@ -8,7 +7,6 @@ import android.util.Log;
  */
 public class LoginEntity {
 
-    private static final String LOG_TAG = LoginEntity.class.getSimpleName();
 
     public String getEnteredPassword() {
         if (enteredPassword == null) {
@@ -27,7 +25,6 @@ public class LoginEntity {
     }
 
     public void setEnteredEmail(String enteredEmail) {
-        Log.i(LOG_TAG, "Entered email:" + enteredEmail);
         this.enteredEmail = enteredEmail;
     }
 
