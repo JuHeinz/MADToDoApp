@@ -3,7 +3,9 @@ package org.julheinz.madtodoapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -19,6 +21,8 @@ import org.julheinz.viewmodel.LoginViewModel;
 import java.util.concurrent.Future;
 
 public class LogInActivity extends AppCompatActivity {
+    private ProgressBar progressBar;
+
     private static final String LOG_TAG = LogInActivity.class.getSimpleName();
 
     private LoginViewModel viewModel;
@@ -58,15 +62,14 @@ public class LogInActivity extends AppCompatActivity {
         });
 
         // STATE DURING LOG IN AUTHENTICATION
+        this.progressBar = findViewById(R.id.progressBar); // show progressbar while loading of data
         viewModel.getWaitingForAuthenticate().observe(this, waiting -> { // Observe changes on MutableLiveData, act according to its state
             if(waiting) {
                 Log.i(LOG_TAG, "Waiting for authentication");
-                //progressBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
             }else{
                 Log.i(LOG_TAG, "Authentication returned with result");
-
-                //this.progressBar.setVisibility(View.GONE);
-
+                this.progressBar.setVisibility(View.GONE);
             }
         });
 

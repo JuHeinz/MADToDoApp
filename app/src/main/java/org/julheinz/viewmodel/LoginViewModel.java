@@ -178,7 +178,13 @@ public class LoginViewModel extends ViewModel {
         waitingForAuthenticate.setValue(true);
         operationRunner.execute(() -> {
             boolean isAuthenticated = userOperations.authenticate(user);
-            Log.i(LOG_TAG, "Authentication successfull? " + isAuthenticated);
+            Log.i(LOG_TAG, "Trying to authenticate user...");
+            try {
+                Thread.sleep(2000); //delay for exam purposes
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            Log.i(LOG_TAG, "Authentication successful? " + isAuthenticated);
             if(isAuthenticated){
                 loginSuccess.postValue(true);
             }else {
