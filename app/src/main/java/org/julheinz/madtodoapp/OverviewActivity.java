@@ -46,7 +46,6 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.overview_activity);
 
         org.julheinz.madtodoapp.databinding.OverviewActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.overview_activity);
         binding.setActivity(this);
