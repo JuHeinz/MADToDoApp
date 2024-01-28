@@ -7,9 +7,12 @@
         <variable
             name="viewmodel"
             type="org.julheinz.viewmodel.LoginViewModel" />
+
         <variable
-            name="entity"
-            type="org.julheinz.entities.LoginEntity" />
+            name="activity"
+            type="org.julheinz.madtodoapp.LogInActivity" />
+
+
 
     </data>
 
@@ -46,7 +49,7 @@
                 android:id="@+id/emailField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:error="@{viewmodel.emailErrorStatus}"
+                android:error="@{activity.emailErrorMessage}"
                 android:hint="@string/email"
                 app:endIconMode="clear_text">
 
@@ -66,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
-                android:error="@{viewmodel.passwordErrorStatus}"
+                android:error="@{activity.pwErrorMessage}"
                 app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.TextInputEditText

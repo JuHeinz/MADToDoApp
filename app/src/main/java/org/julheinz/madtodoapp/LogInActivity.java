@@ -25,20 +25,38 @@ public class LogInActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private LinearLayout authErrorMsg;
 
-    private static final String LOG_TAG = LogInActivity.class.getSimpleName();
+    public String getEmailErrorMessage() {
+        return emailErrorMessage;
+    }
 
+    public String getPwErrorMessage() {
+        return pwErrorMessage;
+    }
+
+    public String emailErrorMessage ="";
+    public String pwErrorMessage ="";
+    private static final String LOG_TAG = LogInActivity.class.getSimpleName();
+    LoginEntity loginEntity;
     private LoginViewModel viewModel;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LoginEntity loginEntity = new LoginEntity();
-
         LoginActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.login_activity);
         this.viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         binding.setViewmodel(viewModel);
+        binding.setActivity(this);
         binding.setLifecycleOwner(this); // make it so databinding and viewmodel can communicate
-        this.viewModel.setEntity(loginEntity);
+        if(viewModel.getEntity() == null){
+            this.loginEntity = new LoginEntity();
+            this.viewModel.setEntity(loginEntity);
+        }else{
+            this.loginEntity = viewModel.getEntity();
+        }
+
+        this.authErrorMsg = findViewById(R.id.authErrorMsg);
+        this.progressBar = findViewById(R.id.progressBar);
+
 
         //DETERMINE ONLINE STATUS
         Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations(); //at some point a TaskCrudOperations Object can be read from this
@@ -63,35 +81,72 @@ public class LogInActivity extends AppCompatActivity {
             btn.setEnabled(isValid);
         });
 
-        // STATE DURING LOG IN AUTHENTICATION
-        this.progressBar = findViewById(R.id.progressBar); // show progressbar while loading of data
-        viewModel.getWaitingForAuthenticate().observe(this, waiting -> { // Observe changes on MutableLiveData, act according to its state
-            if(waiting) {
-                Log.i(LOG_TAG, "Waiting for authentication");
-                progressBar.setVisibility(View.VISIBLE);
-            }else{
-                this.progressBar.setVisibility(View.GONE);
-            }
-        });
 
-        // REACTING TO LOGIN STATE
-        this.authErrorMsg = findViewById(R.id.authErrorMsg);
-        this.authErrorMsg.setVisibility(View.GONE);
-        viewModel.getLoginSuccess().observe(this, status ->{
-            if(status == LoginViewModel.AuthStatus.SUCCESS){
-                this.authErrorMsg.setVisibility(View.GONE);
+        viewModel.getEntityLiveData().observe(this, entity -> { // Observe changes on LoginEntity MutableLiveData, act according to its state
+            Log.i(LOG_TAG, "Observed changes in live data");
 
-                startActivity(new Intent(this, OverviewActivity.class));
-            }else if(status == LoginViewModel.AuthStatus.FAILURE){
-                this.authErrorMsg.setVisibility(View.VISIBLE);
-                Log.i(LOG_TAG, "Password or username is wrong!");
-            }else{
-                this.authErrorMsg.setVisibility(View.GONE);
-                Log.i(LOG_TAG, "Before authentication attempt");
-            }
+            checkEmailErrorState(entity);
+            checkPwErrorState(entity);
+            checkAuthErrorState(entity);
         });
+    }
+
+    public void checkPwErrorState(LoginEntity entity) {
+        switch (entity.getPwErrorState()){
+            case EMPTY:
+                this.pwErrorMessage = "Password may not be empty";
+                break;
+            case NOT_SIX:
+                this.pwErrorMessage = "Password must be of length 6";
+                break;
+            case NOT_NUM:;
+                this.pwErrorMessage = "Password include numbers only";
+                break;
+            case VALID:
+            case NOT_VALIDATED:
+            default:
+                this.pwErrorMessage="";
+        }
+        Log.i(LOG_TAG, pwErrorMessage);
+    }
+
+    private void checkEmailErrorState(LoginEntity entity) {
+        switch (entity.getEmailErrorState()){
+            case EMPTY:
+                this.emailErrorMessage = "Email may not be empty";
+                break;
+            case INVALID_PATTERN:
+                this.emailErrorMessage = "Email pattern invalid";
+                break;
+            case VALID:
+            case NOT_VALIDATED:
+            default:
+                this.emailErrorMessage="";
+        }
+        Log.i(LOG_TAG, emailErrorMessage);
 
     }
 
+    public void checkAuthErrorState(LoginEntity entity){
+        if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.WAITING) {
+            Log.i(LOG_TAG, "Waiting for authentication");
+            progressBar.setVisibility(View.VISIBLE);
+        }else if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.FAILURE){
+            this.authErrorMsg.setVisibility(View.VISIBLE);
+            Log.i(LOG_TAG, "Password or username is wrong!");
+            this.progressBar.setVisibility(View.GONE);
+        }else if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.SUCCESS){
+            startActivity(new Intent(this, OverviewActivity.class));
+        }
+        else {
+            this.authErrorMsg.setVisibility(View.GONE);
+            Log.i(LOG_TAG, "Before authentication attempt");
+        }
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(LOG_TAG, "loginEntity is:" + this.viewModel.getEntity());
+    }
 }
