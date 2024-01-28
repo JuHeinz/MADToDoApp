@@ -405,10 +405,9 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
     }
 
     public void sendEmailToContact(String address){
-        Log.i(LOG_TAG, "Attempting to send email to adress" + address);
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:")); // Only email apps handle this.
-        intent.putExtra(Intent.EXTRA_EMAIL, address);
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{address});
         intent.putExtra(Intent.EXTRA_SUBJECT, "New task!");
         intent.putExtra(Intent.EXTRA_TEXT, getMessageForContact());
         startActivity(intent);
@@ -418,22 +417,28 @@ public class DetailViewActivity extends AppCompatActivity implements DeleteDialo
         Uri uri = Uri.parse("smsto:" + number);
         Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
         intent.putExtra("sms_body", getMessageForContact());
-        Log.i(LOG_TAG, "Attempting to send sms to nr: " + number);
-
         startActivity(intent);
     }
 
-    public String getMessageForContact(){
+    public String getMessageForContact() {
+        Log.i(LOG_TAG, "Attempting to send message for task " + viewModel.getTaskEntity());
+
         String dueDate = viewModel.getTaskEntity().getFullDueDateFormatted();
         String taskTitle = viewModel.getTaskEntity().getTitle();
         String taskDescription = viewModel.getTaskEntity().getDescription();
-        String messageBody = "Here is a new task for you! Title: "  + taskTitle;
-        if(!taskDescription.isEmpty()){
+        String messageBody = "Here is a new task for you! ";
+        if (taskTitle != null) {
+            messageBody = messageBody + "Title: " + taskTitle;
+        } else {
+            messageBody = messageBody + "Title: Untitled";
+        }
+        if (taskDescription != null) {
             messageBody = messageBody + " | Description: " + taskDescription;
+        } else {
+            messageBody = messageBody + " | Description: none";
         }
-        if(!dueDate.isEmpty()){
-            messageBody = messageBody + " | Due: " + dueDate;
-        }
+        messageBody = messageBody + " | Due: " + dueDate;
+
         return messageBody;
     }
 

@@ -168,28 +168,33 @@ public class OverviewActivity extends AppCompatActivity {
     public final ActivityResultLauncher<Intent> detailViewForCreateLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
         if (activityResultObject.getResultCode() == Activity.RESULT_OK) {
             Log.i(LOG_TAG, "Successfully received edited task from DetailView");
+            assert activityResultObject.getData() != null;
             TaskEntity receivedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
             viewModel.createTask(receivedTask);
         }
     });
 
     public ActivityResultLauncher<Intent> detailViewForEditLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
-        String action = activityResultObject.getData().getAction();
-        switch (activityResultObject.getResultCode()) {
-            case Activity.RESULT_OK:
-                TaskEntity returnedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
-                // differenciate if detailview activity finished because the task was deleted or if it was edited
-                if (Objects.equals(action, "android.intent.action.DELETE")) {
-                    this.viewModel.deleteTask(returnedTask);
-                    showSnackbar("Deleted " + returnedTask.getTitle());
-                } else if (Objects.equals(action, "android.intent.action.EDIT")) {
-                    this.viewModel.updateTask(returnedTask);
-                    showSnackbar("Edited " + returnedTask.getTitle());
-                }
-                break;
-            case Activity.RESULT_CANCELED:
-                showSnackbar("Edits were not saved");
-                break;
+        if (activityResultObject.getData() != null) {
+            String action = activityResultObject.getData().getAction();
+            switch (activityResultObject.getResultCode()) {
+                case Activity.RESULT_OK:
+                    TaskEntity returnedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
+                    // differenciate if detailview activity finished because the task was deleted or if it was edited
+                    if (Objects.equals(action, "android.intent.action.DELETE")) {
+                        this.viewModel.deleteTask(returnedTask);
+                        assert returnedTask != null;
+                        showSnackbar("Deleted " + returnedTask.getTitle());
+                    } else if (Objects.equals(action, "android.intent.action.EDIT")) {
+                        this.viewModel.updateTask(returnedTask);
+                        assert returnedTask != null;
+                        showSnackbar("Edited " + returnedTask.getTitle());
+                    }
+                    break;
+                case Activity.RESULT_CANCELED:
+                    showSnackbar("Edits were not saved");
+                    break;
+            }
         }
     });
 

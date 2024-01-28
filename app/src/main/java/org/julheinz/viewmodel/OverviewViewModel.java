@@ -124,7 +124,6 @@ public class OverviewViewModel extends ViewModel {
         return processingState;
     }
 
-    public static final Comparator<TaskEntity> SORT_BY_DONE = Comparator.comparing(TaskEntity::isDone);
     public static Comparator<TaskEntity> SORT_FAV_DUE = Comparator.comparing(TaskEntity::isFav).reversed().thenComparing(TaskEntity::getDueDate);
     public static Comparator<TaskEntity> SORT_DUE_FAV = Comparator.comparing(TaskEntity::getDueDate).thenComparing(TaskEntity::isFav);
 

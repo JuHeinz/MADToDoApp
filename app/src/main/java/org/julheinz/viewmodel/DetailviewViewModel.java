@@ -70,8 +70,8 @@ public class DetailviewViewModel extends ViewModel {
 
     public boolean checkFieldInputValid(int actionId) {
         Log.i(LOG_TAG, "checking input with action id: " + actionId);
-        if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
-            if (taskEntity.getTitle().isEmpty()) { //TODO: causes error on task creation
+        if ((actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) && taskEntity.getTitle() != null) {
+            if(taskEntity.getTitle().isEmpty()) {
                 this.errorStatus.setValue("Field may not be empty.");
             }
         }
