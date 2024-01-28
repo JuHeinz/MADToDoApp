@@ -166,6 +166,7 @@ public class OverviewViewModel extends ViewModel {
         processingState.setValue(ProcessingState.RUNNING);
         operationRunner.execute(() -> {
             crudOperations.deleteAllTasks(true);
+            this.taskList.clear();
             processingState.postValue(ProcessingState.DONE);
         });
     }
