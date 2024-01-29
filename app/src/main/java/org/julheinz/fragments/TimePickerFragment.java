@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,8 +15,9 @@ public class TimePickerFragment extends DialogFragment {
     private static final String LOG_TAG = TimePickerFragment.class.getSimpleName();
 
     TimePickerDialog.OnTimeSetListener listener;
-    long taskDate;
-    public TimePickerFragment(long taskDate){
+    private final long taskDate;
+
+    public TimePickerFragment(long taskDate) {
         this.taskDate = taskDate;
     }
 
@@ -30,18 +30,14 @@ public class TimePickerFragment extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            //get the listener from the host activity
-            listener = (TimePickerDialog.OnTimeSetListener) context;
+            listener = (TimePickerDialog.OnTimeSetListener) context; //get the listener from the host activity
         } catch (ClassCastException e) {
             throw new ClassCastException(context + "activity must implement OnTimePickedListener.");
         }
     }
 
     /**
-     * Return a TimePickerDialog with
-     * default values,
-     * the listener from the host activity that should be called when the user is done,
-     * and a time format.
+     * Return a TimePickerDialog with default values, the listener from the host activity that should be called when the user is done and a time format.
      */
     @NonNull
     @Override
@@ -51,8 +47,8 @@ public class TimePickerFragment extends DialogFragment {
         Log.d(LOG_TAG, "date:" + calendar.getTime());
         int hour = calendar.get(Calendar.HOUR);
         int minute = calendar.get(Calendar.MINUTE);
-        Log.d(LOG_TAG, "Creating time picker with default value: " + hour +":" + minute);
+        Log.d(LOG_TAG, "Creating time picker with default value: " + hour + ":" + minute);
         // give the listener from the host activity to the dialog so it can call the listener when the user is finished
-        return new TimePickerDialog(getActivity(), listener, hour, minute, DateFormat.is24HourFormat(getActivity()));
+        return new TimePickerDialog(getActivity(), listener, hour, minute, true);
     }
 }

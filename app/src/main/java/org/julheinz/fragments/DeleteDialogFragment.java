@@ -14,10 +14,12 @@ import androidx.fragment.app.DialogFragment;
 public class DeleteDialogFragment extends DialogFragment {
 
     /**
-     * Interface to pass the event of the click back to the hosting activity
+     * Interface to pass the event of the click back to the hosting activity.
+     * Hosting activity must implement this. Methods get called by android after user input.
      */
     public interface DeleteDialogListener {
         void onDialogPositiveClick(DialogFragment dialog);
+
         void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -26,6 +28,7 @@ public class DeleteDialogFragment extends DialogFragment {
     /**
      * Instantiate the listener and check if the host activity implements it.
      * Fragment.onAttach() is run when a fragment is created.
+     *
      * @param context: host activity
      */
     @Override
@@ -41,15 +44,10 @@ public class DeleteDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Use the Builder class for convenient dialog construction.
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setMessage("Really delete?")
-                .setPositiveButton("Yes, delete", (dialog, id) -> {
-                    // callback to hosting activity
-                    listener.onDialogPositiveClick(DeleteDialogFragment.this);
-                })
-                .setNegativeButton("No, keep task", (dialog, id) -> listener.onDialogNegativeClick(DeleteDialogFragment.this));
-        // create and return an AlertDialog
-        return alertDialogBuilder.create();
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity()); //build a dialog
+        alertDialogBuilder.setMessage("Really delete?").setPositiveButton("Yes, delete", (dialog, id) -> {
+            listener.onDialogPositiveClick(DeleteDialogFragment.this); // callback to hosting activity
+        }).setNegativeButton("No, keep task", (dialog, id) -> listener.onDialogNegativeClick(DeleteDialogFragment.this));
+        return alertDialogBuilder.create(); // create and return an AlertDialog
     }
 }

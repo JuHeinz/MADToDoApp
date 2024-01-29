@@ -16,9 +16,11 @@ public class DatePickerFragment extends DialogFragment {
 
     DatePickerDialog.OnDateSetListener listener;
     private final long taskDate;
-    public DatePickerFragment(long taskDate){
+
+    public DatePickerFragment(long taskDate) {
         this.taskDate = taskDate;
     }
+
     /**
      * Get the listener from the host activity if it implements the DatePickerDialog.OnDateSetListener.
      *
@@ -45,7 +47,7 @@ public class DatePickerFragment extends DialogFragment {
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        Log.d(LOG_TAG, "Creating time picker with default value: " + year +"/" + month + "/" + day) ;
+        Log.d(LOG_TAG, "Creating time picker with default value: " + year + "/" + month + "/" + day);
 
         // Create a new instance of DatePickerDialog and return it.
         return new DatePickerDialog(requireContext(), listener, year, month, day);
