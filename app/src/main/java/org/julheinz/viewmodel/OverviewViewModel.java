@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 
 /**
  * ViewModel for OverViewActivity: Calls business logic and manages data for the activity.
- * Business logic: calling database operations.
+ * Business logic: calling database operations, sorting the task list,
  * Data: list of taskEntities
  * Should not hold any references to the activity or its UI, is observed by the OverviewActivity.
  */
@@ -34,6 +34,9 @@ public class OverviewViewModel extends ViewModel {
     private final List<TaskEntity> taskList = new ArrayList<>();
 
     private Comparator<TaskEntity> currentSortMode;
+
+    public static final Comparator<TaskEntity> SORT_FAV_DUE = Comparator.comparing(TaskEntity::isFav).reversed().thenComparing(TaskEntity::getDueDate);
+    public static final Comparator<TaskEntity> SORT_DUE_FAV = Comparator.comparing(TaskEntity::getDueDate).thenComparing(TaskEntity::isFav);
 
     public OverviewViewModel() {
         this.currentSortMode = SORT_DUE_FAV; //set one sort mode as default
@@ -59,10 +62,6 @@ public class OverviewViewModel extends ViewModel {
             applyTaskSorting();
             processingState.postValue(ProcessingState.DONE); //change live data
         });
-    }
-
-    public void readTask(long id) {
-
     }
 
     public void readAllTasks() {
@@ -101,7 +100,7 @@ public class OverviewViewModel extends ViewModel {
         if (this.crudOperations instanceof SyncTaskCrudOperations) {
             Log.d(LOG_TAG, "Syncing databases");
             operationRunner.execute(() -> {
-                List<TaskEntity> newLocalData = crudOperations.syncData(); //get data from remote db or overwrite remote db, eother way return local data
+                List<TaskEntity> newLocalData = crudOperations.syncData(); //get data from remote db or overwrite remote db, either way return local data
                 taskList.clear(); //clear current in memory list
                 taskList.addAll(newLocalData); //fill in memory list with (potentially updated) data from local db
                 applyTaskSorting();
@@ -124,9 +123,6 @@ public class OverviewViewModel extends ViewModel {
         return processingState;
     }
 
-    public static Comparator<TaskEntity> SORT_FAV_DUE = Comparator.comparing(TaskEntity::isFav).reversed().thenComparing(TaskEntity::getDueDate);
-    public static Comparator<TaskEntity> SORT_DUE_FAV = Comparator.comparing(TaskEntity::getDueDate).thenComparing(TaskEntity::isFav);
-
     public Comparator<TaskEntity> getCurrentSortMode() {
         return currentSortMode;
     }
@@ -141,11 +137,17 @@ public class OverviewViewModel extends ViewModel {
         processingState.setValue(ProcessingState.DONE);
     }
 
-    public void applyTaskSorting() {
+    /**
+     * Resort the task list.
+     */
+    private void applyTaskSorting() {
         this.taskList.sort(currentSortMode);
-        this.taskList.sort(Comparator.comparing(TaskEntity::isDone));//done tasks to bottom
+        this.taskList.sort(Comparator.comparing(TaskEntity::isDone));// done tasks always get sorted to the bottom
     }
 
+    /**
+     * Trigger retrofit to delete all remote tasks.
+     */
     public String deleteAllRemoteTasks() {
         String message;
         processingState.setValue(ProcessingState.RUNNING);
@@ -162,6 +164,9 @@ public class OverviewViewModel extends ViewModel {
         return message;
     }
 
+    /**
+     * Trigger Room to delete all local tasks.
+     */
     public void deleteAllLocalTasks() {
         processingState.setValue(ProcessingState.RUNNING);
         operationRunner.execute(() -> {

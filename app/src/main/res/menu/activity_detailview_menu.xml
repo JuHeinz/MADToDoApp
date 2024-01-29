@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/addContact" android:title="@string/add_collaborator" android:icon="@drawable/person_add" app:showAsAction="ifRoom"/>
-    <item android:id="@+id/deleteTask" android:title="@string/deleteBtn_label" android:icon="@drawable/delete" app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/addContact"
+        android:icon="@drawable/person_add"
+        android:title="@string/add_collaborator"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/deleteTask"
+        android:icon="@drawable/delete"
+        android:title="@string/deleteBtn_label"
+        app:showAsAction="ifRoom" />
 
 </menu>
