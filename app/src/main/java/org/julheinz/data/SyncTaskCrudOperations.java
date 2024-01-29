@@ -7,7 +7,8 @@ import org.julheinz.entities.TaskEntity;
 import java.util.List;
 
 /**
- * CRUD operations for the tasks, synchronized for local and remote databases if remote available.
+ * Synchronize task CRUD on local and remote databases.
+ * Only instantiated if database server available.
  */
 public class SyncTaskCrudOperations implements TaskCrudOperations {
     private static final String LOG_TAG = SyncTaskCrudOperations.class.getSimpleName();
@@ -26,13 +27,10 @@ public class SyncTaskCrudOperations implements TaskCrudOperations {
         return task;
     }
 
-    @Override
-    public TaskEntity readTask(long id) {
-        return localOperations.readTask(id);
-    }
-
     /**
-     * Get list of tasks always from local db because it has priority. Local db gets only modified when it is empty.
+     * Local db has priority, app should display always the data in the local db.
+     * If the local DB is empty, it gets automatically repopulated from the remote DB on app restart,
+     * therefore it is okay that we don't refer to the remote DB here.
      **/
     @Override
     public List<TaskEntity> readAllTasks() {
@@ -40,30 +38,32 @@ public class SyncTaskCrudOperations implements TaskCrudOperations {
     }
 
     @Override
-    public boolean updateTask(TaskEntity task) {
+    public void updateTask(TaskEntity task) {
         localOperations.updateTask(task);
         remoteOperations.updateTask(task);
-        return false;
     }
 
     @Override
-    public boolean deleteTask(TaskEntity task) {
+    public void deleteTask(TaskEntity task) {
         localOperations.deleteTask(task);
         remoteOperations.deleteTask(task);
-        return true;
     }
 
+    /**
+     * Empty either remote or local database.
+     * @param deleteLocalTasks if true, delete local DB, if false, remote DB.
+     */
     @Override
-    public boolean deleteAllTasks(boolean deleteLocalTasks) {
+    public void deleteAllTasks(boolean deleteLocalTasks) {
         if (deleteLocalTasks) {
             localOperations.deleteAllTasks(true);
         } else {
             remoteOperations.deleteAllTasks(false);
         }
-        return true;
     }
 
     /**
+     * Sync between local and remote database.
      * If the local DB is not empty, empty the remote db and populate it with the tasks from the local db
      * If the local DB is empty, get remote tasks and apply to local DB
      */
@@ -73,17 +73,17 @@ public class SyncTaskCrudOperations implements TaskCrudOperations {
         List<TaskEntity> localTasks = localOperations.readAllTasks();
 
         if (localTasks.isEmpty()) {
-            Log.i(LOG_TAG, "Local database is empty. Attempting to get from remote.");
+            Log.i(LOG_TAG, "Local database is empty. Attempting to repopulate from remote.");
             populateLocalFromRemote();
         } else {
             Log.i(LOG_TAG, "Overwriting remote db with data from local db");
             overwriteRemoteWithLocal();
         }
-        return localOperations.readAllTasks();
+        return localOperations.readAllTasks(); //return (potentially refreshed) data in local db
     }
 
     /**
-     * add all tasks from the remote database to the local one
+     * Add all tasks from the remote database to the local one.
      */
     private void populateLocalFromRemote() {
         List<TaskEntity> remoteTasks = remoteOperations.readAllTasks();
@@ -93,11 +93,10 @@ public class SyncTaskCrudOperations implements TaskCrudOperations {
     }
 
     /**
-     * delete remote database and add all local tasks
+     * Empty remote database and add all local tasks.
      */
     private void overwriteRemoteWithLocal() {
         List<TaskEntity> localTasks = localOperations.readAllTasks();
-
         remoteOperations.deleteAllTasks(false);
         for (TaskEntity localTask : localTasks) {
             remoteOperations.createTask(localTask);

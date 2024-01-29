@@ -17,6 +17,9 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
+/**
+ * Implement CRUD operations with HTTP Requests managed by retrofit. Requests are sent to a database server.
+ */
 public class RetrofitTaskCrudOperations implements TaskCrudOperations {
     private static final String LOG_TAG = RetrofitTaskCrudOperations.class.getSimpleName();
 
@@ -32,22 +35,19 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations {
     }
 
     /**
-     * Describes which operations are available by the web server, is implemented by a class retrofit created during runtime (dynamic proxy)
+     * Specifies the HTTP Requests to the database server.
+     * This interface is implemented by a class retrofit creates during runtime (dynamic proxy).
      */
     public interface TaskWebApiResource {
 
-        @POST("/api/todos")
-            // is translated to http request during runtime
+        @POST("/api/todos")// is translated to http request during runtime
         Call<TaskEntity> create(@Body TaskEntity task); // Call = like promise in js
 
         @GET("/api/todos")
         Call<List<TaskEntity>> readAll();
 
-        @GET("/api/todos/{todoId}")
-        Call<TaskEntity> read(@Path("todoId") long id); //@Path connects placeholder todoId in URL with parameter id
-
         @PUT("/api/todos/{todoId}")
-        Call<TaskEntity> update(@Path("todoId") long id, @Body TaskEntity task);
+        Call<TaskEntity> update(@Path("todoId") long id, @Body TaskEntity task); //@Path connects placeholder todoId in URL with parameter id
 
         @DELETE("/api/todos/{todoId}")
         Call<Boolean> delete(@Path("todoId") long id);
@@ -60,17 +60,8 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations {
             TaskEntity result = webApiResource.create(task).execute().body();
             //.execute() = execute call
             //.body() = get body of response
-            Log.d(LOG_TAG, "Created " + result.toString() + " in retrofit");
+            Log.d(LOG_TAG, "Created " + result + " in retrofit");
             return result;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public TaskEntity readTask(long id) {
-        try {
-            return webApiResource.read(id).execute().body();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -87,32 +78,30 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations {
     }
 
     @Override
-    public boolean updateTask(TaskEntity task) {
+    public void updateTask(TaskEntity task) {
         try {
             webApiResource.update(task.getId(), task).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return true;
     }
 
     @Override
-    public boolean deleteTask(TaskEntity task) {
+    public void deleteTask(TaskEntity task) {
         try {
-            return webApiResource.delete(task.getId()).execute().body();
+            webApiResource.delete(task.getId()).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean deleteAllTasks(boolean deleteLocalTasks) {
+    public void deleteAllTasks(boolean deleteLocalTasks) {
         List<TaskEntity> tasks = this.readAllTasks();
         for (TaskEntity task : tasks) {
             this.deleteTask(task);
         }
         Log.i(LOG_TAG, "All remote tasks deleted");
-        return true;
     }
 
     @Override

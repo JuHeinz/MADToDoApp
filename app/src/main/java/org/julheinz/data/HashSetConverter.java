@@ -4,13 +4,14 @@ import androidx.room.TypeConverter;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 /**
- * Translate String with a separator to and from a HashSet.
+ * Translate a HashSet to a String with separators between elements and vice versa.
+ * Used as a Type converter so that the contents of the Hashset can be saved in databases that can't store Hashsets directly.
+ * When the data is retrieved from the database, the contents are structured as a HashSet again.
  */
 public class HashSetConverter {
-    public static String SEPARATOR = ";;;";
+    public static final String SEPARATOR = ";;;";
 
     @TypeConverter
     public static HashSet<String> fromString(String string) {
@@ -25,6 +26,6 @@ public class HashSetConverter {
         if (set == null) {
             return "";
         }
-        return set.stream().collect(Collectors.joining(SEPARATOR));
+        return String.join(SEPARATOR, set);
     }
 }
