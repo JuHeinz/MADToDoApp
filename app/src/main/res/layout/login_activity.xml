@@ -12,13 +12,12 @@
             name="activity"
             type="org.julheinz.madtodoapp.LogInActivity" />
 
-
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="match_parent"
@@ -31,8 +30,8 @@
         <LinearLayout
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginTop="30dp"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -60,7 +59,6 @@
                     android:onTextChanged="@{() -> viewmodel.onEmailInputChanged()}"
                     android:text="@={viewmodel.entity.enteredEmail}" />
 
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -76,9 +74,7 @@
                     android:inputType="textPassword"
                     android:onEditorAction="@{(view,actionId,keyEvent) -> viewmodel.checkPasswordInputInvalid(actionId)}"
                     android:onTextChanged="@{() -> viewmodel.onPasswordInputChanged()}"
-                    android:text="@={viewmodel.entity.enteredPassword}"
-                    />
-
+                    android:text="@={viewmodel.entity.enteredPassword}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -86,25 +82,26 @@
                 android:id="@+id/logInBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/login"
                 android:layout_marginTop="10dp"
                 android:onClick="@{() -> viewmodel.onLoginButtonClick()}"
-                />
+                android:text="@string/login" />
+
             <LinearLayout
                 android:id="@+id/authErrorMsg"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:paddingTop="10dp"
-                >
+                android:paddingTop="10dp">
+
                 <ImageView
-                    android:scaleType="fitXY"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:layout_marginEnd="4dp"
                     android:layout_gravity="center"
+                    android:layout_marginEnd="4dp"
+                    android:scaleType="fitXY"
                     android:src="@drawable/warning"
-                    app:tint="?attr/colorError"/>
+                    app:tint="?attr/colorError"
+                    android:importantForAccessibility="no" />
 
                 <TextView
                     android:layout_width="match_parent"

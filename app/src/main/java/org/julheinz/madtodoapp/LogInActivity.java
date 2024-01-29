@@ -1,7 +1,6 @@
 package org.julheinz.madtodoapp;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,33 +22,32 @@ import org.julheinz.viewmodel.LoginViewModel;
 
 import java.util.concurrent.Future;
 
+/**
+ * Activity for user to log in.
+ */
 public class LogInActivity extends AppCompatActivity {
     private static final String LOG_TAG = LogInActivity.class.getSimpleName();
     private ProgressBar progressBar;
     private LinearLayout authErrorMsg;
     private TextInputLayout pwField;
     private TextInputLayout emailField;
-    LoginEntity loginEntity;
-    private LoginViewModel viewModel;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         LoginActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.login_activity);
-        this.viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        LoginViewModel viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         binding.setViewmodel(viewModel);
         binding.setActivity(this);
-        binding.setLifecycleOwner(this); // make it so databinding and viewmodel can communicate
+        binding.setLifecycleOwner(this); // make it so data binding and view model can communicate
+
+        LoginEntity loginEntity;
         if(viewModel.getEntity() == null){
-            this.loginEntity = new LoginEntity();
-            this.viewModel.setEntity(loginEntity);
+            loginEntity = new LoginEntity();
+            viewModel.setEntity(loginEntity);
         }else{
-            this.loginEntity = viewModel.getEntity();
-            Log.d(LOG_TAG, "previous loginEntity onCreate is:" + this.viewModel.getEntity());
-
-
+            Log.d(LOG_TAG, "previous loginEntity onCreate is:" + viewModel.getEntity());
         }
 
         this.authErrorMsg = findViewById(R.id.authErrorMsg);
@@ -64,7 +62,7 @@ public class LogInActivity extends AppCompatActivity {
             taskCrudOperations = crudOperationsFuture.get(); //get waits until the other thread is done and the future obj has a value
             if(taskCrudOperations instanceof RoomTaskCrudOperations){
                 Log.i(LOG_TAG,"Offline! Skipping log in.");
-                //If offline, skip login view and go to OverviewActivity
+                // If offline, skip login view and go to OverviewActivity
                 startActivity(new Intent(this, OverviewActivity.class));
             }else{
                 Log.i(LOG_TAG,"Online, please log in.");
@@ -73,13 +71,11 @@ public class LogInActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // INPUT VALIDATION
-        viewModel.getInputsValid().observe(this, isValid ->{
+        viewModel.getInputsValid().observe(this, isValid ->{ // Observe changes to the field in the view model that is true when both inputs are valid
             Log.i(LOG_TAG, "Both inputs valid? " + isValid);
             Button btn = this.findViewById(R.id.logInBtn);
-            btn.setEnabled(isValid);
+            btn.setEnabled(isValid); // if both inputs are valid, enable the log in button
         });
-
 
         viewModel.getEntityLiveData().observe(this, entity -> { // Observe changes on LoginEntity MutableLiveData
             checkEmailErrorState(entity);
@@ -99,7 +95,7 @@ public class LogInActivity extends AppCompatActivity {
             case NOT_SIX:
                 pwField.setError("Password must be of length 6");
                 break;
-            case NOT_NUM:;
+            case NOT_NUM:
                 pwField.setError("Password must include numbers only");
                 break;
             case VALID:
@@ -146,20 +142,12 @@ public class LogInActivity extends AppCompatActivity {
                 this.authErrorMsg.setVisibility(View.GONE);
                 this.progressBar.setVisibility(View.GONE);
                 break;
-            case BEFORE_ATTEMPT: //reset error on new user input / before login attempt
-                this.authErrorMsg.setVisibility(View.GONE);
-                this.progressBar.setVisibility(View.GONE);
-                break;
+            //reset error on new user input / before login attempt
+            case BEFORE_ATTEMPT:
             default:
                 this.authErrorMsg.setVisibility(View.GONE);
                 this.progressBar.setVisibility(View.GONE);
         }
-        Log.d(LOG_TAG, "Check for auth state" +  entity.getAuthErrorState());
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG, "loginEntity onDestroy is:" + this.viewModel.getEntity());
-    }
 }
