@@ -9,9 +9,6 @@
             name="viewmodel"
             type="org.julheinz.viewmodel.DetailviewViewModel" />
 
-        <variable
-            name="activity"
-            type="org.julheinz.madtodoapp.DetailViewActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -133,7 +130,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="@={viewmodel.taskEntity.done}"
-                android:visibility="@{activity.doneCheckboxVisibility}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
