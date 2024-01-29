@@ -1,6 +1,7 @@
 package org.julheinz.madtodoapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.julheinz.data.RoomTaskCrudOperations;
 import org.julheinz.data.TaskCrudOperations;
@@ -22,22 +24,15 @@ import org.julheinz.viewmodel.LoginViewModel;
 import java.util.concurrent.Future;
 
 public class LogInActivity extends AppCompatActivity {
+    private static final String LOG_TAG = LogInActivity.class.getSimpleName();
     private ProgressBar progressBar;
     private LinearLayout authErrorMsg;
-
-    public String getEmailErrorMessage() {
-        return emailErrorMessage;
-    }
-
-    public String getPwErrorMessage() {
-        return pwErrorMessage;
-    }
-
-    public String emailErrorMessage ="";
-    public String pwErrorMessage ="";
-    private static final String LOG_TAG = LogInActivity.class.getSimpleName();
+    private TextInputLayout pwField;
+    private TextInputLayout emailField;
     LoginEntity loginEntity;
     private LoginViewModel viewModel;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +47,15 @@ public class LogInActivity extends AppCompatActivity {
             this.viewModel.setEntity(loginEntity);
         }else{
             this.loginEntity = viewModel.getEntity();
+            Log.d(LOG_TAG, "previous loginEntity onCreate is:" + this.viewModel.getEntity());
+
+
         }
 
         this.authErrorMsg = findViewById(R.id.authErrorMsg);
         this.progressBar = findViewById(R.id.progressBar);
-
+        this.pwField = findViewById(R.id.pwField);
+        this.emailField = findViewById(R.id.emailField);
 
         //DETERMINE ONLINE STATUS
         Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations(); //at some point a TaskCrudOperations Object can be read from this
@@ -82,71 +81,85 @@ public class LogInActivity extends AppCompatActivity {
         });
 
 
-        viewModel.getEntityLiveData().observe(this, entity -> { // Observe changes on LoginEntity MutableLiveData, act according to its state
-            Log.i(LOG_TAG, "Observed changes in live data");
-
+        viewModel.getEntityLiveData().observe(this, entity -> { // Observe changes on LoginEntity MutableLiveData
             checkEmailErrorState(entity);
             checkPwErrorState(entity);
             checkAuthErrorState(entity);
         });
     }
 
+    /**
+     * Get the validation status of the password input and change UI accordingly
+     */
     public void checkPwErrorState(LoginEntity entity) {
         switch (entity.getPwErrorState()){
             case EMPTY:
-                this.pwErrorMessage = "Password may not be empty";
+                pwField.setError("Password may not be empty");
                 break;
             case NOT_SIX:
-                this.pwErrorMessage = "Password must be of length 6";
+                pwField.setError("Password must be of length 6");
                 break;
             case NOT_NUM:;
-                this.pwErrorMessage = "Password include numbers only";
+                pwField.setError("Password must include numbers only");
                 break;
             case VALID:
             case NOT_VALIDATED:
             default:
-                this.pwErrorMessage="";
+                pwField.setErrorEnabled(false);
         }
-        Log.i(LOG_TAG, pwErrorMessage);
     }
 
+    /**
+     * Get the validation status of the email input and change UI accordingly
+     */
     private void checkEmailErrorState(LoginEntity entity) {
         switch (entity.getEmailErrorState()){
             case EMPTY:
-                this.emailErrorMessage = "Email may not be empty";
+                emailField.setError("Email may not be empty");
                 break;
             case INVALID_PATTERN:
-                this.emailErrorMessage = "Email pattern invalid";
+                emailField.setError("Email pattern invalid");
                 break;
             case VALID:
             case NOT_VALIDATED:
             default:
-                this.emailErrorMessage="";
-        }
-        Log.i(LOG_TAG, emailErrorMessage);
+                emailField.setErrorEnabled(false);
 
+        }
     }
 
+    /**
+     * Get the log in authentication status and change UI accordingly
+     */
     public void checkAuthErrorState(LoginEntity entity){
-        if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.WAITING) {
-            Log.i(LOG_TAG, "Waiting for authentication");
-            progressBar.setVisibility(View.VISIBLE);
-        }else if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.FAILURE){
-            this.authErrorMsg.setVisibility(View.VISIBLE);
-            Log.i(LOG_TAG, "Password or username is wrong!");
-            this.progressBar.setVisibility(View.GONE);
-        }else if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.SUCCESS){
-            startActivity(new Intent(this, OverviewActivity.class));
+        switch (entity.getAuthErrorState()){
+            case WAITING:
+                this.authErrorMsg.setVisibility(View.GONE);
+                this.progressBar.setVisibility(View.VISIBLE);
+                break;
+            case FAILURE:
+                this.authErrorMsg.setVisibility(View.VISIBLE);
+                this.progressBar.setVisibility(View.GONE);
+                break;
+            case SUCCESS:
+                startActivity(new Intent(this, OverviewActivity.class));
+                this.authErrorMsg.setVisibility(View.GONE);
+                this.progressBar.setVisibility(View.GONE);
+                break;
+            case BEFORE_ATTEMPT: //reset error on new user input / before login attempt
+                this.authErrorMsg.setVisibility(View.GONE);
+                this.progressBar.setVisibility(View.GONE);
+                break;
+            default:
+                this.authErrorMsg.setVisibility(View.GONE);
+                this.progressBar.setVisibility(View.GONE);
         }
-        else {
-            this.authErrorMsg.setVisibility(View.GONE);
-            Log.i(LOG_TAG, "Before authentication attempt");
-        }
+        Log.d(LOG_TAG, "Check for auth state" +  entity.getAuthErrorState());
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(LOG_TAG, "loginEntity is:" + this.viewModel.getEntity());
+        Log.d(LOG_TAG, "loginEntity onDestroy is:" + this.viewModel.getEntity());
     }
 }

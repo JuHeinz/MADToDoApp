@@ -1,11 +1,16 @@
 package org.julheinz.entities;
 
-
+import androidx.annotation.NonNull;
 
 /**
  * An (attempted) login
  */
 public class LoginEntity {
+
+    @Override
+    public String toString() {
+        return "LoginEntity{" + "enteredPassword='" + enteredPassword + '\'' + ", enteredEmail='" + enteredEmail + '\'' + ", emailErrorState=" + emailErrorState + ", pwErrorState=" + pwErrorState + ", authErrorState=" + authErrorState + '}';
+    }
 
     public enum EmailErrorState{
         INVALID_PATTERN, EMPTY, VALID, NOT_VALIDATED
@@ -17,10 +22,6 @@ public class LoginEntity {
 
     public enum AuthErrorState{
         BEFORE_ATTEMPT, SUCCESS, FAILURE, WAITING
-    }
-    @Override
-    public String toString() {
-        return "LoginEntity{" + "enteredPassword='" + enteredPassword + '\'' + ", enteredEmail='" + enteredEmail + '\'' + '}';
     }
 
     public String getEnteredPassword() {

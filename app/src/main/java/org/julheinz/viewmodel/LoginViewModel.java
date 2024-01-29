@@ -40,16 +40,17 @@ public class LoginViewModel extends ViewModel {
         if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.FAILURE){ //if there was previously and authentication error, reset it
             entity.setAuthErrorState(LoginEntity.AuthErrorState.BEFORE_ATTEMPT);
         }
-        entity.setEmailErrorState(LoginEntity.EmailErrorState.NOT_VALIDATED); // reset the errorStatus so error disappears once validated (e.g. enough letters entered)
+        entity.setEmailErrorState(LoginEntity.EmailErrorState.NOT_VALIDATED);
         entityLiveData.setValue(entity);
         return false; // return false so other listeners can process the event
     }
 
     public boolean onPasswordInputChanged() {
-        if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.FAILURE){ //if there was previously and authentication error, reset it
+        if(entity.getAuthErrorState() == LoginEntity.AuthErrorState.FAILURE){ //if there was previously an authentication error, reset it
+            //TODO: this also resets on rotate, making the error disappear on rotate
             entity.setAuthErrorState(LoginEntity.AuthErrorState.BEFORE_ATTEMPT);
         }
-        entity.setEmailErrorState(LoginEntity.EmailErrorState.NOT_VALIDATED); // reset the errorStatus so error disappears once validated (e.g. enough letters entered)
+        entity.setPwErrorState(LoginEntity.PwErrorState.NOT_VALIDATED); // reset the errorStatus so error disappears immediately once user types
         entityLiveData.setValue(entity);
         return false;
     }
@@ -159,7 +160,6 @@ public class LoginViewModel extends ViewModel {
             } else {
                 entity.setAuthErrorState(LoginEntity.AuthErrorState.FAILURE);
                 entityLiveData.postValue(entity);
-
             }
         });
     }
