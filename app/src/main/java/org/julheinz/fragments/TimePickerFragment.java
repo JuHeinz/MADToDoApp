@@ -45,7 +45,7 @@ public class TimePickerFragment extends DialogFragment {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(taskDate);
         Log.d(LOG_TAG, "date:" + calendar.getTime());
-        int hour = calendar.get(Calendar.HOUR);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         Log.d(LOG_TAG, "Creating time picker with default value: " + hour + ":" + minute);
         // give the listener from the host activity to the dialog so it can call the listener when the user is finished
