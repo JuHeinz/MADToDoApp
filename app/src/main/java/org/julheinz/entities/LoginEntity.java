@@ -3,26 +3,36 @@ package org.julheinz.entities;
 import androidx.annotation.NonNull;
 
 /**
- * An (attempted) login
+ * Represents the state of an log in attempt.
  */
 public class LoginEntity {
 
-    @Override
-    public String toString() {
-        return "LoginEntity{" + "enteredPassword='" + enteredPassword + '\'' + ", enteredEmail='" + enteredEmail + '\'' + ", emailErrorState=" + emailErrorState + ", pwErrorState=" + pwErrorState + ", authErrorState=" + authErrorState + '}';
-    }
-
-    public enum EmailErrorState{
+    /**
+     * Possible values for the validation of an email address.
+     */
+    public enum EmailErrorState {
         INVALID_PATTERN, EMPTY, VALID, NOT_VALIDATED
     }
 
-    public enum PwErrorState{
+    /**
+     * Possible values for the validation of a password.
+     */
+    public enum PwErrorState {
         NOT_SIX, EMPTY, NOT_NUM, VALID, NOT_VALIDATED
     }
 
-    public enum AuthErrorState{
+    /**
+     * Possible values for the state of the authentication.
+     */
+    public enum AuthErrorState {
         BEFORE_ATTEMPT, SUCCESS, FAILURE, WAITING
     }
+
+    private EmailErrorState emailErrorState = EmailErrorState.NOT_VALIDATED;
+    private PwErrorState pwErrorState = PwErrorState.NOT_VALIDATED;
+    private AuthErrorState authErrorState = AuthErrorState.BEFORE_ATTEMPT;
+    private String enteredPassword;
+    private String enteredEmail;
 
     public String getEnteredPassword() {
         if (enteredPassword == null) {
@@ -44,13 +54,9 @@ public class LoginEntity {
         this.enteredEmail = enteredEmail;
     }
 
-
     public void setEnteredPassword(String enteredPassword) {
         this.enteredPassword = enteredPassword;
     }
-
-    private String enteredPassword;
-    private String enteredEmail;
 
     public EmailErrorState getEmailErrorState() {
         return emailErrorState;
@@ -76,8 +82,9 @@ public class LoginEntity {
         this.authErrorState = authErrorState;
     }
 
-    private EmailErrorState emailErrorState = EmailErrorState.NOT_VALIDATED;
-    private PwErrorState pwErrorState = PwErrorState.NOT_VALIDATED;
-    private AuthErrorState authErrorState = AuthErrorState.BEFORE_ATTEMPT;
-
+    @NonNull
+    @Override
+    public String toString() {
+        return "LoginEntity{" + "enteredPassword='" + enteredPassword + '\'' + ", enteredEmail='" + enteredEmail + '\'' + ", emailErrorState=" + emailErrorState + ", pwErrorState=" + pwErrorState + ", authErrorState=" + authErrorState + '}';
+    }
 }

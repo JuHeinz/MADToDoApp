@@ -12,19 +12,17 @@ import com.google.gson.annotations.SerializedName;
 import org.julheinz.data.HashSetConverter;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 
-//Entity annotation for ROOM to make a table for this class
-@Entity
+/**
+ * Represents a task.
+ */
+@Entity // Entity annotation for ROOM to make a table for this class
 public class TaskEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
@@ -35,6 +33,7 @@ public class TaskEntity implements Serializable {
     private String description;
 
     @SerializedName("expiry")
+    // what the name of the json field should be when this entity gets translated to json
     private long dueDate = System.currentTimeMillis();
     private boolean done;
     @SerializedName("favourite")
@@ -56,7 +55,6 @@ public class TaskEntity implements Serializable {
     }
 
     public void setTitle(String title) {
-        Log.i("TaskEntity", "Changed title: " + title);
         this.title = title;
     }
 
@@ -66,7 +64,6 @@ public class TaskEntity implements Serializable {
 
     public void setDone(boolean done) {
         this.done = done;
-        Log.i("TaskEntity", "Changed done: " + this.done);
     }
 
     public String getDescription() {
@@ -93,12 +90,11 @@ public class TaskEntity implements Serializable {
         this.fav = fav;
     }
 
-
     public HashSet<String> getContacts() {
-        if (contacts == null) {
-            contacts = new HashSet<>();
+        if (this.contacts == null) {
+            this.contacts = new HashSet<>();
         }
-        return contacts;
+        return this.contacts;
     }
 
     public void setContacts(HashSet<String> contacts) {
@@ -108,19 +104,18 @@ public class TaskEntity implements Serializable {
         this.contacts = contacts;
     }
 
-    public String getFullDueDateFormatted(){
+    /**
+     * Translate long of unix timestamp to human readable format.
+     */
+    public String getFullDueDateFormatted() {
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(getDueDate()), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy, kk:mm");
         return formatter.format(dateTime);
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", dueDate=" + dueDate + "(" + getFullDueDateFormatted() + ")"+ ", done=" + done + ", fav=" + fav + ". contacts:" + contacts;
-    }
-
-    // Override equals so that two TaskEntities with the same id are seen as equal, not exact same instance. Needed because TaskEntities get serialized
+    /**
+     * Override equals so that two TaskEntities with the same id are seen as equal, not exact same instance. Needed because TaskEntities get serialized.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -132,6 +127,12 @@ public class TaskEntity implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "TaskEntity{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' + ", dueDate=" + dueDate + "(" + getFullDueDateFormatted() + ")" + ", done=" + done + ", fav=" + fav + ". contacts:" + contacts;
     }
 }
 
