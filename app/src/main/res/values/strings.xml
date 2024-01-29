@@ -3,16 +3,7 @@
     <string name="title_hint">Title</string>
     <string name="description_hint">Description (optional)</string>
     <string name="saveBtn_label">Save</string>
-    <string name="backBtn_label">Back</string>
-    <string name="is_fav_label">Favorite</string>
-    <string name="is_done_label">Done?</string>
-    <string name="alt_text_addTaskBtn">Add task</string>
     <string name="deleteBtn_label">Delete</string>
-    <string name="due_time">Due Time</string>
-    <string name="due_date">Due Date</string>
-    <string name="dd_mm_yyyy">dd/mm/yyyy</string>
-    <string name="due">Due:</string>
-    <string name="favorite">Favorite?</string>
     <string name="sort">Sort</string>
     <string name="delete_all_local">Empty local database</string>
     <string name="delete_all_remote">Empty remote database</string>
