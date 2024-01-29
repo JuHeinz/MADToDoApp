@@ -19,10 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Objects;
 
-/**
- * Represents a task.
- */
-@Entity // Entity annotation for ROOM to make a table for this class
+
+@Entity
 public class TaskEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
@@ -33,7 +31,6 @@ public class TaskEntity implements Serializable {
     private String description;
 
     @SerializedName("expiry")
-    // what the name of the json field should be when this entity gets translated to json
     private long dueDate = System.currentTimeMillis();
     private boolean done;
     @SerializedName("favourite")
@@ -104,18 +101,14 @@ public class TaskEntity implements Serializable {
         this.contacts = contacts;
     }
 
-    /**
-     * Translate long of unix timestamp to human readable format.
-     */
+
     public String getFullDueDateFormatted() {
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(getDueDate()), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy, kk:mm");
         return formatter.format(dateTime);
     }
 
-    /**
-     * Override equals so that two TaskEntities with the same id are seen as equal, not exact same instance. Needed because TaskEntities get serialized.
-     */
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

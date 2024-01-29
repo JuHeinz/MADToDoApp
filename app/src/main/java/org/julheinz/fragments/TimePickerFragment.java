@@ -21,24 +21,18 @@ public class TimePickerFragment extends DialogFragment {
         this.taskDate = taskDate;
     }
 
-    /**
-     * Get the listener from the host activity if it implements the TimePickerDialog.OnTimeSetListener.
-     *
-     * @param context: host activity
-     */
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            listener = (TimePickerDialog.OnTimeSetListener) context; //get the listener from the host activity
+            listener = (TimePickerDialog.OnTimeSetListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context + "activity must implement OnTimePickedListener.");
         }
     }
 
-    /**
-     * Return a TimePickerDialog with default values, the listener from the host activity that should be called when the user is done and a time format.
-     */
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -48,7 +42,6 @@ public class TimePickerFragment extends DialogFragment {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         Log.d(LOG_TAG, "Creating time picker with default value: " + hour + ":" + minute);
-        // give the listener from the host activity to the dialog so it can call the listener when the user is finished
         return new TimePickerDialog(getActivity(), listener, hour, minute, true);
     }
 }

@@ -22,9 +22,7 @@ import org.julheinz.viewmodel.LoginViewModel;
 
 import java.util.concurrent.Future;
 
-/**
- * Activity for user to log in.
- */
+
 public class LogInActivity extends AppCompatActivity {
     private static final String LOG_TAG = LogInActivity.class.getSimpleName();
     private ProgressBar progressBar;
@@ -40,7 +38,7 @@ public class LogInActivity extends AppCompatActivity {
         LoginViewModel viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         binding.setViewmodel(viewModel);
         binding.setActivity(this);
-        binding.setLifecycleOwner(this); // make it so data binding and view model can communicate
+        binding.setLifecycleOwner(this);
 
         LoginEntity loginEntity;
         if(viewModel.getEntity() == null){
@@ -55,14 +53,12 @@ public class LogInActivity extends AppCompatActivity {
         this.pwField = findViewById(R.id.pwField);
         this.emailField = findViewById(R.id.emailField);
 
-        //DETERMINE ONLINE STATUS
-        Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations(); //at some point a TaskCrudOperations Object can be read from this
+        Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations();
         TaskCrudOperations taskCrudOperations;
         try {
-            taskCrudOperations = crudOperationsFuture.get(); //get waits until the other thread is done and the future obj has a value
+            taskCrudOperations = crudOperationsFuture.get();
             if(taskCrudOperations instanceof RoomTaskCrudOperations){
                 Log.i(LOG_TAG,"Offline! Skipping log in.");
-                // If offline, skip login view and go to OverviewActivity
                 startActivity(new Intent(this, OverviewActivity.class));
             }else{
                 Log.i(LOG_TAG,"Online, please log in.");
@@ -71,22 +67,20 @@ public class LogInActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        viewModel.getInputsValid().observe(this, isValid ->{ // Observe changes to the field in the view model that is true when both inputs are valid
+        viewModel.getInputsValid().observe(this, isValid ->{
             Log.i(LOG_TAG, "Both inputs valid? " + isValid);
             Button btn = this.findViewById(R.id.logInBtn);
-            btn.setEnabled(isValid); // if both inputs are valid, enable the log in button
+            btn.setEnabled(isValid);
         });
 
-        viewModel.getEntityLiveData().observe(this, entity -> { // Observe changes on LoginEntity MutableLiveData
+        viewModel.getEntityLiveData().observe(this, entity -> {
             checkEmailErrorState(entity);
             checkPwErrorState(entity);
             checkAuthErrorState(entity);
         });
     }
 
-    /**
-     * Get the validation status of the password input and change UI accordingly
-     */
+
     public void checkPwErrorState(LoginEntity entity) {
         switch (entity.getPwErrorState()){
             case EMPTY:
@@ -105,9 +99,7 @@ public class LogInActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Get the validation status of the email input and change UI accordingly
-     */
+
     private void checkEmailErrorState(LoginEntity entity) {
         switch (entity.getEmailErrorState()){
             case EMPTY:
@@ -124,9 +116,7 @@ public class LogInActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Get the log in authentication status and change UI accordingly
-     */
+
     public void checkAuthErrorState(LoginEntity entity){
         switch (entity.getAuthErrorState()){
             case WAITING:
@@ -142,7 +132,6 @@ public class LogInActivity extends AppCompatActivity {
                 this.authErrorMsg.setVisibility(View.GONE);
                 this.progressBar.setVisibility(View.GONE);
                 break;
-            //reset error on new user input / before login attempt
             case BEFORE_ATTEMPT:
             default:
                 this.authErrorMsg.setVisibility(View.GONE);

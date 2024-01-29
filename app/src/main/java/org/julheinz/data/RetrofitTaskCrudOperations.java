@@ -17,37 +17,31 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
-/**
- * Implement CRUD operations with HTTP Requests managed by retrofit. Requests are sent to a database server.
- */
+
 public class RetrofitTaskCrudOperations implements TaskCrudOperations {
     private static final String LOG_TAG = RetrofitTaskCrudOperations.class.getSimpleName();
 
     private final TaskWebApiResource webApiResource;
 
     public RetrofitTaskCrudOperations() {
-        //API base "retrofit" is filled with data needed to connect to API
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://10.0.2.2:8080/") // 10.0.2.2. = this PC, if localhost, the phone would refer to itself
-                .addConverterFactory(GsonConverterFactory.create()) //GsonConverter = convert Java to JSON
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        this.webApiResource = retrofit.create(TaskWebApiResource.class); //retrofit.create() returns an object that implements TaskWebApiResource
+        this.webApiResource = retrofit.create(TaskWebApiResource.class);
     }
 
-    /**
-     * Specifies the HTTP Requests to the database server.
-     * This interface is implemented by a class retrofit creates during runtime (dynamic proxy).
-     */
+
     public interface TaskWebApiResource {
 
-        @POST("/api/todos")// is translated to http request during runtime
-        Call<TaskEntity> create(@Body TaskEntity task); // Call = like promise in js
+        @POST("/api/todos")
+        Call<TaskEntity> create(@Body TaskEntity task);
 
         @GET("/api/todos")
         Call<List<TaskEntity>> readAll();
 
         @PUT("/api/todos/{todoId}")
-        Call<TaskEntity> update(@Path("todoId") long id, @Body TaskEntity task); //@Path connects placeholder todoId in URL with parameter id
+        Call<TaskEntity> update(@Path("todoId") long id, @Body TaskEntity task);
 
         @DELETE("/api/todos/{todoId}")
         Call<Boolean> delete(@Path("todoId") long id);
@@ -58,8 +52,6 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations {
         try {
             Log.d(LOG_TAG, "Trying to create task " + task.toString() + " in retrofit");
             TaskEntity result = webApiResource.create(task).execute().body();
-            //.execute() = execute call
-            //.body() = get body of response
             Log.d(LOG_TAG, "Created " + result + " in retrofit");
             return result;
         } catch (IOException e) {
@@ -106,6 +98,6 @@ public class RetrofitTaskCrudOperations implements TaskCrudOperations {
 
     @Override
     public List<TaskEntity> syncData() {
-        return null; //is not needed because it is only ever called on SyncTaskCrudOperations
+        return null;
     }
 }

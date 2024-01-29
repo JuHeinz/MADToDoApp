@@ -21,11 +21,7 @@ public class DatePickerFragment extends DialogFragment {
         this.taskDate = taskDate;
     }
 
-    /**
-     * Get the listener from the host activity if it implements the DatePickerDialog.OnDateSetListener.
-     *
-     * @param context: host activity
-     */
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -49,7 +45,6 @@ public class DatePickerFragment extends DialogFragment {
 
         Log.d(LOG_TAG, "Creating time picker with default value: " + year + "/" + month + "/" + day);
 
-        // Create a new instance of DatePickerDialog and return it.
         return new DatePickerDialog(requireContext(), listener, year, month, day);
     }
 }

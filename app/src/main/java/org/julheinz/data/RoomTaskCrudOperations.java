@@ -16,9 +16,6 @@ import org.julheinz.entities.TaskEntity;
 
 import java.util.List;
 
-/**
- * CRUD operations on database local to device via ROOM framework.
- */
 public class RoomTaskCrudOperations implements TaskCrudOperations {
 
     private static final String LOG_TAG = RoomTaskCrudOperations.class.getSimpleName();
@@ -31,10 +28,8 @@ public class RoomTaskCrudOperations implements TaskCrudOperations {
         this.crudOnDb = db.getDao();
     }
 
-    /**
-     * ROOM DAO Interface. Implemented by ROOM via code generation to access database.
-     */
-    @Dao //marks interface as DataAccessObjects, meaning the class ROOM should implement by the class it creates at compile time.
+
+    @Dao
     public interface DatabaseInteractions {
         @Insert
         long createTaskInDB(TaskEntity task);
@@ -49,9 +44,7 @@ public class RoomTaskCrudOperations implements TaskCrudOperations {
         void deleteTask(TaskEntity task);
     }
 
-    /**
-     * Create a RoomDatabase from the TaskEntity class.
-     */
+
     @Database(entities = {TaskEntity.class}, version = 1)
     public static abstract class TaskDatabase extends RoomDatabase {
         public abstract DatabaseInteractions getDao();

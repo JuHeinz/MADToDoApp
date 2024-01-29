@@ -4,9 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Objects;
 
-/**
- * Represents a contact the user can add to a task.
- */
+
 public class ContactEntity {
     private String name;
     private long id;
@@ -58,9 +56,7 @@ public class ContactEntity {
         return "ContactEntity{" + "name='" + name + '\'' + ", id='" + id + '\'' + ", email='" + email + '\'' + ", phoneNumber='" + phoneNumber + '\'' + '}';
     }
 
-    /**
-     * Two objects of this class are equal if they have the same id.
-     */
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

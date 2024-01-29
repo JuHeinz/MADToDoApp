@@ -32,10 +32,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/**
- * Activity for overview over tasks. Data is not directly handled here but delegated to OverviewViewModel.
- * It observes the view model and controls the UI.
- */
+
 public class OverviewActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = OverviewActivity.class.getSimpleName();
@@ -50,23 +47,23 @@ public class OverviewActivity extends AppCompatActivity {
         OverviewActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.overview_activity);
         binding.setActivity(this);
 
-        viewModel = new ViewModelProvider(this).get(OverviewViewModel.class); // instantiate the view model or reuse if already exists
+        viewModel = new ViewModelProvider(this).get(OverviewViewModel.class);
 
         ListView listView = findViewById(R.id.listView);
         this.progressBar = findViewById(R.id.progressBar);
 
-        this.listViewAdapter = new TaskListAdapter(this, R.id.listView, viewModel.getTasks(), this.getLayoutInflater(), viewModel); //instantiate adapter
+        this.listViewAdapter = new TaskListAdapter(this, R.id.listView, viewModel.getTasks(), this.getLayoutInflater(), viewModel);
         listView.setAdapter(this.listViewAdapter);
-        listView.setOnItemClickListener(onTaskClickListener()); // click listener for tasks in list
+        listView.setOnItemClickListener(onTaskClickListener());
 
-        Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations(); //at some point a TaskCrudOperations Object can be read from this
+        Future<TaskCrudOperations> crudOperationsFuture = ((TaskApplication) getApplication()).getCrudOperations();
         TaskCrudOperations taskCrudOperations;
         try {
-            taskCrudOperations = crudOperationsFuture.get(); //get waits until the other thread is done and the future obj has a value
+            taskCrudOperations = crudOperationsFuture.get();
 
-            viewModel.setCrudOperations(taskCrudOperations); //connect view model to crudOperations
+            viewModel.setCrudOperations(taskCrudOperations);
 
-            viewModel.getProcessingState().observe(this, processingState -> { // Observe changes on MutableLiveData, act according to its processing state
+            viewModel.getProcessingState().observe(this, processingState -> {
                 switch (processingState) {
                     case RUNNING:
                         break;
@@ -80,7 +77,7 @@ public class OverviewActivity extends AppCompatActivity {
                 }
             });
 
-            if (this.viewModel.isInitial()) { //if there isn't already a view model, get data from db
+            if (this.viewModel.isInitial()) {
                 this.progressBar.setVisibility(View.VISIBLE);
                 if (((TaskApplication) getApplication()).isInOfflineMode()) {
                     showSnackbar("Offline! Changes will not be synced to server.");
@@ -129,37 +126,27 @@ public class OverviewActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Returns click listener for list item which gets the taskEntity for the selected item and triggers an edit on it.
-     */
+
     private AdapterView.OnItemClickListener onTaskClickListener() {
         return (parent, view, position, id) -> {
-            //get the TaskEntity from the data list that corresponds to the view position in the ListView
             TaskEntity selectedTask = listViewAdapter.getItem(position);
             callDetailViewForEdit(selectedTask);
         };
     }
 
-    /**
-     * Starts DetailActivity for result after click on existing task
-     */
+
     private void callDetailViewForEdit(TaskEntity selectedItem) {
         Intent callDetailViewForEdit = new Intent(Intent.ACTION_EDIT, null, this, DetailViewActivity.class);
         callDetailViewForEdit.putExtra(ARG_TASK, selectedItem);
         detailViewForEditLauncher.launch(callDetailViewForEdit);
     }
 
-    /**
-     * This is a field.
-     * Define the intent for calling the edit view.
-     * Also defines what should be done after a result is returned.
-     */
+
     public final ActivityResultLauncher<Intent> detailViewForEditLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
         if (activityResultObject.getData() != null) {
             String action = activityResultObject.getData().getAction();
             if (activityResultObject.getResultCode() == RESULT_OK) {
                 TaskEntity returnedTask = (TaskEntity) activityResultObject.getData().getSerializableExtra(ARG_TASK);
-                // differentiate if detail view activity finished because the task was deleted or if it was edited
                 if (Objects.equals(action, "android.intent.action.DELETE")) {
                     this.viewModel.deleteTask(returnedTask);
                     assert returnedTask != null;
@@ -175,19 +162,13 @@ public class OverviewActivity extends AppCompatActivity {
         }
     });
 
-    /**
-     * Starts DetailActivity for result after click on new task button
-     */
+
     private void callDetailViewForCreate() {
         Intent detailviewIntent = new Intent(Intent.ACTION_INSERT, null, this, DetailViewActivity.class);
-        detailViewForCreateLauncher.launch(detailviewIntent); //launch a new activity from which we want to get a result
+        detailViewForCreateLauncher.launch(detailviewIntent);
     }
 
-    /**
-     * This is a field.
-     * Define the intent for calling the a create task view.
-     * Also defines what should be done after a result is returned.
-     */
+
     public final ActivityResultLauncher<Intent> detailViewForCreateLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResultObject -> {
         if (activityResultObject.getResultCode() == Activity.RESULT_OK) {
             Log.i(LOG_TAG, "Successfully received edited task from DetailView");
@@ -197,18 +178,14 @@ public class OverviewActivity extends AppCompatActivity {
         }
     });
 
-    /**
-     * Inflate menu in top app bar
-     */
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_overview_menu, menu);
         return true;
     }
 
-    /**
-     * Style icon according to if task is overdue
-     */
+
     public int calculateTaskDue(TaskEntity taskToBeCompared) {
         if (taskToBeCompared.getDueDate() > System.currentTimeMillis()) {
             return View.GONE;

@@ -17,13 +17,10 @@ public class TaskApplication extends Application {
     private final String LOG_TAG = TaskApplication.class.getSimpleName();
     private TaskCrudOperations crudOperations;
 
-    /**
-     * Instantiate CRUD operations once at app start, not in OverviewActivity where it would be instantiated every time the activity is instantiated
-     */
+
 
     public Future<TaskCrudOperations> getCrudOperations() {
         CompletableFuture<TaskCrudOperations> returnValueFutureObj = new CompletableFuture<>();
-        //check if there already are crud operations, because this method is called in an activity, this method gets called whenever the activity restarts, e.g. on screen orientation flip
         if (this.crudOperations != null) {
             returnValueFutureObj.complete(this.crudOperations);
         } else {
@@ -32,15 +29,14 @@ public class TaskApplication extends Application {
             TaskCrudOperations remoteOperations = new RetrofitTaskCrudOperations();
             TaskCrudOperations syncedOperations = new SyncTaskCrudOperations(localOperations, remoteOperations);
 
-            new Thread(() -> { //new thread for network access because else this runs on UI thread
+            new Thread(() -> {
                 try {
-                    //check if connection is open
                     HttpURLConnection connection = (HttpURLConnection) new URL("http://10.0.2.2:8080/api/todos").openConnection();
                     Log.d(LOG_TAG, "Created connection: " + connection);
                     connection.setRequestMethod("GET");
                     connection.setConnectTimeout(500);
                     connection.setReadTimeout(500);
-                    connection.getInputStream(); //body of server response
+                    connection.getInputStream();
                     this.crudOperations = syncedOperations;
                     returnValueFutureObj.complete(crudOperations);
                     Log.d(LOG_TAG, "Using synced operations");
@@ -52,17 +48,14 @@ public class TaskApplication extends Application {
                 }
             }).start();
         }
-        //If we didn't use a future this would always be null because getting the operations runs on another thread (wait 500ms for server..)
-        return returnValueFutureObj; // it the completable future gets completed with the right data when it is ready, it gets returned immediately tho.
+        return returnValueFutureObj;
     }
 
     public boolean isInOfflineMode(){
         return this.crudOperations instanceof RoomTaskCrudOperations;
     }
 
-    /**
-     * Called on app start
-     */
+
     @Override
     public void onCreate() {
 

@@ -2,28 +2,20 @@ package org.julheinz.entities;
 
 import androidx.annotation.NonNull;
 
-/**
- * Represents the state of an log in attempt.
- */
+
 public class LoginEntity {
 
-    /**
-     * Possible values for the validation of an email address.
-     */
+
     public enum EmailErrorState {
         INVALID_PATTERN, EMPTY, VALID, NOT_VALIDATED
     }
 
-    /**
-     * Possible values for the validation of a password.
-     */
+
     public enum PwErrorState {
         NOT_SIX, EMPTY, NOT_NUM, VALID, NOT_VALIDATED
     }
 
-    /**
-     * Possible values for the state of the authentication.
-     */
+
     public enum AuthErrorState {
         BEFORE_ATTEMPT, SUCCESS, FAILURE, WAITING
     }

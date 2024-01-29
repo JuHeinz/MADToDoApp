@@ -15,12 +15,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * ViewModel for OverViewActivity: Calls business logic and manages data for the activity.
- * Business logic: calling database operations, sorting the task list,
- * Data: list of taskEntities
- * Should not hold any references to the activity or its UI, is observed by the OverviewActivity.
- */
+
 public class OverviewViewModel extends ViewModel {
     private static final String LOG_TAG = OverviewViewModel.class.getSimpleName();
 
@@ -28,7 +23,7 @@ public class OverviewViewModel extends ViewModel {
 
     private final MutableLiveData<ProcessingState> processingState = new MutableLiveData<>();
 
-    private final ExecutorService operationRunner = Executors.newFixedThreadPool(4); // smart thread management
+    private final ExecutorService operationRunner = Executors.newFixedThreadPool(4);
     private TaskCrudOperations crudOperations;
     private boolean initial = true;
     private final List<TaskEntity> taskList = new ArrayList<>();
@@ -39,7 +34,7 @@ public class OverviewViewModel extends ViewModel {
     public static final Comparator<TaskEntity> SORT_DUE_FAV = Comparator.comparing(TaskEntity::getDueDate).thenComparing(TaskEntity::isFav);
 
     public OverviewViewModel() {
-        this.currentSortMode = SORT_DUE_FAV; //set one sort mode as default
+        this.currentSortMode = SORT_DUE_FAV;
     }
 
     public List<TaskEntity> getTasks() {
@@ -56,11 +51,11 @@ public class OverviewViewModel extends ViewModel {
 
     public void createTask(TaskEntity taskEntity) {
         processingState.setValue(ProcessingState.RUNNING);
-        operationRunner.execute(() -> { // execute assigns a new or existing thread to this task
+        operationRunner.execute(() -> {
             TaskEntity createdTask = crudOperations.createTask(taskEntity);
             this.taskList.add(createdTask);
             applyTaskSorting();
-            processingState.postValue(ProcessingState.DONE); //change live data
+            processingState.postValue(ProcessingState.DONE);
         });
     }
 
@@ -79,8 +74,8 @@ public class OverviewViewModel extends ViewModel {
         operationRunner.execute(() -> {
             crudOperations.updateTask(editedTask);
             int index = taskList.indexOf(editedTask);
-            this.taskList.set(index, editedTask); //replace TaskEntity at that position in the task list
-            applyTaskSorting(); //call sorting here sorting is updated after done or fav press in overview
+            this.taskList.set(index, editedTask);
+            applyTaskSorting();
             processingState.postValue(ProcessingState.DONE);
         });
     }
@@ -88,8 +83,8 @@ public class OverviewViewModel extends ViewModel {
     public void deleteTask(TaskEntity taskToBeDeleted) {
         processingState.setValue(ProcessingState.RUNNING);
         operationRunner.execute(() -> {
-            crudOperations.deleteTask(taskToBeDeleted); // remove from database
-            this.taskList.remove(taskToBeDeleted); // remove from list view adapter
+            crudOperations.deleteTask(taskToBeDeleted);
+            this.taskList.remove(taskToBeDeleted);
             processingState.postValue(ProcessingState.DONE);
         });
     }
@@ -100,9 +95,9 @@ public class OverviewViewModel extends ViewModel {
         if (this.crudOperations instanceof SyncTaskCrudOperations) {
             Log.d(LOG_TAG, "Syncing databases");
             operationRunner.execute(() -> {
-                List<TaskEntity> newLocalData = crudOperations.syncData(); //get data from remote db or overwrite remote db, either way return local data
-                taskList.clear(); //clear current in memory list
-                taskList.addAll(newLocalData); //fill in memory list with (potentially updated) data from local db
+                List<TaskEntity> newLocalData = crudOperations.syncData();
+                taskList.clear();
+                taskList.addAll(newLocalData);
                 applyTaskSorting();
                 processingState.postValue(ProcessingState.DONE);
             });
@@ -137,17 +132,13 @@ public class OverviewViewModel extends ViewModel {
         processingState.setValue(ProcessingState.DONE);
     }
 
-    /**
-     * Resort the task list.
-     */
+
     private void applyTaskSorting() {
         this.taskList.sort(currentSortMode);
-        this.taskList.sort(Comparator.comparing(TaskEntity::isDone));// done tasks always get sorted to the bottom
+        this.taskList.sort(Comparator.comparing(TaskEntity::isDone));
     }
 
-    /**
-     * Trigger retrofit to delete all remote tasks.
-     */
+
     public String deleteAllRemoteTasks() {
         String message;
         processingState.setValue(ProcessingState.RUNNING);
@@ -164,9 +155,7 @@ public class OverviewViewModel extends ViewModel {
         return message;
     }
 
-    /**
-     * Trigger Room to delete all local tasks.
-     */
+
     public void deleteAllLocalTasks() {
         processingState.setValue(ProcessingState.RUNNING);
         operationRunner.execute(() -> {
