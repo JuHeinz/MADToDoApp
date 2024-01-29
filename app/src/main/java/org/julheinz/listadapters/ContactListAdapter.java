@@ -17,12 +17,14 @@ import org.julheinz.madtodoapp.databinding.ContactListItemBinding;
 
 import java.util.List;
 
+/**
+ * Returns the view for each ContactEntity. Views are used in ListView.
+ */
 public class ContactListAdapter extends ArrayAdapter<ContactEntity> {
 
     private final LayoutInflater inflater;
-    ContactEntity contact;
 
-    Context parentActivity;
+    private final Context parentActivity;
 
     public ContactListAdapter(Context parent, int layoutIdOfListView, List<ContactEntity> contactList, LayoutInflater inflater) {
         super(parent, layoutIdOfListView, contactList);
@@ -33,15 +35,16 @@ public class ContactListAdapter extends ArrayAdapter<ContactEntity> {
     /**
      * Get the view for a single item by inflating a layout and creating a new view or using a recycled view.
      * Overrides method of ArrayAdapter to produce custom view, not just TextView.
-     * @param position the position of the item in the list, used to get the ContactEntity object.
+     *
+     * @param position                 the position of the item in the list, used to get the ContactEntity object.
      * @param existingViewToBeRecycled view for a contact that can be recycled
-     * @param parent view that calls this method
+     * @param parent                   view that calls this method
      * @return The view for a contact in the list, either created anew or recycled from earlier, layout defined by contact_list_item.xml
      */
     @NonNull
     @Override
     public View getView(int position, @Nullable View existingViewToBeRecycled, @NonNull ViewGroup parent) {
-        contact = getItem(position); //data to be rendered
+        ContactEntity contact = getItem(position); //data to be rendered
         View contactView; //view that displays the data
         ContactListItemBinding contactBinding;
 
@@ -50,29 +53,25 @@ public class ContactListAdapter extends ArrayAdapter<ContactEntity> {
             //there will always be an already inflated view because of the else statement.
 
             contactBinding = (ContactListItemBinding) contactView.getTag(); //get data binder from recycled view
-            //reset button visibility so recycled views dont have the states of their previous owners
+            //reset button visibilities so recycled views don't have the states of their previous owners
             contactView.findViewById(R.id.emailBtn).setVisibility(View.VISIBLE);
             contactView.findViewById(R.id.smsBtn).setVisibility(View.VISIBLE);
-
-
         } else {
             contactBinding = DataBindingUtil.inflate(inflater, R.layout.contact_list_item, null, false); //if there is no view to be recycled, inflate a new one
-            contactView = contactBinding.getRoot(); //set task view to the view created by inflating
+            contactView = contactBinding.getRoot(); //assign the view created by data binding inflating to the field.
             contactView.setTag(contactBinding); //set data binding for view
         }
 
-        contactBinding.setContact(contact);
-        contactBinding.setActivity((DetailViewActivity) parentActivity); //set the "activity" variable in the databinding to the parent view of this list
+        contactBinding.setContact(contact); //set the "contact" variable for the data binding to the contact entity in this view
+        contactBinding.setActivity((DetailViewActivity) parentActivity); //set the "activity" variable for the data binding to the parent view of this list
 
-        if(contact.getEmail().isEmpty()){
+        if (contact != null && contact.getEmail().isEmpty()) {
             contactView.findViewById(R.id.emailBtn).setVisibility(View.GONE);
         }
 
-        if(contact.getPhoneNumber().isEmpty()){
+        if (contact != null && contact.getPhoneNumber().isEmpty()) {
             contactView.findViewById(R.id.smsBtn).setVisibility(View.GONE);
         }
         return contactView;
     }
-
-
 }

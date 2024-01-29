@@ -19,16 +19,16 @@ import org.julheinz.viewmodel.OverviewViewModel;
 import java.util.List;
 
 /**
- *  An adapter that manages what is shown in the list view. This is a custom adapter for my TaskEntity, extending an ArrayAdapter.
+ * Returns the view for each TaskEntity. Views are used in ListView.
  */
 public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
-    private static final String LOG_TAG = TaskListAdapter.class.getSimpleName();
 
     private final LayoutInflater inflater;
     TaskEntity task;
     final OverviewViewModel viewModel;
 
     final OverviewActivity activity;
+
     public TaskListAdapter(Context parent, int layoutIdOfListView, List<TaskEntity> taskList, LayoutInflater inflater, OverviewViewModel viewModel) {
         super(parent, layoutIdOfListView, taskList);
         this.inflater = inflater;
@@ -39,9 +39,10 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
     /**
      * Get the view for a single item by inflating a layout and creating a new view or using a recycled view.
      * Overrides method of ArrayAdapter produce custom view, not just TextView.
-     * @param position the position of the task in the list, used to get the TaskEntity object.
+     *
+     * @param position                 the position of the task in the list, used to get the TaskEntity object.
      * @param existingViewToBeRecycled view for a task that can be recycled
-     * @param parent view that calls this method
+     * @param parent                   view that calls this method
      * @return The view for a task in the list, either created anew or recycled from earlier, layout defined by list_item.xml
      */
     @NonNull
@@ -63,10 +64,8 @@ public class TaskListAdapter extends ArrayAdapter<TaskEntity> {
         }
 
         taskBinding.setTask(task);
-        taskBinding.setViewModel(viewModel); // make it so that the databinding class for the listitem has access to the viewmodel of Overview Activity
-        taskBinding.setActivity(activity); // make it so that the databinding class for the listitem has access to the Overview Activity
+        taskBinding.setViewModel(viewModel); // make it so that the data binding class for the list item has access to the view model of Overview Activity
+        taskBinding.setActivity(activity); // make it so that the data binding class for the list item has access to the Overview Activity
         return taskView;
     }
-
-
 }
